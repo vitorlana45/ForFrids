@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400;1,600&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#eaf4e7",
+                        "surface-tint": "#506354",
+                        "surface-variant": "#dbe5d9",
+                        "on-secondary-fixed-variant": "#604025",
+                        "surface-container-high": "#e1ebdf",
+                        "on-surface": "#151e16",
+                        "surface-container-highest": "#dbe5d9",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#e7f1e5",
+                        "secondary-container": "#fdceaa",
+                        "surface": "#f2fcf0",
+                        "outline": "#737872",
+                        "on-secondary-fixed": "#2d1602",
+                        "tertiary-fixed-dim": "#c8c6c3",
+                        "outline-variant": "#c3c8c1",
+                        "surface-container-low": "#ecf6ea",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "tertiary": "#41423f",
+                        "inverse-primary": "#b7ccb9",
+                        "primary-container": "#4a5d4e",
+                        "surface-dim": "#d3ddd1",
+                        "on-secondary-container": "#79563a",
+                        "tertiary-fixed": "#e4e2de",
+                        "on-surface-variant": "#434843",
+                        "on-primary-container": "#c0d5c2",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2a332b",
+                        "primary-fixed": "#d3e8d5",
+                        "secondary": "#7a573b",
+                        "on-tertiary-fixed-variant": "#474744",
+                        "on-tertiary-container": "#d1d0cc",
+                        "on-primary-fixed": "#0e1f13",
+                        "background": "#f2fcf0",
+                        "primary": "#334537",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#1b1c1a",
+                        "tertiary-container": "#595956",
+                        "secondary-fixed-dim": "#ebbd9b",
+                        "primary-fixed-dim": "#b7ccb9",
+                        "on-background": "#151e16",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#ffdcc3",
+                        "on-primary-fixed-variant": "#394b3d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "48px",
+                        "gutter": "32px",
+                        "unit": "8px",
+                        "stack-sm": "12px",
+                        "margin-edge": "40px",
+                        "stack-md": "24px",
+                        "section-gap": "120px",
+                        "container-max": "1120px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Noto Serif"],
+                        "body-lg": ["Manrope"],
+                        "label-caps": ["Manrope"],
+                        "headline-md": ["Noto Serif"],
+                        "headline-sm": ["Noto Serif"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.7", "letterSpacing": "0.03em", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.15em", "fontWeight": "600"}],
+                        "headline-md": ["32px", {"lineHeight": "1.3", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "headline-sm": ["24px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0.02em", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 24
+    }
+.grain-texture {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCRJWkQENbS6Ur1T3Ca6rrmSsUGFGNI_VF9BVQro0GaTAhbstFXc0qngjfmuFIjDHEbrP7XOfKjT3_EaLEoCUFAuCEFnHnGw6-XxX7LpoH4a4qi63HsYVis3H04bdHnddHR0JuR3gI2hPAvAZoShM7CTNIEl5I12BxC86I8aB5hMBoUJpSAVC7AUF3AiNBSMHK1dDTA6GOuEvGdXTtb8cdcRO8WSeNjZnAAJ7fb3ySbs02LpY-7_r1rrzdNCddAfx-pQmJF1RbCWME);
+    opacity: 0.05
+    }</style>
+</head>
+<body class="bg-[#FDFCF0] font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-[#FDFCF0] border-b border-[#C89D7C]/30">
+<div class="max-w-7xl mx-auto px-10 py-6 flex justify-between items-center w-full">
+<div class="flex items-center gap-8">
+<span class="font-serif text-2xl italic font-semibold text-[#4A5D4E]">Eternal Paws</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="font-serif text-lg tracking-tight text-stone-500 hover:text-[#4A5D4E] transition-colors" href="#">Time Capsule</a>
+<a class="font-serif text-lg tracking-tight text-[#4A5D4E] font-bold border-b border-[#C89D7C] pb-1" href="#">Memorial QR</a>
+<a class="font-serif text-lg tracking-tight text-stone-500 hover:text-[#4A5D4E] transition-colors" href="#">Memory Book</a>
+<a class="font-serif text-lg tracking-tight text-stone-500 hover:text-[#4A5D4E] transition-colors" href="#">Tributes</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-[#4A5D4E] cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-[#4A5D4E] cursor-pointer">settings</span>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-serif text-lg tracking-tight hover:opacity-80 transition-opacity">My Sanctuary</button>
+</div>
+</div>
+</header>
+<main class="pt-32 pb-40 px-10 max-w-7xl mx-auto">
+<!-- Header Section -->
+<section class="mb-16 text-center max-w-2xl mx-auto">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-[0.3em] mb-4 block">Personalização</span>
+<h1 class="font-display-lg text-display-lg text-primary mb-6">QR Code Memorial</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant italic">Crie um elo eterno entre o mundo físico e as memórias digitais do seu companheiro.</p>
+<div class="w-12 h-px bg-[#C89D7C] mx-auto mt-8"></div>
+</section>
+<!-- Configuration Canvas -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+<!-- Customization Controls (Left Column) -->
+<div class="lg:col-span-4 space-y-10">
+<!-- Style Selector -->
+<div class="space-y-6">
+<h3 class="font-headline-sm text-headline-sm text-primary">Estilo do Código</h3>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex flex-col items-center p-4 border border-[#C89D7C] bg-white rounded-xl transition-all hover:border-primary">
+<span class="material-symbols-outlined text-3xl mb-2 text-primary">grid_view</span>
+<span class="font-label-caps text-label-caps uppercase">Minimalista</span>
+</button>
+<button class="flex flex-col items-center p-4 border border-[#C89D7C]/20 bg-stone-50 rounded-xl transition-all hover:border-primary">
+<span class="material-symbols-outlined text-3xl mb-2 text-stone-400">filter_vintage</span>
+<span class="font-label-caps text-label-caps uppercase text-stone-400">Orgânico</span>
+</button>
+</div>
+</div>
+<!-- Color Palette -->
+<div class="space-y-6">
+<h3 class="font-headline-sm text-headline-sm text-primary">Paleta de Cores</h3>
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-primary ring-2 ring-offset-2 ring-primary cursor-pointer"></div>
+<div class="w-10 h-10 rounded-full bg-secondary cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-secondary transition-all"></div>
+<div class="w-10 h-10 rounded-full bg-stone-400 cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-stone-400 transition-all"></div>
+<div class="w-10 h-10 rounded-full bg-tertiary cursor-pointer hover:ring-2 hover:ring-offset-2 hover:ring-tertiary transition-all"></div>
+</div>
+</div>
+<!-- Actions -->
+<div class="pt-8 space-y-4">
+<button class="w-full bg-primary-container text-on-primary-container py-5 rounded-full font-serif text-lg tracking-tight flex items-center justify-center gap-3 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">download</span>
+                        Exportar QR Digital
+                    </button>
+<p class="text-center font-body-md text-sm text-stone-400 italic">Ideal para usar em vídeos ou impressões próprias.</p>
+</div>
+</div>
+<!-- Visualization Area (Center Column) -->
+<div class="lg:col-span-8 flex flex-col gap-12">
+<!-- Main Preview Card -->
+<div class="bg-white border border-[#C89D7C]/30 p-12 rounded-3xl flex flex-col md:flex-row items-center gap-12 relative overflow-hidden">
+<div class="absolute inset-0 grain-texture pointer-events-none"></div>
+<div class="relative z-10 w-64 h-64 bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+<img alt="QR Code" class="w-full h-full object-contain" data-alt="minimalist and elegant black qr code on a clean white background centered with a subtle pet paw icon in the middle soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7pJD9GPV-HbPIdatlp4bjoce8ErNVS7g6JyuhB2mgBekTl4cMOJYeRIV_QONyrXlY3VNruPW2Zjzmb1q6pu5Enacm3L5mS0owodMGYSe_BsmnAH_Qc3m-6vV6hYqiyZD0t6R3Rgh8hd6Wvx_lVta2hPaxzANg8v05KK5lLG_hnyL1YJSjw_U5KQbHDxWq7nrzFL9Mn7_btxnAXhFokRUBd5easZcybGFzspMOSbV2TDLumUSL_oxoQxwsIFjohzSjGQeVJQlNI6s"/>
+</div>
+<div class="relative z-10 space-y-6 flex-1">
+<div class="space-y-2 text-center md:text-left">
+<h2 class="font-headline-md text-headline-md text-primary">Previsão Realista</h2>
+<p class="font-body-md text-on-surface-variant">Este código conectará quem o escanear diretamente ao memorial de <span class="font-bold text-primary italic">Luna</span>.</p>
+</div>
+<div class="flex flex-wrap gap-4 justify-center md:justify-start">
+<span class="px-4 py-2 bg-secondary/15 text-secondary rounded-full font-label-caps text-[10px] uppercase tracking-widest">Acesso Vitalício</span>
+<span class="px-4 py-2 bg-primary/15 text-primary rounded-full font-label-caps text-[10px] uppercase tracking-widest">Privacidade Segura</span>
+</div>
+</div>
+</div>
+<!-- Product Showcase (Physical Goods) -->
+<div class="space-y-8">
+<h3 class="font-headline-sm text-headline-sm text-primary border-b border-[#C89D7C]/20 pb-4">Encomendar Produto Físico</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Product 1: Metal Plate -->
+<div class="group cursor-pointer">
+<div class="aspect-square bg-stone-100 rounded-2xl overflow-hidden mb-4 relative">
+<img alt="Placa Metálica" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="close-up of a luxury brushed gold metal plaque with an engraved qr code mounted on dark oak wood warm cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABYGRcPmiqTk-AWnJEHBX9YyqsmsIIUhmkA3ANmGwwnGaetCURhAWG0oBkUVVtQcYCIGmOLI1gwpttTg3W9N3BoNANz-FMfSRnXPeWNmqr8f7vl7frxaPTKCnbtF31N40WGHrb6G5XjutDB272q8UmthcoEXdXlUD8O7ni-RHCNFgCBY5IDsS4ZeX9fw5wJUFOFcHh5jJPQ0CDF4mK2EZxIhG8Ov6zli0eSMZT-USk1iz0u-SyEOGhxJtiCmiNVjYgE7UR2xdg7TY"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="bg-white px-4 py-2 rounded-full font-label-caps text-primary shadow-lg">Selecionar</span>
+</div>
+</div>
+<h4 class="font-headline-sm text-lg text-primary">Placa Memorial em Latão</h4>
+<p class="font-body-md text-sm text-on-surface-variant">R$ 189,00</p>
+</div>
+<!-- Product 2: Medal -->
+<div class="group cursor-pointer">
+<div class="aspect-square bg-stone-100 rounded-2xl overflow-hidden mb-4 relative">
+<img alt="Medalha Pet" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="small elegant silver memorial medal for pet collar with a laser engraved qr code placed on silk fabric soft dreamy light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDXeuC_aMwl9Fkrqm2SynI83joHr02nmcQf0IZudHE7DNoTYJKwp2-h8-XiEymP7kmSl5k3sv8BkGBOK5NUDfwgUZ35eYaKWPZXyCm29XHjho5NxONw_jdBZRMbH9lDZsZ3jW4nXXXrrfic_FDIV5ot5TCXi-oGxDd53yU4Mmv5DZ8Zr_SxweIH9GjBtizAxCUTuGjw8SSknSTaMLVB1NBmZD1cFT8l1ODlZwiuQwhONHaLFEQv6l_pJzcv-dXxgVJedPWHHOjKo0"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="bg-white px-4 py-2 rounded-full font-label-caps text-primary shadow-lg">Selecionar</span>
+</div>
+</div>
+<h4 class="font-headline-sm text-lg text-primary">Medalha de Coleira Silver</h4>
+<p class="font-body-md text-sm text-on-surface-variant">R$ 124,00</p>
+</div>
+<!-- Product 3: Framed Art -->
+<div class="group cursor-pointer">
+<div class="aspect-square bg-stone-100 rounded-2xl overflow-hidden mb-4 relative">
+<img alt="Quadro Memory" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="minimalist wooden picture frame on a wall containing a photo of a golden retriever with a discreet qr code in the corner modern interior lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHDtlAnLXcUJYGxNC7evGX-3psNldH1iDDotEglH6rwTb7hcvLMtkUoDdFtGD0YQO9np75t8mMG3VOEyinAzDvVuYATlooTRGphLbKiSb_eqqMjFXzHTX6HQsooeUouUiYZS_C_jWn5GiAldXDQBtFF99mI8V61-1nKAYc1OV-qwyJeDU23djRVbG8EFcUJ8hP7Q3q2lAcPjRHNdb0mc-1BHeRBRcjv13wD8cjU8ku8ZyCm0HOTlBINfdQdO5CmD-wf52gyzqAAMw"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="bg-white px-4 py-2 rounded-full font-label-caps text-primary shadow-lg">Selecionar</span>
+</div>
+</div>
+<h4 class="font-headline-sm text-lg text-primary">Porta-Retrato Heritage</h4>
+<p class="font-body-md text-sm text-on-surface-variant">R$ 245,00</p>
+</div>
+</div>
+</div>
+<!-- Order Summary CTA -->
+<div class="bg-primary p-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8 mt-4 shadow-xl">
+<div class="text-on-primary">
+<h4 class="font-headline-sm text-xl mb-1">Finalizar Encomenda</h4>
+<p class="font-body-md opacity-80">Personalização: Latão Premium + QR Gravado</p>
+</div>
+<button class="bg-[#FDFCF0] text-primary px-10 py-4 rounded-full font-serif font-bold text-lg hover:bg-secondary-fixed transition-colors">
+                        Prosseguir com Compra
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-stone-100 border-t border-[#C89D7C]/10 py-20 mt-32">
+<div class="flex flex-col items-center gap-8 max-w-4xl mx-auto text-center">
+<span class="font-serif text-xl text-[#4A5D4E]">Eternal Paws</span>
+<div class="flex gap-10">
+<a class="font-serif text-sm italic text-stone-500 hover:text-[#C89D7C] transition-colors" href="#">Our Ethos</a>
+<a class="font-serif text-sm italic text-stone-500 hover:text-[#C89D7C] transition-colors" href="#">Privacy</a>
+<a class="font-serif text-sm italic text-stone-500 hover:text-[#C89D7C] transition-colors" href="#">Terms</a>
+<a class="font-serif text-sm italic text-stone-500 hover:text-[#C89D7C] transition-colors" href="#">Support</a>
+</div>
+<p class="font-serif text-sm italic text-stone-600">© 2024 Eternal Paws. Preserving memories with dignity.</p>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-6 pb-8 pt-4 bg-[#FDFCF0]/90 backdrop-blur-md rounded-t-3xl border-t border-[#C89D7C]/20 shadow-[0_-4px_20px_rgba(74,93,78,0.05)]">
+<div class="flex flex-col items-center justify-center text-stone-400 opacity-70">
+<span class="material-symbols-outlined">home</span>
+<span class="font-serif text-[10px] tracking-widest uppercase mt-1">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 opacity-70">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-serif text-[10px] tracking-widest uppercase mt-1">Capsule</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#4A5D4E] font-bold scale-110 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">qr_code_2</span>
+<span class="font-serif text-[10px] tracking-widest uppercase mt-1">Memorial</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 opacity-70">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-serif text-[10px] tracking-widest uppercase mt-1">Print</span>
+</div>
+</nav>
+</body></html>

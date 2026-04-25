@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,700;1,400&amp;family=Manrope:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#253f2b",
+                    "surface-container-low": "#f9f2ed",
+                    "surface": "#fff8f3",
+                    "secondary-container": "#e2ddf0",
+                    "on-primary-fixed-variant": "#334d38",
+                    "secondary": "#5f5c6c",
+                    "primary": "#4a654f",
+                    "on-surface-variant": "#424842",
+                    "on-secondary-fixed": "#1c1a27",
+                    "surface-variant": "#e8e1dc",
+                    "primary-fixed-dim": "#b0ceb4",
+                    "outline": "#737972",
+                    "surface-dim": "#dfd9d4",
+                    "on-surface": "#1e1b18",
+                    "inverse-on-surface": "#f7efea",
+                    "primary-container": "#8daa91",
+                    "tertiary-container": "#aaa296",
+                    "on-primary-fixed": "#062010",
+                    "on-background": "#1e1b18",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#1f1b13",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#c9c4d7",
+                    "tertiary-fixed": "#ebe1d4",
+                    "surface-bright": "#fff8f3",
+                    "primary-fixed": "#cceacf",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#e5e0f3",
+                    "on-secondary-container": "#646171",
+                    "on-secondary-fixed-variant": "#474554",
+                    "surface-container-highest": "#e8e1dc",
+                    "on-tertiary-container": "#3e3930",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#33302c",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary": "#645d53",
+                    "surface-tint": "#4a654f",
+                    "inverse-primary": "#b0ceb4",
+                    "background": "#fff8f3",
+                    "on-tertiary-fixed-variant": "#4c463c",
+                    "surface-container-high": "#eee7e1",
+                    "outline-variant": "#c2c8c0",
+                    "tertiary-fixed-dim": "#cfc5b9",
+                    "on-tertiary": "#ffffff",
+                    "surface-container": "#f4ede7",
+                    "on-primary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "16px",
+                    "stack-md": "32px",
+                    "stack-lg": "64px",
+                    "margin-mobile": "20px",
+                    "unit": "8px",
+                    "gutter": "32px",
+                    "section-padding": "120px",
+                    "container-max-width": "1140px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Manrope"],
+                    "h3": ["Noto Serif"],
+                    "body-lg": ["Manrope"],
+                    "h2": ["Noto Serif"],
+                    "label-caps": ["Manrope"],
+                    "h1": ["Noto Serif"],
+                    "body-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "h3": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "h2": ["32px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "600"}],
+                    "h1": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .text-sage-tint { color: #8DAA91; }
+        .bg-sage-tint { background-color: #8DAA91; }
+        .border-sage-tint { border-color: #8DAA91; }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-surface selection:bg-secondary-container">
+<!-- TopAppBar -->
+<header class="bg-stone-50/80 backdrop-blur-md dark:bg-stone-950/80 border-b border-stone-200/50 dark:border-stone-800/50 docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
+<div class="text-xl font-serif italic text-stone-700 dark:text-stone-300">Eternal Paws</div>
+<nav class="hidden md:flex gap-8">
+<a class="font-h3 text-body-sm text-[#8DAA91] border-b border-[#8DAA91] pb-1" href="#memorial">Memorial</a>
+<a class="font-h3 text-body-sm text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition-colors" href="#timeline">Timeline</a>
+<a class="font-h3 text-body-sm text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition-colors" href="#gallery">Gallery</a>
+<a class="font-h3 text-body-sm text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition-colors" href="#tributes">Tributes</a>
+</nav>
+<div class="flex gap-4">
+<button class="p-2 rounded-full hover:bg-stone-100/50 dark:hover:bg-stone-900/50 transition-all text-stone-600">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="p-2 rounded-full hover:bg-stone-100/50 dark:hover:bg-stone-900/50 transition-all text-stone-600">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+</div>
+</header>
+<main class="relative" id="memorial">
+<!-- Hero Section -->
+<section class="relative h-[819px] flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img alt="Barney Golden Retriever" class="w-full h-full object-cover" data-alt="A soulful close-up portrait of a majestic Golden Retriever with soft golden fur, gentle eyes, in a sun-drenched meadow at sunset" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKrpBtkXeurRhaleUkSjgQGYjwSr28ObzTUYQFM2-ITz9lpe5YFljHP3A883XOvjTvQ8-x9YgnKbTf_p_OPiPupAm9bcmhlweuJ25bxKKkqoYeivFchOfw34NaWqrcdLr-9DW-df3bIv75l88US9HjADX_KebUqmQUS8q256j1DCn0tKc6Xj9vewK7aUJTe0brkRcPUzmQ0SkkyVznULo2-39Ax9nHP6SpSEFADoc_F3h3jQyoa3fiuGBDz8Chlf1Dx7-8TtETFZ4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
+</div>
+<div class="relative z-10 text-center px-4 max-w-3xl">
+<span class="font-label-caps text-on-surface-variant tracking-[0.2em] mb-4 block">EM MEMÓRIA DE</span>
+<h1 class="font-h1 text-h1 text-on-surface mb-2">Barney</h1>
+<p class="font-h3 text-h3 italic text-primary mb-8">2014 — 2023</p>
+<div class="w-12 h-px bg-outline-variant mx-auto mb-8"></div>
+<p class="font-h2 text-h3 italic text-on-surface-variant leading-relaxed">
+                    "Um raio de sol em forma de quatro patas, que nos ensinou que o amor não precisa de palavras, apenas de presença."
+                </p>
+</div>
+</section>
+<!-- Nossa História Section -->
+<section class="max-w-4xl mx-auto px-6 py-[120px]">
+<div class="grid md:grid-cols-2 gap-16 items-center">
+<div class="space-y-6">
+<h2 class="font-h2 text-h2 text-on-surface">Nossa História</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                        Barney não era apenas um cão; ele era o coração pulsante da nossa casa. Ele chegou em uma tarde chuvosa de outono, uma pequena bola de pelos dourados que coube perfeitamente no vão do meu braço.
+                    </p>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Sua personalidade era magnética. Ele tinha uma forma única de saber quando alguém estava triste, apoiando seu queixo pesado no colo de quem precisava de conforto. Barney amava o cheiro de grama molhada, o som do mar e, acima de tudo, estar rodeado pela sua família.
+                    </p>
+</div>
+<div class="relative group">
+<div class="absolute -inset-4 bg-surface-container-low rounded-xl -rotate-2 group-hover:rotate-0 transition-transform"></div>
+<img alt="Barney Filhote" class="relative rounded-lg shadow-sm w-full aspect-square object-cover" data-alt="A tiny Golden Retriever puppy sitting in a wicker basket on a wooden floor, looking curious with large dark eyes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC65Pnd2kGh1Xm8zLFiaZEUr5UI71W2BprJht1OvtoEf6I2Tl4Lve_k0IFy4VVJmUk_Tmif1ydR6mBZzDTxBl7wDK1kcOEBZVm78v3YCyi3-3Acx_pK1aYgpcYBzXqYT6q8LCb4pQqJqMlufP-t6IRe-eO6HJi2O8FFT8Yu0TntZ0iD5iAYmCFNnWB8O_i6xO9oo8BceZvBKoCVuv_PSyPfgX5dd5Ke8m0KuthUWew76K7JsGDmrwNYBGz3jNraj9Cd9szfUR9Q4XA"/>
+</div>
+</div>
+</section>
+<!-- Timeline Section -->
+<section class="bg-surface-container-lowest py-[120px]" id="timeline">
+<div class="max-w-5xl mx-auto px-6">
+<div class="text-center mb-20">
+<h2 class="font-h2 text-h2 text-on-surface mb-4">Marcos de uma Vida Feliz</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Momentos que definiram nossa jornada juntos</p>
+</div>
+<div class="relative space-y-12 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-outline-variant before:to-transparent">
+<!-- Item 1 -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-surface-variant bg-surface-bright text-primary-container z-10 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+<span class="material-symbols-outlined text-[20px]">home</span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[45%] p-6 rounded-2xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-stone-100">
+<time class="font-label-caps text-primary text-[10px] mb-2 block">MAIO 2014</time>
+<h3 class="font-h3 text-body-lg font-bold text-on-surface mb-2">Chegada em Casa</h3>
+<p class="font-body-sm text-on-surface-variant">O dia em que o silêncio da casa foi substituído pelo barulho de patinhas apressadas e muita alegria.</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-surface-variant bg-surface-bright text-primary-container z-10 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+<span class="material-symbols-outlined text-[20px]">beach_access</span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[45%] p-6 rounded-2xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-stone-100">
+<time class="font-label-caps text-primary text-[10px] mb-2 block">DEZEMBRO 2015</time>
+<h3 class="font-h3 text-body-lg font-bold text-on-surface mb-2">Primeira Praia</h3>
+<p class="font-body-sm text-on-surface-variant">Sua reação ao mar foi mágica. Ele não teve medo, apenas pulou nas ondas como se pertencesse à água.</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-surface-variant bg-surface-bright text-primary-container z-10 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+<span class="material-symbols-outlined text-[20px]">pets</span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[45%] p-6 rounded-2xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-stone-100">
+<time class="font-label-caps text-primary text-[10px] mb-2 block">ABRIL 2017</time>
+<h3 class="font-h3 text-body-lg font-bold text-on-surface mb-2">Amizade com a Luna</h3>
+<p class="font-body-sm text-on-surface-variant">A chegada da sua irmãzinha Luna. Barney foi o mentor mais gentil e protetor que ela poderia ter.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Gallery Section -->
+<section class="py-[120px] max-w-7xl mx-auto px-6" id="gallery">
+<div class="text-center mb-16">
+<h2 class="font-h2 text-h2 text-on-surface mb-4">Galeria de Momentos</h2>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="space-y-4">
+<img class="w-full h-64 object-cover rounded-xl shadow-sm" data-alt="Golden Retriever running joyfully in a park with its tongue out and ears flying" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgg0WRH8yg3199S0KzzsJPVWXb98w0JodDBEgjQkMdmtOfWov4xCn5fEtt0I7pX36ZUJ4wA06fLK5zciGT0vh1xNTLgVTfx3OpWBT4vaC_GFSYWF4_eo5sWVpQsJme3yT0ZvB0A32CiVIJMPFlbQNBCL7_E0wm8a4qLB7z04Yl_g6Jg4OE_ZpBNNhAu0jFaHI8QIj6UY9tk72FXmZw3PbJeb95D1Go5TMuw-KEUM8dms3chk43Oi0MD5oRbxheGF3PcDhq1D2uvTI"/>
+<img class="w-full h-80 object-cover rounded-xl shadow-sm" data-alt="Close up of a dog's nose and whiskers in soft focus, peaceful and intimate" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzkTtXCL35-OktYCOW8Aj0c0VSXFnqtz4SQK-PvHoIMboMUxHi-zGnxVkutkeQhs6MjsW8_FrLqGQgedcz16PYYvKD-J-TxrAXNi6jnWk5ZP-2vtgxsiinP8dIdPxSBIhi10KvFa4LM3XS1bH3tM4vCOYwc93n8yyTCtRVExmUXTzI9VSYEDgmCokeqYp6X9USg3anjMXohA9q3EgR0VEgiVF28nfndbOmOvsA2k4-Cmf1cqXWRU1c6WbTd84HNVuu8eWe7-8dCO8"/>
+</div>
+<div class="space-y-4">
+<img class="w-full h-96 object-cover rounded-xl shadow-sm" data-alt="Two dogs lying together on a rug, a larger golden retriever and a smaller pup, sleeping peacefully" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpsUSDHfw4elqpG10Bh_L7KFtosKwEQf8nkdy24dHNgnKDTb8gG41_Z24_Ag7nMhsS_0dMpRGBjqrcSPtBbanAge0HWhM1alpqNq7D2vqvc7nEd1xH5cWLwW2oY233aQWpaAgyKvwUxrU0xHON_DaYZyuDvXyov0E1iUrHf3JPSV44o4tvSlMqpr1bjgctDX0uHdp-RLj0lWjKhuWeBt0ybYvDanaGi4yo1dJDQX_Fw8y3BwCOUdYWJq8z1pg_WAcYzTraG9NViLo"/>
+<img class="w-full h-48 object-cover rounded-xl shadow-sm" data-alt="Golden retriever looking at the camera with a soft head tilt against a blurred green background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdVApm5D7QN8gbKnPiHzGO0FzCfLfeYQ-LGlsf3ctOdlYwPrwPZ96uO4RfPCyjKlJHldgRJkrD6B2QtoNsyFvM2NyKiQffNzdc4CKi_lzMqSPYPOqAU8AXAmXGfb0lzgJ06BI5nm1rEXp-5gF292SWqb0mb_cmy1yXAzqSzLbcEjP1DET1Cf-5uA1lWpSD1CJgjuODHm4AG9mrqrRYJXGY2DU06VjC51qI7AecnkwAssMX626Am0CkaC2D9NaQSvJTR6MZSH_Zoek"/>
+</div>
+<div class="space-y-4">
+<img class="w-full h-64 object-cover rounded-xl shadow-sm" data-alt="A man hugging a large golden retriever in a field of flowers, high emotional resonance" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlRvQIB5-urlQY3u6NyTr26wv9ZY16Os3qIV_PUsps3ZFmNAGkgQ3SjMhrhWJbM3qpv93KvGTIaVBRUZZuWpMUkbpeWzFAsRgenk9pRNp058ZN4uDI4BFfsuXYW1yzTkXt565RuoUY33vTwx9e5OoNGrRf6bjD8hdNs0c2EOrxKUkziAhaSdHA1Hr2QdOABoDF51grk-2Qxj0e5-qSwrjEuPmyRSUknAyvCknXJ1TX-F-l85_Og0Ohm7-o2_dOyR8KgLRb9m7t1VY"/>
+<img class="w-full h-80 object-cover rounded-xl shadow-sm" data-alt="Golden retriever with a tennis ball in its mouth, eyes sparking with excitement" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAHvV-iTv2agTejtmj4hMSNRu0H_CzolvysBnfJzJr_VAu3RLY_cU43IVqXj85S-dtmR-SCdQU0Yg_U77HiWEtTGymUgPoIkgPCQIfn-CWYyUQcN_3kCRjmo5LaLNbAsRC5A2VkClWs18Eo7TpYzn7F69CTcImI66lDMw_iO7zwwKe4BVy_7srGx-4Y5rKDbJOCRWWVbCPDV3mpUrxkaFMs2qexrF8Z8D1w2k7W6FZ7MKTWOnM5bLIhVemyvOJWwYNhRbZXMMGlqU"/>
+</div>
+<div class="space-y-4">
+<img class="w-full h-96 object-cover rounded-xl shadow-sm" data-alt="Golden retriever standing on a beach at sunset, silhouette against the orange sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArORweipdutL7zpZAqzkLAhu497SyWkLM_rzw5YstwGLU6eMFjdw9-uRng5lU72ft5PN9oj1JqNXphaX03FVt9V0vSsAdESX-RGVNrbNP1OwN4jw281_G5YQjdnRLsL1O_H7BpW-SgfNddaf569y8EOJNu3eMusXkpl8hE9HlMQQAqtY-qyjfWjfQFJ0_N6i0ZAGnwR-o861V92E5CYicX9QXncrPMIlMUq7LxJxRplRoiJWIS2ag5YHLn0nltWSXXAA3GbyR9wnc"/>
+<img class="w-full h-48 object-cover rounded-xl shadow-sm" data-alt="Close up of a dog's paw resting on a human hand, symbol of friendship and bond" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzmX9NFrzGJwP0YEFSLroXmVd_5hQ20Lr0pjdBtwmvdh61P892m5kPn3ZnEPxMreUUwn3p_8uwqG2Z2QROQlMqpmBV8Q97n4kG_3r1_g091vtEsA0JKAQTOW-j6CmuQpJ7ZnnBmUyhEadQJbYW1iFWcGfEPr71UOOUeWAm03PfUcmYZrfwayT3T1o0Auv91NuRE5jyB6-IRijigJRGy5SpJ0isko0sPDXZhFwHcRYJMobm5s1dScdXHAmZcl3Vt88ghR7Dy7YL4xA"/>
+</div>
+</div>
+</section>
+<!-- Tributos Section -->
+<section class="bg-surface-container-low py-[120px]" id="tributes">
+<div class="max-w-4xl mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="font-h2 text-h2 text-on-surface mb-4">Tributos e Mensagens</h2>
+<p class="font-body-md text-body-md text-on-surface-variant italic">Palavras de carinho de quem o amou</p>
+</div>
+<div class="grid gap-8">
+<div class="p-8 bg-surface rounded-3xl border border-stone-200/50 shadow-sm">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-secondary font-bold">M</div>
+<div>
+<h4 class="font-body-md font-bold text-on-surface">Mariana Costa</h4>
+<span class="text-[12px] text-stone-400">Tia de coração</span>
+</div>
+</div>
+<p class="font-body-md text-on-surface-variant italic leading-relaxed">
+                            "Nunca esquecerei como o Barney me recebia com um sapato na boca toda vez que eu chegava. Era o seu jeito único de dizer 'seja bem-vinda'. Ele fará muita falta nos nossos domingos."
+                        </p>
+</div>
+<div class="p-8 bg-surface rounded-3xl border border-stone-200/50 shadow-sm">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary font-bold">R</div>
+<div>
+<h4 class="font-body-md font-bold text-on-surface">Ricardo Silva</h4>
+<span class="text-[12px] text-stone-400">Vizinho e amigo</span>
+</div>
+</div>
+<p class="font-body-md text-on-surface-variant italic leading-relaxed">
+                            "Um cavalheiro de quatro patas. O parque não será o mesmo sem os latidos alegres do Barney."
+                        </p>
+</div>
+<div class="text-center mt-12">
+<button class="px-8 py-3 bg-primary text-on-primary rounded-full font-body-md hover:bg-on-primary-fixed-variant transition-all shadow-md">
+                            Deixar um Tributo
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-[120px] text-center px-6">
+<div class="max-w-2xl mx-auto space-y-8">
+<div class="inline-flex p-4 bg-surface-container-highest rounded-full mb-6">
+<span class="material-symbols-outlined text-primary-container text-4xl">qr_code_2</span>
+</div>
+<h3 class="font-h2 text-h2 text-on-surface">Mantenha a memória viva</h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                    Gere um QR Code exclusivo para este memorial e compartilhe com quem amava o Barney ou coloque em um lugar especial.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+<button class="flex items-center justify-center gap-2 px-8 py-4 border border-outline-variant text-on-surface-variant rounded-full font-label-caps hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined">qr_code</span>
+                        Gerar QR Code Memorial
+                    </button>
+<button class="flex items-center justify-center gap-2 px-8 py-4 bg-white shadow-sm border border-stone-100 text-on-surface-variant rounded-full font-label-caps hover:shadow-md transition-all">
+<span class="material-symbols-outlined">ios_share</span>
+                        Compartilhar
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-stone-50 dark:bg-stone-950 full-width py-12 mt-24 border-t border-stone-200 dark:border-stone-900">
+<div class="flex flex-col items-center gap-6 text-center w-full px-4">
+<div class="text-lg font-serif text-[#8DAA91]">Eternal Paws</div>
+<p class="font-serif text-sm italic text-stone-400 dark:text-stone-600 max-w-md">
+                © 2024 Eternal Paws Digital Sanctuary. Dedicated to the memories that stay forever.
+            </p>
+<nav class="flex gap-8">
+<a class="font-serif text-sm italic text-stone-500 hover:text-stone-800 dark:hover:text-stone-300" href="#">Privacy Policy</a>
+<a class="font-serif text-sm italic text-stone-500 hover:text-stone-800 dark:hover:text-stone-300" href="#">Terms of Service</a>
+<a class="font-serif text-sm italic text-stone-500 hover:text-stone-800 dark:hover:text-stone-300" href="#">Support</a>
+</nav>
+</div>
+</footer>
+<!-- Bottom Navigation (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-4 md:hidden bg-white/90 backdrop-blur-lg dark:bg-stone-900/90 border-t border-stone-100 dark:border-stone-800 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] rounded-t-2xl">
+<a class="flex flex-col items-center justify-center text-[#8DAA91] font-semibold scale-95 active:scale-90 transition-transform" href="#memorial">
+<span class="material-symbols-outlined">home</span>
+<span class="font-sans text-[10px] tracking-wide uppercase">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 scale-95 active:scale-90 transition-transform" href="#timeline">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="font-sans text-[10px] tracking-wide uppercase">Memories</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 scale-95 active:scale-90 transition-transform" href="#gallery">
+<span class="material-symbols-outlined">collections</span>
+<span class="font-sans text-[10px] tracking-wide uppercase">Gallery</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 scale-95 active:scale-90 transition-transform" href="#tributes">
+<span class="material-symbols-outlined">flutter_dash</span>
+<span class="font-sans text-[10px] tracking-wide uppercase">Tributes</span>
+</a>
+</nav>
+</body></html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,700;1,400&amp;family=Manrope:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#0e1f13",
+                    "on-secondary-fixed-variant": "#604025",
+                    "tertiary-fixed": "#e4e2de",
+                    "surface": "#f2fcf0",
+                    "tertiary": "#41423f",
+                    "primary-fixed": "#d3e8d5",
+                    "outline": "#737872",
+                    "on-surface": "#151e16",
+                    "inverse-primary": "#b7ccb9",
+                    "secondary-container": "#fdceaa",
+                    "on-primary": "#ffffff",
+                    "primary": "#334537",
+                    "secondary": "#7a573b",
+                    "surface-container-highest": "#dbe5d9",
+                    "outline-variant": "#c3c8c1",
+                    "secondary-fixed-dim": "#ebbd9b",
+                    "on-primary-container": "#c0d5c2",
+                    "tertiary-fixed-dim": "#c8c6c3",
+                    "surface-variant": "#dbe5d9",
+                    "surface-container-low": "#ecf6ea",
+                    "primary-fixed-dim": "#b7ccb9",
+                    "on-tertiary-fixed": "#1b1c1a",
+                    "surface-bright": "#f2fcf0",
+                    "on-tertiary": "#ffffff",
+                    "surface-tint": "#506354",
+                    "background": "#f2fcf0",
+                    "surface-dim": "#d3ddd1",
+                    "inverse-on-surface": "#eaf4e7",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-surface-variant": "#434843",
+                    "primary-container": "#4a5d4e",
+                    "on-secondary-fixed": "#2d1602",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed-variant": "#474744",
+                    "tertiary-container": "#595956",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#ffdcc3",
+                    "surface-container-high": "#e1ebdf",
+                    "on-tertiary-container": "#d1d0cc",
+                    "on-secondary-container": "#79563a",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#e7f1e5",
+                    "on-primary-fixed-variant": "#394b3d",
+                    "on-background": "#151e16",
+                    "inverse-surface": "#2a332b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "48px",
+                    "unit": "8px",
+                    "section-gap": "120px",
+                    "gutter": "32px",
+                    "stack-sm": "12px",
+                    "margin-edge": "40px",
+                    "stack-md": "24px",
+                    "container-max": "1120px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Noto Serif"],
+                    "headline-md": ["Noto Serif"],
+                    "display-lg": ["Noto Serif"],
+                    "label-caps": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "body-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-sm": ["24px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "headline-md": ["32px", {"lineHeight": "1.3", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.15em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.7", "letterSpacing": "0.03em", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0.02em", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .sepia-effect {
+            filter: sepia(0.4) contrast(0.9) brightness(1.05);
+        }
+        .book-texture {
+            background-image: radial-gradient(circle at 2px 2px, rgba(200, 157, 124, 0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-secondary-container">
+<!-- TopAppBar Shell -->
+<header class="bg-stone-50 dark:bg-stone-950 border-b border-[#C89D7C]/30 fixed top-0 w-full z-50">
+<div class="flex justify-between items-center px-6 py-4 w-full max-w-5xl mx-auto">
+<h1 class="text-2xl font-headline-md italic text-[#4A5D4E] dark:text-stone-100">Eterno Pet</h1>
+<nav class="hidden md:flex gap-8">
+<a class="text-stone-400 font-normal font-serif hover:text-[#4A5D4E] transition-colors duration-300" href="#">Memorial</a>
+<a class="text-stone-400 font-normal font-serif hover:text-[#4A5D4E] transition-colors duration-300" href="#">Linha do Tempo</a>
+<a class="text-[#4A5D4E] font-bold border-b-2 border-[#C89D7C] font-serif transition-all" href="#">Diário</a>
+<a class="text-stone-400 font-normal font-serif hover:text-[#4A5D4E] transition-colors duration-300" href="#">Galeria</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#4A5D4E]" data-icon="favorite">favorite</span>
+<span class="material-symbols-outlined text-[#4A5D4E]" data-icon="settings">settings</span>
+<img alt="Foto de perfil do tutor" class="w-8 h-8 rounded-full object-cover grayscale" data-alt="Close-up portrait of a woman with a gentle expression in soft natural lighting, muted tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDP5hwBfKElYKO5pQ4rDPqBOKHi8H2be_oLSi4VQu1cEcXhe80I6jBV2jiqxBzLjlJQCm0w2SbS70dDJ26rF33hWmg-8Tqxj16n0iSrTndZPBtD3lzBLhLvES8N4sebbkheX70pcXZI3K198j0Etpf-GrxPkSAdPZv7QE8btUceBxfHeO2C6SAL_c-FSG5jqF_rw0KbyVVxz6FxukzthphyOY_NAVwzjGX3LJjawGNwRUolN3oBFL0P6jSlGOKQBRche4kg9PrsRiM"/>
+</div>
+</div>
+</header>
+<main class="pt-32 pb-40 px-margin-edge max-w-container-max mx-auto book-texture min-h-screen">
+<!-- Header Section -->
+<section class="text-center mb-stack-lg">
+<h2 class="font-display-lg text-display-lg text-primary mb-stack-sm">Crônicas de Fridis</h2>
+<div class="w-24 h-px bg-[#C89D7C]/50 mx-auto mb-stack-sm"></div>
+<p class="font-headline-sm text-headline-sm italic text-secondary max-w-2xl mx-auto">
+                "Palavras tecidas com saudade, eternizando os pequenos milagres que vivemos lado a lado."
+            </p>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Sidebar / Filters -->
+<aside class="lg:col-span-3 space-y-stack-md">
+<div class="p-stack-md border border-[#C89D7C]/20 bg-surface-container-low rounded-xl">
+<h3 class="font-label-caps text-label-caps text-secondary mb-stack-sm">Fases da Vida</h3>
+<ul class="space-y-2">
+<li><a class="text-primary font-body-md hover:text-secondary flex items-center gap-2" href="#"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Infância Travessa</a></li>
+<li><a class="text-on-surface-variant font-body-md hover:text-secondary flex items-center gap-2 transition-colors" href="#"><span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span> Maturidade Serena</a></li>
+<li><a class="text-on-surface-variant font-body-md hover:text-secondary flex items-center gap-2 transition-colors" href="#"><span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span> O Grande Silêncio</a></li>
+</ul>
+</div>
+<div class="p-stack-md border border-[#C89D7C]/20 bg-surface-container-low rounded-xl">
+<h3 class="font-label-caps text-label-caps text-secondary mb-stack-sm">Humor das Crônicas</h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-secondary/15 text-secondary text-xs font-label-caps">Nostálgico</span>
+<span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-label-caps">Alegre</span>
+<span class="px-3 py-1 rounded-full bg-stone-200 text-tertiary text-xs font-label-caps">Reflexivo</span>
+</div>
+</div>
+</aside>
+<!-- Chronicles List -->
+<div class="lg:col-span-9 space-y-section-gap">
+<!-- Story Item 1 -->
+<article class="group">
+<div class="flex flex-col md:flex-row gap-stack-md items-start">
+<div class="w-full md:w-1/3 aspect-[4/5] overflow-hidden rounded-lg border border-[#C89D7C]/30 bg-surface-container shadow-sm">
+<img class="w-full h-full object-cover sepia-effect group-hover:scale-105 transition-transform duration-700" data-alt="Golden retriever puppy sitting in fresh white snow, looking up with curious eyes, soft winter lighting, grainy film texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBNQYif_JjzCaCcOqH_ojJFVE9V5aNZJ4dS436LOSdsfWbaNufMhvNEFtdwh3YhEEOF48z9tR96fTtWDoV5sWsLsrvNxPOazlxaMQSffRmaMehLN4ck_vGx2tWpMJvpp8zwB3A1qKmzujTKkiDJx7nj_HWKs-BOCUeDgZLKak2OU8pHxiQ7FQX_KUv8fuWKe3-mFTZow5oc8fIy2D7Ea4tMAX2tNx1ib5mT7zECAxfcGRSlhd2xWi7RfQqcnNDKBv0Gib2EUY-0o4"/>
+</div>
+<div class="w-full md:w-2/3 space-y-stack-sm">
+<div class="flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-secondary">14 de Agosto, 2018</span>
+<span class="font-label-caps text-label-caps text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span> 5 min de leitura
+                                </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary leading-tight group-hover:text-secondary transition-colors">O primeiro latido na neve</h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                                Era uma manhã atipicamente branca. Fridis, com suas patas ainda desajeitadas, encarou o quintal como se o mundo tivesse sido apagado e redesenhado. Ele não sabia o que era aquele frio...
+                            </p>
+<a class="inline-flex items-center gap-2 font-label-caps text-label-caps text-primary border-b border-primary pb-1 group-hover:gap-4 transition-all" href="#">
+                                Continuar lendo <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Story Item 2 -->
+<article class="group">
+<div class="flex flex-col md:flex-row-reverse gap-stack-md items-start">
+<div class="w-full md:w-1/3 aspect-[4/5] overflow-hidden rounded-lg border border-[#C89D7C]/30 bg-surface-container shadow-sm">
+<img class="w-full h-full object-cover sepia-effect group-hover:scale-105 transition-transform duration-700" data-alt="A golden retriever standing on a wooden dining table looking at a plate of food, warm indoor lighting, nostalgic atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD17I2rBadE0w77w9o0pGszd5iefvl970VkOyDWMQbPqH5APJDeR1-5OS-dmLSjjUDEbLl6fNkhXeUgj9DZzI4VQVdWqDOWXSuR_QEr8K35GoMcbwZA3OqwSx3CSsXtGJAreTxM4s-occLEuWjwz5RWWZ1RdKEXgrKbjItLn3iI_OSm92yns0K2TG0_lQ5SO_xKHHEMSHdsY5IoX91rX8ie8Uf_5BpZAN5mHaMcNH-Kqe4SqMGoYbsM61szjOPYbwmiI3mtMPjwDbM"/>
+</div>
+<div class="w-full md:w-2/3 space-y-stack-sm">
+<div class="flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-secondary">22 de Junho, 2021</span>
+<span class="font-label-caps text-label-caps text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span> 8 min de leitura
+                                </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary leading-tight group-hover:text-secondary transition-colors">O dia em que ele roubou o jantar</h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed text-right md:text-left">
+                                Nunca houve um ladrão tão charmoso. Enquanto os convidados riam na sala, Fridis executava seu plano mestre com a precisão de um ninja e a fome de um leão. O rosbife nunca teve chance...
+                            </p>
+<div class="flex justify-end md:justify-start">
+<a class="inline-flex items-center gap-2 font-label-caps text-label-caps text-primary border-b border-primary pb-1 group-hover:gap-4 transition-all" href="#">
+                                    Continuar lendo <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</article>
+<!-- Story Item 3 -->
+<article class="group">
+<div class="flex flex-col md:flex-row gap-stack-md items-start">
+<div class="w-full md:w-1/3 aspect-[4/5] overflow-hidden rounded-lg border border-[#C89D7C]/30 bg-surface-container shadow-sm">
+<img class="w-full h-full object-cover sepia-effect group-hover:scale-105 transition-transform duration-700" data-alt="An older dog resting its head on a person's lap, soft sunset light through a window, peaceful and emotional atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAzocEF3EQ-jK_7tg1TjjngBYZU52FRhxUzCQa8AUUp5svxTc4tsLgi2WZqzSwMzW9Psc0tBptiINGvXMgb_KXDpJPwacQZ7JIfMeure80RXnjigjQXhD_tm6gfAReUorwOYVKmw8KOqlU481xb5cDgCzx9mjQUjal3qjVgDGnQCIoZTaERgvpD0i2_hNKUvbTufQmc7isIDvK1-69FLGCxC2NTCwspWzh_0tv7a6smnfoINRHM7IbyT-pw7CMqOSAtybeg5Pi7hM"/>
+</div>
+<div class="w-full md:w-2/3 space-y-stack-sm">
+<div class="flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-secondary">05 de Outubro, 2023</span>
+<span class="font-label-caps text-label-caps text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span> 12 min de leitura
+                                </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary leading-tight group-hover:text-secondary transition-colors">Lições de um olhar cansado</h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                                Os passos ficaram lentos, mas o amor parecia ter ganhado um peso novo, mais denso. Naqueles olhos âmbar, eu li capítulos inteiros sobre paciência e sobre como o tempo é apenas um detalhe...
+                            </p>
+<a class="inline-flex items-center gap-2 font-label-caps text-label-caps text-primary border-b border-primary pb-1 group-hover:gap-4 transition-all" href="#">
+                                Continuar lendo <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+<!-- FAB for writing new story -->
+<button class="fixed bottom-32 right-8 md:right-16 bg-primary-container text-on-primary p-5 rounded-full shadow-[0_8px_30px_rgb(74,93,78,0.2)] flex items-center justify-center group transition-all hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined text-2xl" data-icon="edit_note" style="font-variation-settings: 'FILL' 1;">edit_note</span>
+<span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 transition-all duration-500 font-label-caps whitespace-nowrap">Escrever Nova História</span>
+</button>
+<!-- BottomNavBar Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-md rounded-t-2xl shadow-[0_-4px_20px_rgba(74,93,78,0.05)] border-t border-[#C89D7C]/20 md:hidden">
+<a class="flex flex-col items-center justify-center text-stone-400 px-4 py-2" href="#">
+<span class="material-symbols-outlined" data-icon="spa">spa</span>
+<span class="font-serif text-[10px] uppercase tracking-widest mt-1">Memorial</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 px-4 py-2" href="#">
+<span class="material-symbols-outlined" data-icon="timeline">timeline</span>
+<span class="font-serif text-[10px] uppercase tracking-widest mt-1">Timeline</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#4A5D4E]/10 text-[#4A5D4E] dark:bg-[#4A5D4E]/20 dark:text-stone-100 rounded-xl px-4 py-2" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span class="font-serif text-[10px] uppercase tracking-widest mt-1">Diário</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 px-4 py-2" href="#">
+<span class="material-symbols-outlined" data-icon="photo_library">photo_library</span>
+<span class="font-serif text-[10px] uppercase tracking-widest mt-1">Galeria</span>
+</a>
+</nav>
+</body></html>

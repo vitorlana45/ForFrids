@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Eterno Pet — Memorial de Fridis</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,700;1,400&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#645d53",
+                        "outline-variant": "#c2c8c0",
+                        "on-tertiary-fixed-variant": "#4c463c",
+                        "surface-container-low": "#f9f2ed",
+                        "inverse-surface": "#33302c",
+                        "on-primary-fixed": "#062010",
+                        "on-background": "#1e1b18",
+                        "secondary-fixed": "#e5e0f3",
+                        "tertiary-container": "#aaa296",
+                        "outline": "#737972",
+                        "on-surface": "#1e1b18",
+                        "error": "#ba1a1a",
+                        "secondary": "#5f5c6c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#b0ceb4",
+                        "on-surface-variant": "#424842",
+                        "primary-fixed": "#cceacf",
+                        "on-tertiary-fixed": "#1f1b13",
+                        "primary": "#4a654f",
+                        "on-secondary-container": "#646171",
+                        "surface-bright": "#fff8f3",
+                        "surface-container": "#f4ede7",
+                        "secondary-fixed-dim": "#c9c4d7",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#eee7e1",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#253f2b",
+                        "background": "#fff8f3",
+                        "tertiary-fixed": "#ebe1d4",
+                        "primary-container": "#8daa91",
+                        "surface-dim": "#dfd9d4",
+                        "secondary-container": "#e2ddf0",
+                        "surface-variant": "#e8e1dc",
+                        "tertiary-fixed-dim": "#cfc5b9",
+                        "on-secondary-fixed-variant": "#474554",
+                        "surface-tint": "#4a654f",
+                        "surface-container-highest": "#e8e1dc",
+                        "inverse-on-surface": "#f7efea",
+                        "on-tertiary-container": "#3e3930",
+                        "on-secondary-fixed": "#1c1a27",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#b0ceb4",
+                        "on-secondary": "#ffffff",
+                        "surface": "#fff8f3",
+                        "on-primary-fixed-variant": "#334d38"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "16px",
+                        "stack-lg": "64px",
+                        "stack-md": "32px",
+                        "margin-mobile": "20px",
+                        "container-max-width": "1140px",
+                        "unit": "8px",
+                        "section-padding": "120px",
+                        "gutter": "32px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Manrope"],
+                        "body-sm": ["Manrope"],
+                        "h2": ["Noto Serif"],
+                        "h1": ["Noto Serif"],
+                        "body-lg": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "h3": ["Noto Serif"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "h2": ["32px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                        "h1": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                        "h3": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #FDFBF7;
+            color: #1e1b18;
+            scroll-behavior: smooth;
+        }
+        .botanical-bg {
+            background-image: radial-gradient(circle at top right, rgba(141, 170, 145, 0.05) 0%, transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(141, 170, 145, 0.05) 0%, transparent 40%);
+        }
+        .ornament-leaf {
+            opacity: 0.15;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="font-body-md botanical-bg">
+<!-- TopAppBar -->
+<header class="bg-[#FDFCF8]/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-[#8DAA91]/10 dark:border-slate-800 shadow-sm shadow-[#8DAA91]/5 docked full-width top-0 sticky z-50 transition-all duration-300 ease-in-out">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+<div class="text-2xl font-serif italic text-[#8DAA91] dark:text-[#A7C4AB]">Eterno Pet</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-[#8DAA91] dark:text-[#A7C4AB] border-b-2 border-[#8DAA91] pb-1 font-medium font-serif" href="#">Memorial</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#8DAA91] transition-colors font-serif" href="#">História</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#8DAA91] transition-colors font-serif" href="#">Galeria</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#8DAA91] transition-colors font-serif" href="#">Tributos</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="flex gap-2">
+<button class="p-2 hover:bg-[#8DAA91]/5 dark:hover:bg-slate-800 rounded-lg transition-all text-slate-500">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="p-2 hover:bg-[#8DAA91]/5 dark:hover:bg-slate-800 rounded-lg transition-all text-slate-500">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<button class="px-6 py-2 bg-primary text-on-primary rounded-full font-serif font-medium hover:bg-primary/90 transition-all">Deixar Homenagem</button>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6">
+<!-- Hero Section -->
+<section class="py-section-padding flex flex-col items-center text-center relative overflow-hidden">
+<!-- Decorative elements -->
+<span class="material-symbols-outlined absolute -top-10 -left-10 text-[200px] text-primary/5 select-none">eco</span>
+<span class="material-symbols-outlined absolute -bottom-10 -right-10 text-[200px] text-primary/5 select-none">potted_plant</span>
+<div class="relative z-10">
+<div class="w-64 h-64 md:w-80 md:h-80 mx-auto rounded-full border-8 border-white shadow-xl overflow-hidden mb-8">
+<img alt="Fridis" class="w-full h-full object-cover" data-alt="Close-up of a happy Golden Retriever smiling with warm brown eyes and soft golden fur in soft natural sunlight outdoors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2Oa17cMolBYc723OK-HCBI3FOtK56bOeX7dg7hpWMvGuuAUzoaaXmZN2Sx9m-1ZP1bDNaUffe_KFiuTnMjxIjeY_bFxmFM-QVBsEQSevgfqS4TTx1qglNiM56un4MSWwA01LlI33eKXcPn-LzHn2uQOaMsDDCr6tvE7nbzkVJYwXfH5n-SL70I1kln_i-ZVnwvI0hoTqPKYvgVX1lpUrJR2SUg3S5edEFtN2ge3suDsrlIXEz4Mh1SdIjHXviiloIAsXeo2N2-JY"/>
+</div>
+<h1 class="font-h1 text-h1 text-primary mb-4">Fridis</h1>
+<p class="font-serif text-xl italic text-tertiary mb-6">2012 — 2024</p>
+<p class="font-h2 text-h3 text-on-surface-variant max-w-2xl mx-auto font-light italic">
+                    "Um raio de sol que iluminou nossas vidas"
+                </p>
+</div>
+</section>
+<!-- Timeline Section -->
+<section class="py-stack-lg border-t border-primary/10">
+<div class="max-w-3xl mx-auto">
+<h2 class="font-h2 text-h2 text-center text-primary mb-stack-lg">Nossa Caminhada</h2>
+<div class="relative pl-8 md:pl-0">
+<!-- Vertical Line -->
+<div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-primary/20 -translate-x-1/2"></div>
+<!-- Milestone 1 -->
+<div class="relative flex flex-col md:flex-row items-center mb-stack-md">
+<div class="hidden md:flex flex-1 justify-end pr-12 text-right">
+<span class="font-label-caps text-primary">Novembro 2012</span>
+</div>
+<div class="absolute left-0 md:left-1/2 w-4 h-4 rounded-full bg-primary-container border-4 border-surface -translate-x-1/2 z-10"></div>
+<div class="flex-1 md:pl-12">
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
+<h3 class="font-h3 text-h3 text-on-surface mb-1">Chegada em casa</h3>
+<p class="font-body-sm text-on-surface-variant">O dia em que a casa se encheu de pelos dourados e um amor sem fim.</p>
+<span class="md:hidden font-label-caps text-primary mt-2 block">Nov 2012</span>
+</div>
+</div>
+</div>
+<!-- Milestone 2 -->
+<div class="relative flex flex-col md:flex-row items-center mb-stack-md">
+<div class="flex-1 md:pr-12 md:text-right order-2 md:order-1">
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
+<h3 class="font-h3 text-h3 text-on-surface mb-1">Primeira viagem à praia</h3>
+<p class="font-body-sm text-on-surface-variant">Descobriu que a água e a areia eram seu segundo lar favorito.</p>
+<span class="md:hidden font-label-caps text-primary mt-2 block">Janeiro 2014</span>
+</div>
+</div>
+<div class="absolute left-0 md:left-1/2 w-4 h-4 rounded-full bg-primary-container border-4 border-surface -translate-x-1/2 z-10 order-1 md:order-2"></div>
+<div class="hidden md:flex flex-1 pl-12 order-3">
+<span class="font-label-caps text-primary">Janeiro 2014</span>
+</div>
+</div>
+<!-- Milestone 3 -->
+<div class="relative flex flex-col md:flex-row items-center">
+<div class="hidden md:flex flex-1 justify-end pr-12 text-right">
+<span class="font-label-caps text-primary">Maio 2017</span>
+</div>
+<div class="absolute left-0 md:left-1/2 w-4 h-4 rounded-full bg-primary-container border-4 border-surface -translate-x-1/2 z-10"></div>
+<div class="flex-1 md:pl-12">
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
+<h3 class="font-h3 text-h3 text-on-surface mb-1">O irmão pet</h3>
+<p class="font-body-sm text-on-surface-variant">A chegada do pequeno Barney e o início de uma irmandade inseparável.</p>
+<span class="md:hidden font-label-caps text-primary mt-2 block">Maio 2017</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Gallery Section -->
+<section class="py-section-padding">
+<h2 class="font-h2 text-h2 text-center text-primary mb-stack-lg">Álbum Afetivo</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 items-start">
+<div class="grid gap-4 md:gap-6">
+<img alt="Fridis filhote" class="rounded-xl shadow-sm hover:scale-[1.02] transition-transform duration-300" data-alt="Golden Retriever puppy sitting in green grass, soft morning light, playful expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKXTishP7E-yhGIxqipvpguMYnZ08uq2VRTpoUr-31nVtROvR8dXS1CSK8G1Wa7xydlzWUszeTrVzqTZ1mns92pMcWmpUxAZtZAkJNrBYquOAlqfvl-5O15vR8gjspi1tLpzae6WGZQGu-QcQ6lze6SYrlZmaBkdKzUgOPfUVR9LaA4fVGg8ygWDJLOY1vy7h3-GNqFHdMf2ySbqnKkZowvq2NwQZ6ptTgAdxw3zdWNtJ3OxJ75phBP-yldw2nUNOcBKMcxGXoVbU"/>
+<img alt="Fridis na praia" class="rounded-xl shadow-sm hover:scale-[1.02] transition-transform duration-300" data-alt="Golden Retriever running joyfully on a sandy beach at sunset, splashing in shallow water" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCSEH4mxPPcVGJ8Q_lXnBkSGwQNTSlYJccvXIrS36pgNVP8knqcjL09A0fv0glP1H3QbWehOShk1ckWbAYJhBqvAQXAbY2MWe8dnDyf7m-sr_ewlCEQe44NkrfXPSGpZiZ4b8g5IFaWw8rVqOWfj0Ol8yFzuhToc_gXdw4IXxYmuJUWsaQSuE7O3Sp1KkO9-ML7wlLFmJ_bexegrwKtGDEJ0sdPsiyK4fSfl9Gs2TaBAAIatvDS6cPAa9daU4SzEu6PihlxVpgYvc"/>
+</div>
+<div class="grid gap-4 md:gap-6 pt-12">
+<img alt="Fridis descansando" class="rounded-xl shadow-sm hover:scale-[1.02] transition-transform duration-300" data-alt="Large Golden Retriever resting head on paws on a cozy wooden floor with soft indoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvE2P4uZ8KhKQugiyHhxclVPtazNuLb4qO4gJ2h2NVfkZUwH7dnU2nZB54fV09ETelVvAks37nDm4VY5IF_H09zEzK8T2qCyTgW1aTwkBnu8gf1weCXF0_1fFhN3WwPiPKVWg0xptekcRpWzPiILWFjl9yUckjCK280N68FqAFEzkvPf3AhvjU2dl6Ky34gWOvY4SnAfdwT3ppGQHVA1f03XNRRGh3ixnKl0nns9Xf2vct3JLVA_bZZvZpE2UXtKFu9zvmJyQci4o"/>
+<img alt="Fridis com flores" class="rounded-xl shadow-sm hover:scale-[1.02] transition-transform duration-300" data-alt="Beautiful Golden Retriever wearing a flower crown, peaceful garden setting, ethereal soft light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLNVBnkmuyjSKy0PPeWvW6JA8RLs6zdkTV_xzkQE7-ic7J1Qfjnz83P7r752x3vPl9WHLSAOvaLmwMz940NmN-nssdHkecjSeB33Ws3luex_fivvzkZo-6ybR0cai9_8fZnMb3UuRFKPVgTPb53LeWzoGCI6LAnbIudYf3kVuzC0zvQiN3mvOKP0hTXniRKrFwG_l0smMewbtKe2cJcnISeTsMU7Evr5RjoJ23Ye1HM7EvE37blhLgRZ0Ijg_TvdLboJFPV2i2oGE"/>
+</div>
+<div class="grid gap-4 md:gap-6">
+<img alt="Fridis brincando" class="rounded-xl shadow-sm hover:scale-[1.02] transition-transform duration-300" data-alt="Golden Retriever holding a tennis ball in its mouth, bright sunny day, joyful energy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeftslBH9VwOM4n3iPseqEchGXeh5J9Zn38kFSOyy07CFY1Mvjn4hHFX2011437-Uk_7yu4EoVSVco6-CTDsijjQzM7g-FTokyxU3ts_ZAw2lxgT9wHbNtqGjh2UBqxDaN0P9UTBiOB1wORTXcpsEkgBscAJ-KM-OQSx-kwhV21TsS5361HIWrUlY6QSi1tIqfv4ZFDjWDKeB3KEGZ0QUDDXm86eh56wTaVOQZNDuYAgyBH30z3umMgyeXyFAFbdszz2lT5PrVOf4"/>
+<img alt="Fridis e o mar" class="rounded-xl shadow-sm hover:scale-[1.02] transition-transform duration-300" data-alt="Golden Retriever silhouette against a deep blue ocean and bright sky, serene and majestic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9RSvXX44LKT1RYZFEOpts7VrpaCVn0WSNNITgV4s4GgEFoab09TFOAXBYhx93SUaq54HiGlHK3XKCrGKDNN4xyUWcV9CdWl4FSrNrG7ayMS10rCAO1o0ZzDcOXTS1JxjUPirNsdNaQwIH8qjY-R8fOb5Y0kTNOQpA2DOJkQGDFRyGPdC57Z-95zVU33Gtqt5s3Q0wO8Pbv1I5cISDbrTwEXCJA8fmvPGIg6NzpfGUgbQJjj06aWp1t57rXWQUEF-u1z3-6mUNscU"/>
+</div>
+<div class="grid gap-4 md:gap-6 pt-8">
+<img alt="Fridis idoso" class="rounded-xl shadow-sm hover:scale-[1.02] transition-transform duration-300" data-alt="Senior Golden Retriever with a white muzzle looking thoughtfully into the distance, autumn colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPZIWTuXKdSMQhAj1MkTnGb1C2NOpjdan6pXU-YQzXOJ1yyh8Z3d4CHlOrThhTNOlVMb1-_vsPyzYgY5dDA8HtGGZHZTD6I6BADpNozMc3laCmuVMbafdRbK9ZJsCrWMM47ea0gkkmrRACdYhMsRywdMRQwO_Cze277uN-DpOdPRbp-3wm_wAoKaL2Y4GygGBKiQ3cyG5rCYxVnnLWQUL4nKQ3MlEMKv6hTaP8mVsQlEMfHqa38EciKsD2FIo2Z40_-rqSG5ecqHg"/>
+</div>
+</div>
+</section>
+<!-- Family Tree -->
+<section class="py-stack-lg bg-surface-container/30 rounded-3xl p-8 md:p-12">
+<h2 class="font-h2 text-h3 text-center text-primary mb-stack-md">Nossa Família</h2>
+<div class="flex flex-wrap justify-center gap-12">
+<div class="flex flex-col items-center">
+<div class="w-20 h-20 rounded-full border-2 border-primary/20 p-1 mb-3">
+<img alt="Tutor" class="w-full h-full rounded-full object-cover" data-alt="Portrait of a smiling young man in a casual sweater, warm empathetic expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRuD-StBn6VCOlxqRdAT6GZLruGu-W8v2KWO8squKcYEAis_fcOVm-nQ9iVVDNYFXgAQrbVwFwJ6GavP1QoR-VdPwmQAyFaXfU70ChsFogxnqKK9QyXiGJhngqPptSzinz6uCUuA6ZDXh24kc9A4JXpogRJuSGtVa42ipj8zUwKDHUv3r10yqpKcU4ShVXRJ8dqZk4AIFL8XB5lX-d8E3brB8156J5hpOPhkSxgE1334CZIpf7vldhzv7tIWLJY0UfHk7OougzcnE"/>
+</div>
+<span class="font-label-caps text-on-surface">Lucas</span>
+<span class="text-[10px] text-tertiary uppercase tracking-widest">Tutor</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-20 h-20 rounded-full border-2 border-primary/20 p-1 mb-3">
+<img alt="Tutora" class="w-full h-full rounded-full object-cover" data-alt="Portrait of a young woman with a kind smile, natural outdoor setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH1IK70XJ-_BdCnwHnpL3Q1BqYF1i0vaArCaUWgOcGVDRAj1v4XmU0HsQsl-OZJWqBLjvCqKwRJXurdMYsEuRXZN88Zy5Ht1Yp2HVSsUMlVbsP-z9V5cZxlh6HOmiuo0tq5P7JJXJ9djXZQ1yyiiEs6J-_nHz8PXHPRpS5bnVsFhTx2UmQO0RabXNThYz3n8S2D4VWbXVh9rRLySVH_dBieqLDXd4BkJP11w2bYnQzpvGEcNcaMM1TOB2HS3XAlTYwb8oMwyxcDzU"/>
+</div>
+<span class="font-label-caps text-on-surface">Mariana</span>
+<span class="text-[10px] text-tertiary uppercase tracking-widest">Tutora</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-20 h-20 rounded-full border-2 border-primary/20 p-1 mb-3">
+<img alt="Barney" class="w-full h-full rounded-full object-cover" data-alt="Cute small mixed breed dog looking curious, friendly expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtsRquofR3FlyFg6GCfENVbbedZ5DT2Bo_ZU5HeJogBfNypNe9SkHh8v53qVQcNUzmx4L46vFNyRUlhsgtMOlPauc_W0-NqMPqFm2sK1ax0xBKpLPHii1N9TVCG4qPA63m8seeAyNsEnBiguMLVXjmbPezcIH_09kbNSCxIP-UETzkFM-vn7bnEghFsu3wDrKesXWyIOmkT6zJLF76hOW3pdk-VY1tsKctkjDhrzhzYrZFJTOPY_YhbCBbStz1aw8WFaJLEYlAlVI"/>
+</div>
+<span class="font-label-caps text-on-surface">Barney</span>
+<span class="text-[10px] text-tertiary uppercase tracking-widest">Irmão Pet</span>
+</div>
+</div>
+</section>
+<!-- Tributes Section -->
+<section class="py-section-padding">
+<div class="flex justify-between items-end mb-stack-lg">
+<div>
+<h2 class="font-h2 text-h2 text-primary">Mensagens de Amor</h2>
+<p class="font-body-md text-tertiary">O que os amigos dizem sobre o Fridis</p>
+</div>
+<button class="flex items-center gap-2 text-primary font-medium hover:underline">
+<span class="material-symbols-outlined">edit_note</span>
+                    Escrever
+                </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-[#8DAA91]/10 flex flex-col h-full relative">
+<span class="material-symbols-outlined text-primary/20 absolute top-4 right-4 text-4xl">format_quote</span>
+<p class="font-serif italic text-on-surface mb-6 flex-grow">"Sentiremos sua falta, amigão. Obrigado por todos os finais de semana correndo no parque. Você foi o melhor."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center text-secondary font-bold">T</div>
+<div>
+<p class="font-label-caps text-on-surface text-[11px]">Tio Alberto</p>
+<p class="text-[10px] text-tertiary">Família</p>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-[#8DAA91]/10 flex flex-col h-full relative">
+<span class="material-symbols-outlined text-primary/20 absolute top-4 right-4 text-4xl">format_quote</span>
+<p class="font-serif italic text-on-surface mb-6 flex-grow">"Nunca conheci um cão com um olhar tão doce. O Fridis tinha o dom de acalmar qualquer um."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-fixed rounded-full flex items-center justify-center text-on-primary-fixed-variant font-bold">C</div>
+<div>
+<p class="font-label-caps text-on-surface text-[11px]">Carla &amp; Bob</p>
+<p class="text-[10px] text-tertiary">Vizinhos</p>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-[#8DAA91]/10 flex flex-col h-full relative">
+<span class="material-symbols-outlined text-primary/20 absolute top-4 right-4 text-4xl">format_quote</span>
+<p class="font-serif italic text-on-surface mb-6 flex-grow">"Obrigado por ter sido o melhor amigo do Lucas. Sua luz continua brilhando em nossas memórias."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-tertiary-fixed rounded-full flex items-center justify-center text-on-tertiary-fixed-variant font-bold">R</div>
+<div>
+<p class="font-label-caps text-on-surface text-[11px]">Rodrigo S.</p>
+<p class="text-[10px] text-tertiary">Amigo</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-[#FDFCF8] dark:bg-slate-950 w-full mt-32 border-t border-[#8DAA91]/10 dark:border-slate-800 transition-all">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-7xl mx-auto">
+<div class="mb-6 md:mb-0">
+<div class="text-lg font-serif text-[#8DAA91] mb-2">Eterno Pet</div>
+<p class="font-serif text-sm text-slate-600 dark:text-slate-400">© 2024 Eterno Pet — Um espaço de paz e memórias.</p>
+</div>
+<nav class="flex gap-8">
+<a class="text-slate-400 hover:text-[#8DAA91] font-serif text-sm transition-opacity" href="#">Privacidade</a>
+<a class="text-slate-400 hover:text-[#8DAA91] font-serif text-sm transition-opacity" href="#">Termos</a>
+<a class="text-slate-400 hover:text-[#8DAA91] font-serif text-sm transition-opacity" href="#">Sobre o Memorial</a>
+</nav>
+</div>
+</footer>
+</body></html>

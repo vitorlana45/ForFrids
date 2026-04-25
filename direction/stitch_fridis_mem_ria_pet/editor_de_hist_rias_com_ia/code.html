@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;1,400&amp;family=Manrope:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#0e1f13",
+                    "on-secondary-fixed-variant": "#604025",
+                    "tertiary-fixed": "#e4e2de",
+                    "surface": "#f2fcf0",
+                    "tertiary": "#41423f",
+                    "primary-fixed": "#d3e8d5",
+                    "outline": "#737872",
+                    "on-surface": "#151e16",
+                    "inverse-primary": "#b7ccb9",
+                    "secondary-container": "#fdceaa",
+                    "on-primary": "#ffffff",
+                    "primary": "#334537",
+                    "secondary": "#7a573b",
+                    "surface-container-highest": "#dbe5d9",
+                    "outline-variant": "#c3c8c1",
+                    "secondary-fixed-dim": "#ebbd9b",
+                    "on-primary-container": "#c0d5c2",
+                    "tertiary-fixed-dim": "#c8c6c3",
+                    "surface-variant": "#dbe5d9",
+                    "surface-container-low": "#ecf6ea",
+                    "primary-fixed-dim": "#b7ccb9",
+                    "on-tertiary-fixed": "#1b1c1a",
+                    "surface-bright": "#f2fcf0",
+                    "on-tertiary": "#ffffff",
+                    "surface-tint": "#506354",
+                    "background": "#f2fcf0",
+                    "surface-dim": "#d3ddd1",
+                    "inverse-on-surface": "#eaf4e7",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-surface-variant": "#434843",
+                    "primary-container": "#4a5d4e",
+                    "on-secondary-fixed": "#2d1602",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed-variant": "#474744",
+                    "tertiary-container": "#595956",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#ffdcc3",
+                    "surface-container-high": "#e1ebdf",
+                    "on-tertiary-container": "#d1d0cc",
+                    "on-secondary-container": "#79563a",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#e7f1e5",
+                    "on-primary-fixed-variant": "#394b3d",
+                    "on-background": "#151e16",
+                    "inverse-surface": "#2a332b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "48px",
+                    "unit": "8px",
+                    "section-gap": "120px",
+                    "gutter": "32px",
+                    "stack-sm": "12px",
+                    "margin-edge": "40px",
+                    "stack-md": "24px",
+                    "container-max": "1120px"
+            },
+            "fontFamily": {
+                    "headline-sm": ["Noto Serif"],
+                    "headline-md": ["Noto Serif"],
+                    "display-lg": ["Noto Serif"],
+                    "label-caps": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "body-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-sm": ["24px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "headline-md": ["32px", {"lineHeight": "1.3", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.15em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.7", "letterSpacing": "0.03em", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0.02em", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .zen-mode-container {
+            scrollbar-width: none;
+        }
+        .zen-mode-container::-webkit-scrollbar {
+            display: none;
+        }
+        .ai-assistant-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(200, 157, 124, 0.05) 100%);
+            backdrop-filter: blur(8px);
+        }
+        .subtle-border {
+            border: 1px solid rgba(200, 157, 124, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- Top Navigation Bar -->
+<header class="bg-stone-50 dark:bg-stone-950 text-[#4A5D4E] dark:text-stone-200 docked full-width top-0 border-b border-[#C89D7C]/30 sticky z-50">
+<div class="flex justify-between items-center px-6 py-4 w-full max-w-5xl mx-auto">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="arrow_back">arrow_back</button>
+<h1 class="text-2xl font-serif italic text-[#4A5D4E] dark:text-stone-100">Eterno Pet</h1>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-stone-400 font-normal font-serif text-lg tracking-tight hover:text-[#4A5D4E] transition-colors duration-300">Salvar Rascunho</button>
+<button class="bg-primary text-on-primary px-8 py-2 rounded-full font-label-caps text-label-caps hover:bg-primary-container transition-all">Publicar no Diário</button>
+</div>
+</div>
+</header>
+<main class="max-w-[1120px] mx-auto px-margin-edge py-section-gap grid grid-cols-12 gap-gutter items-start">
+<!-- Left Column: Story Editor -->
+<section class="col-span-12 lg:col-span-8 space-y-stack-lg">
+<!-- Metadata & Inspiration -->
+<div class="space-y-stack-md">
+<div class="flex flex-col md:flex-row gap-stack-md items-start">
+<!-- Inspiration Photo -->
+<div class="w-full md:w-1/3 aspect-square rounded-xl overflow-hidden subtle-border relative group cursor-pointer bg-surface-container-low">
+<img class="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity" data-alt="Soft-focus portrait of a golden retriever resting in a sun-dappled autumn garden, warm cinematic lighting and film grain texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCST3Aiaxu-G7W0PDlQq5wDgBCpVXS617fQyYvwO2rPpgyoew0uWO9aAmJxFh93UxhUjVxT-lwpq31my6XUwzj_YjRwcl4uYGQp6or8_G4-QLvAnxkrXvfeWrQeCW4zrAlXIiPBBdzGZZyv_mZRiOqMvknId4yYe6pgeN3on1cJ2bOaEOm4UPkSEwgf0s2AmJfbNX64dqqnTk9D-2ec0gf0WHUH_9zeO2yErcrLBkT9AuSUBPr_Ff_uMLVPqvHAeweok3Rur2oe8MA"/>
+<div class="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-transparent transition-all">
+<span class="material-symbols-outlined text-on-primary text-3xl" data-icon="add_a_photo">add_a_photo</span>
+</div>
+</div>
+<!-- Title and Date -->
+<div class="flex-1 w-full space-y-stack-sm">
+<input class="w-full bg-transparent border-0 border-b border-[#C89D7C]/30 focus:ring-0 focus:border-secondary font-headline-md text-headline-md text-on-surface placeholder:text-stone-300 px-0 py-2" placeholder="Título da sua memória..." type="text"/>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+<input class="bg-transparent border-0 font-label-caps text-label-caps focus:ring-0 p-0" type="date" value="2023-10-27"/>
+</div>
+<div class="pt-4">
+<span class="font-label-caps text-label-caps text-secondary opacity-70">SESSÃO DE ESCRITA: MODO ZEN ATIVADO</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Writing Canvas -->
+<article class="zen-mode-container">
+<textarea class="w-full min-h-[600px] bg-transparent border-0 focus:ring-0 font-headline-sm text-headline-sm leading-relaxed text-on-surface-variant placeholder:text-stone-200 resize-none p-0" placeholder="Comece a contar sua história aqui... sinta o peso de cada palavra, honre cada lembrança."></textarea>
+</article>
+<!-- Bottom Divider -->
+<div class="flex justify-center py-stack-lg">
+<div class="w-24 h-px bg-[#C89D7C]/30"></div>
+</div>
+</section>
+<!-- Right Column: AI Assistance & Context -->
+<aside class="col-span-12 lg:col-span-4 sticky top-28 space-y-stack-md">
+<div class="ai-assistant-card subtle-border p-stack-md rounded-2xl">
+<div class="flex items-center gap-3 mb-stack-md">
+<span class="material-symbols-outlined text-secondary" data-icon="auto_awesome" data-weight="fill" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h2 class="font-label-caps text-label-caps text-primary">Assistência Poética IA</h2>
+</div>
+<p class="font-body-md text-on-surface-variant mb-stack-md leading-snug">
+                    Selecione um trecho ou escolha uma sugestão para aprofundar sua narrativa.
+                </p>
+<div class="space-y-stack-sm">
+<button class="w-full text-left p-4 rounded-xl bg-surface-container-highest/50 border border-transparent hover:border-[#C89D7C]/40 hover:bg-surface-container-highest transition-all flex items-center justify-between group">
+<span class="font-body-md">Expandir esta memória</span>
+<span class="material-symbols-outlined text-stone-400 group-hover:text-secondary" data-icon="keyboard_arrow_right">keyboard_arrow_right</span>
+</button>
+<button class="w-full text-left p-4 rounded-xl bg-surface-container-highest/50 border border-transparent hover:border-[#C89D7C]/40 hover:bg-surface-container-highest transition-all flex items-center justify-between group">
+<span class="font-body-md">Tornar o tom mais poético</span>
+<span class="material-symbols-outlined text-stone-400 group-hover:text-secondary" data-icon="auto_fix_high">auto_fix_high</span>
+</button>
+<button class="w-full text-left p-4 rounded-xl bg-surface-container-highest/50 border border-transparent hover:border-[#C89D7C]/40 hover:bg-surface-container-highest transition-all flex items-center justify-between group">
+<span class="font-body-md">Ajudar a descrever um sentimento</span>
+<span class="material-symbols-outlined text-stone-400 group-hover:text-secondary" data-icon="sentiment_very_satisfied">sentiment_very_satisfied</span>
+</button>
+</div>
+<div class="mt-stack-md pt-stack-md border-t border-[#C89D7C]/20">
+<div class="bg-surface-container-low p-4 rounded-lg italic text-on-surface-variant/80 font-serif text-sm">
+                        "Lembre-se: não há pressa. Deixe que as palavras fluam no ritmo da saudade."
+                    </div>
+</div>
+</div>
+<!-- Secondary Context Card -->
+<div class="p-stack-md border border-[#C89D7C]/20 rounded-2xl bg-surface-container-lowest/50">
+<h3 class="font-label-caps text-label-caps text-secondary mb-stack-sm">Inspiração do Dia</h3>
+<p class="font-body-md text-on-surface-variant italic">
+                    "O que você mais sentia falta no olhar dele pelas manhãs?"
+                </p>
+<div class="mt-stack-md flex gap-2">
+<span class="px-3 py-1 bg-secondary/10 text-secondary rounded-full font-label-caps text-[10px]">#SAUDADE</span>
+<span class="px-3 py-1 bg-secondary/10 text-secondary rounded-full font-label-caps text-[10px]">#LEGADO</span>
+</div>
+</div>
+</aside>
+</main>
+<!-- Bottom Navigation Bar (Mobile only fallback for "Diário") -->
+<nav class="md:hidden bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-md text-[#4A5D4E] dark:text-stone-200 fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 rounded-t-2xl border-t border-[#C89D7C]/20 shadow-[0_-4px_20px_rgba(74,93,78,0.05)]">
+<div class="flex flex-col items-center justify-center text-stone-400 px-4 py-2">
+<span class="material-symbols-outlined" data-icon="spa">spa</span>
+<span class="font-serif text-[10px] uppercase tracking-widest mt-1">Memorial</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 px-4 py-2">
+<span class="material-symbols-outlined" data-icon="timeline">timeline</span>
+<span class="font-serif text-[10px] uppercase tracking-widest mt-1">Linha do Tempo</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-[#4A5D4E]/10 text-[#4A5D4E] dark:bg-[#4A5D4E]/20 dark:text-stone-100 rounded-xl px-4 py-2 scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-serif text-[10px] uppercase tracking-widest mt-1">Diário</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 px-4 py-2">
+<span class="material-symbols-outlined" data-icon="photo_library">photo_library</span>
+<span class="font-serif text-[10px] uppercase tracking-widest mt-1">Galeria</span>
+</div>
+</nav>
+<!-- Footer Decoration -->
+<footer class="max-w-5xl mx-auto px-6 py-stack-lg border-t border-[#C89D7C]/10 mb-24 md:mb-0">
+<div class="flex flex-col md:flex-row justify-between items-center opacity-40 grayscale">
+<div class="font-serif italic text-primary">Eterno Pet — Transformando saudades em legados.</div>
+<div class="flex gap-4 mt-4 md:mt-0">
+<span class="material-symbols-outlined" data-icon="potted_plant">potted_plant</span>
+<span class="material-symbols-outlined" data-icon="nature">nature</span>
+</div>
+</div>
+</footer>
+</body></html>

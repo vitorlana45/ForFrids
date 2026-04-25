@@ -1,0 +1,91 @@
+Stack que eu escolheria para o MVP
+
+Front-end + back-end web: Next.js com App Router. Ele já te dá layout, navegação, renderização server/client e facilita fazer uma aplicação full-stack no mesmo projeto, o que combina muito com um SaaS desse tipo.
+
+Banco + autenticação + storage: Supabase. Para teu caso faz muito sentido porque junta Postgres, Auth e Storage no mesmo lugar. Como teu produto vai depender muito de cadastro, páginas dos pets, fotos e talvez vídeos curtos, essa combinação encaixa muito bem. O próprio Supabase documenta Postgres, autenticação e armazenamento integrados com políticas de acesso.
+
+Pagamentos: Stripe. Ele já trabalha bem com Products, Prices, Checkout e Subscriptions, então serve tanto para plano mensal quanto para um plano “eterno” de pagamento único.
+
+E-mails transacionais: Resend. Para confirmação de conta, recuperação de senha, aviso de homenagem publicada, lembrança de aniversário do pet e coisas assim, ele costuma ser uma escolha bem prática. A busca retornou a documentação oficial do Resend, então ele segue como opção atual e ativa.
+
+Tecnologias de interface
+
+Para UI, eu iria de Tailwind CSS + uma biblioteca de componentes baseada em Tailwind, como shadcn/ui. Isso combina muito com o tipo de produto que você quer: páginas bonitas, emocionais, elegantes e com liberdade para criar identidade visual forte. Aqui estou te sugerindo com base em prática de mercado e adequação ao projeto; para esse ponto específico, estou fazendo recomendação técnica, não citando uma fonte única oficial.
+
+ORM e acesso a dados
+
+Eu usaria Prisma se você quiser produtividade e organização no começo. Mas, se for usar Supabase de forma mais direta, também dá para trabalhar sem Prisma em várias partes. Para MVP, eu iria de:
+
+Supabase client para auth/storage
+Prisma só se você sentir que o modelo de dados vai crescer bastante logo no início
+Hospedagem
+
+Vercel para o app Next.js é o caminho mais natural para começar rápido.
+Se depois quiser reduzir custo ou ter mais controle:
+
+app em Railway ou Render
+banco e storage continuam no Supabase
+Stack completa que eu montaria para você hoje
+
+Eu faria assim:
+
+Next.js
+TypeScript
+Tailwind CSS
+shadcn/ui
+Supabase
+Stripe
+Resend
+Zod para validação
+React Hook Form para formulários
+UploadThing ou storage direto no Supabase para upload de imagens
+Vercel para deploy
+Como isso se traduz no teu SaaS
+
+Com essa stack, você consegue fazer bem:
+
+cadastro/login do tutor
+página pública do pet
+álbum de fotos
+memorial com texto e homenagem
+plano grátis e plano premium
+QR code da página
+geração futura de PDF/livro memorial
+notificações por e-mail
+painel administrativo do usuário
+Minha sugestão mais honesta
+
+Para começar, eu iria com:
+
+Next.js + Supabase + Stripe + Tailwind + shadcn/ui
+
+Essa é a combinação que eu acho mais equilibrada entre:
+
+velocidade para lançar
+baixo custo inicial
+visual bonito
+facilidade para monetizar
+pouca complexidade operacional
+Se você quiser algo mais “enterprise” desde cedo
+
+Aí poderia ser:
+
+Next.js no front
+NestJS no back
+Postgres
+S3/R2 para mídia
+Stripe
+Redis
+fila para geração de PDF/vídeos
+
+Mas eu não começaria assim. Para esse projeto, no começo, isso tende a te atrasar mais do que ajudar.
+
+Minha recomendação final
+
+Para validar a ideia da Fridis como produto:
+
+MVP:
+Next.js + TypeScript + Tailwind + shadcn/ui + Supabase + Stripe + Resend + Vercel.
+
+Fase 2:
+Adicionar geração de PDF, QR code, domínio personalizado, mais temas visuais e talvez IA para ajudar a escrever homenagens.

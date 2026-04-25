@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Eterno Pet | Eternize a história de quem sempre esteve ao seu lado</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Noto+Serif:ital,wght@0,400;0,500;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#f4ede7",
+                    "on-primary": "#ffffff",
+                    "background": "#fff8f3",
+                    "secondary": "#5f5c6c",
+                    "on-tertiary-fixed-variant": "#4c463c",
+                    "tertiary": "#645d53",
+                    "outline": "#737972",
+                    "surface-bright": "#fff8f3",
+                    "surface-container-high": "#eee7e1",
+                    "on-primary-fixed-variant": "#334d38",
+                    "on-secondary-fixed-variant": "#474554",
+                    "tertiary-container": "#aaa296",
+                    "primary-fixed-dim": "#b0ceb4",
+                    "on-background": "#1e1b18",
+                    "tertiary-fixed-dim": "#cfc5b9",
+                    "primary": "#4a654f",
+                    "surface-variant": "#e8e1dc",
+                    "on-primary-container": "#253f2b",
+                    "secondary-fixed": "#e5e0f3",
+                    "surface": "#fff8f3",
+                    "surface-dim": "#dfd9d4",
+                    "surface-tint": "#4a654f",
+                    "primary-container": "#8daa91",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed": "#062010",
+                    "on-tertiary-container": "#3e3930",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#e2ddf0",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#424842",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "on-surface": "#1e1b18",
+                    "on-tertiary-fixed": "#1f1b13",
+                    "outline-variant": "#c2c8c0",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#f7efea",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ebe1d4",
+                    "surface-container-highest": "#e8e1dc",
+                    "inverse-surface": "#33302c",
+                    "on-secondary-fixed": "#1c1a27",
+                    "inverse-primary": "#b0ceb4",
+                    "on-secondary-container": "#646171",
+                    "surface-container-low": "#f9f2ed",
+                    "primary-fixed": "#cceacf",
+                    "secondary-fixed-dim": "#c9c4d7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "32px",
+                    "unit": "8px",
+                    "stack-md": "32px",
+                    "margin-mobile": "20px",
+                    "container-max-width": "1140px",
+                    "section-padding": "120px",
+                    "stack-sm": "16px",
+                    "stack-lg": "64px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Manrope"],
+                    "h3": ["Noto Serif"],
+                    "h1": ["Noto Serif"],
+                    "body-lg": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "label-caps": ["Manrope"],
+                    "h2": ["Noto Serif"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "h3": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500"}],
+                    "h1": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "600"}],
+                    "h2": ["32px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #fff8f3;
+            color: #1e1b18;
+        }
+        .organic-shape {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        }
+        .soft-glow {
+            box-shadow: 0 0 40px rgba(74, 101, 79, 0.08);
+        }
+    </style>
+</head>
+<body class="font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-stone-50/80 dark:bg-neutral-950/80 backdrop-blur-md border-b border-stone-200/40 dark:border-neutral-800/40 shadow-sm shadow-emerald-900/5 docked full-width top-0 z-50 fixed">
+<div class="flex justify-between items-center w-full px-8 md:px-16 h-20 max-w-screen-2xl mx-auto">
+<div class="text-2xl font-serif italic text-emerald-900 dark:text-emerald-50">Eterno Pet</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-emerald-800 dark:text-emerald-200 border-b border-emerald-800/30 pb-1 font-serif text-stone-900 dark:text-stone-100 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-500" href="#">Our Vision</a>
+<a class="text-stone-500 dark:text-stone-400 font-normal font-serif hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-500" href="#">Memorials</a>
+<a class="text-stone-500 dark:text-stone-400 font-normal font-serif hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-500" href="#">Pricing</a>
+<a class="text-stone-500 dark:text-stone-400 font-normal font-serif hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-500" href="#">Support</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-600 cursor-pointer" data-icon="account_circle">account_circle</span>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-full font-body-sm font-semibold hover:bg-primary/90 transition-all">Create Tribute</button>
+</div>
+</div>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative overflow-hidden px-8 md:px-16 py-20 md:py-32 flex flex-col md:flex-row items-center gap-16 max-w-screen-2xl mx-auto">
+<div class="flex-1 space-y-8 z-10">
+<h1 class="font-h1 text-h1 text-on-background max-w-xl">
+                    Eternize a história de quem sempre esteve ao seu lado
+                </h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant max-w-md">
+                    Um santuário digital para celebrar a vida, guardar memórias e encontrar conforto através de tributos eternos.
+                </p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary text-on-primary px-8 py-4 rounded-full text-body-md font-semibold flex items-center gap-2 hover:shadow-lg hover:shadow-primary/20 transition-all">
+                        Começar Homenagem
+                        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<button class="border border-outline/30 text-primary px-8 py-4 rounded-full text-body-md font-semibold hover:bg-surface-container transition-all">
+                        Ver Memorial Exemplo
+                    </button>
+</div>
+</div>
+<div class="flex-1 relative">
+<div class="organic-shape bg-primary-container w-full aspect-square absolute -top-10 -right-10 opacity-20 blur-3xl"></div>
+<div class="relative z-10 rounded-[40px] overflow-hidden shadow-2xl border-8 border-white">
+<img alt="Woman hugging her dog" class="w-full h-[600px] object-cover" data-alt="tender moment between a young woman and her golden retriever in a sun-drenched meadow with soft warm lighting and hazy trees" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADRHwOj4DfPOR7ebdvcgLmr_Hafly8pz7lYG2IGAD_Ms7fdefxi23NW18U6QuOAZsb9jtD7t8GbpFlbZL5OfX-Et-idwltXyCsl9pWFB5DCho1kdObcdQcoZC4SSkpF9Xeu4x-jdovgG0U8bJmTfpeEImyv_Yn9HJLKCpvwo2z2fFavKDgJHjobsg5Dnyt0cEjfTwmFT3rOycqPegD3JTOf56L_Ex_GHHYVuiieKDf49u8I5jBfJ6PqJOnVvWHUT57FDGPuikkG10"/>
+</div>
+<div class="absolute -bottom-8 -left-8 bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-xl z-20 max-w-[240px] border border-stone-100">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-primary" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-label-caps text-primary">AI SUPPORT</span>
+</div>
+<p class="text-body-sm font-body-sm italic text-stone-600">"Sua lealdade era um presente diário que o tempo nunca apagará."</p>
+</div>
+</div>
+</section>
+<!-- Purpose Section -->
+<section class="bg-surface-container-low py-section-padding px-8 md:px-16">
+<div class="max-w-screen-2xl mx-auto">
+<div class="text-center mb-20 space-y-4">
+<span class="font-label-caps text-secondary tracking-widest">PROPÓSITO</span>
+<h2 class="font-h2 text-h2 text-on-surface">Um espaço para o afeto</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<div class="bg-white p-10 rounded-[32px] soft-glow border border-stone-100 flex flex-col gap-6 hover:translate-y-[-8px] transition-transform duration-500">
+<div class="w-14 h-14 bg-primary-container/20 rounded-2xl flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl" data-icon="timeline">timeline</span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface">Timeline da Vida</h3>
+<p class="font-body-md text-on-surface-variant">Documente cada marco, desde a primeira patinha em casa até os momentos mais serenos da maturidade.</p>
+</div>
+<!-- Card 2 -->
+<div class="bg-white p-10 rounded-[32px] soft-glow border border-stone-100 flex flex-col gap-6 hover:translate-y-[-8px] transition-transform duration-500">
+<div class="w-14 h-14 bg-secondary-container rounded-2xl flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-3xl" data-icon="lock_clock">lock_clock</span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface">Cápsula do Tempo</h3>
+<p class="font-body-md text-on-surface-variant">Guarde cartas, áudios e vídeos para serem revelados em datas especiais, mantendo a conexão viva.</p>
+</div>
+<!-- Card 3 -->
+<div class="bg-white p-10 rounded-[32px] soft-glow border border-stone-100 flex flex-col gap-6 hover:translate-y-[-8px] transition-transform duration-500">
+<div class="w-14 h-14 bg-tertiary-fixed rounded-2xl flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-3xl" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface">IA de Tributos</h3>
+<p class="font-body-md text-on-surface-variant">Nossa inteligência sensível ajuda a transformar sentimentos em palavras, criando homenagens poéticas e únicas.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Memorial Showcase -->
+<section class="py-section-padding px-8 md:px-16 overflow-hidden">
+<div class="max-w-screen-2xl mx-auto flex flex-col lg:flex-row gap-20 items-center">
+<div class="flex-1 space-y-8">
+<span class="font-label-caps text-primary tracking-widest">SANTUÁRIO DIGITAL</span>
+<h2 class="font-h2 text-h2 text-on-surface leading-tight">Um refúgio visualmente poético para suas lembranças</h2>
+<p class="text-body-lg text-on-surface-variant font-serif italic">
+                        "Cada memorial é desenhado para ser tão único quanto o laço que vocês compartilharam. Typography clássica, cores suaves e foco total na beleza da vida vivida."
+                    </p>
+<ul class="space-y-4">
+<li class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+                            Layouts editoriais premium
+                        </li>
+<li class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+                            Galeria imersiva de fotos e vídeos
+                        </li>
+<li class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle">check_circle</span>
+                            Espaço para mensagens de amigos e familiares
+                        </li>
+</ul>
+</div>
+<div class="flex-1 w-full">
+<!-- Memorial Preview Card -->
+<div class="bg-surface p-8 md:p-12 rounded-[40px] shadow-2xl border border-surface-variant relative">
+<div class="text-center space-y-6">
+<div class="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg">
+<img alt="Pet memorial photo" class="w-full h-full object-cover" data-alt="portrait of a loyal beagle dog with expressive eyes and soft brown and white fur, set against a blurred forest background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsLnYSePk-ObiZPD1xeBiP6GAA7UX7n_vehjG5CRJ6aTZdtte5XANrpSsBIXweU3zzQsvjhYgTWQeV0UKLfML2ySDEdLKlghrey3CoGcYW-ZOrcOd5-30DKmvK-JM-Zw01mZI3yfDYK4WD_ePjQ4gnjgjFqu0penyiSLj10pRXDC_rpXtzEVOAJts6LudFURa2TCXA1BsGOB0v1hSgwuX79ADNye4KGoxbSC9UiXl3V-4pX5c20-_jRJBKWc6LDrCxLBFWHSdLYI4"/>
+</div>
+<h3 class="font-h1 text-3xl italic">Para sempre, Max</h3>
+<p class="font-body-sm text-primary tracking-widest uppercase">2012 — 2024</p>
+<div class="h-px w-24 bg-primary/20 mx-auto"></div>
+<p class="font-serif text-lg leading-relaxed text-stone-700 italic px-4">
+                                "O melhor companheiro de trilhas e o dono do latido mais alegre do bairro. Você nos ensinou o significado de amor incondicional."
+                            </p>
+</div>
+<div class="mt-12 grid grid-cols-2 gap-4">
+<div class="rounded-2xl overflow-hidden h-32 shadow-sm">
+<img alt="Pet memory" class="w-full h-full object-cover" data-alt="golden retriever puppy playing with a tennis ball on a lush green lawn in bright daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEhXtU87snDWkES9lD_qa5dACrxdEE65qLtk4KcgxAm3mE1aZS_wR7wUsw40h0pZAOM3VK9pxRFMkKyfzhQYMqDLPzmQMRy9YkjUeTsvPXehybstknM8FCu0fNEcZcBov73-LHtG39s9ev2SlWEkWVCNcG4yh4TTOayUpzRJq3j6czUulFLdCyf4lD9XqTzIb2hnwvRReVpPTcvNYjiFeyE3z8jjxC-blmJnYSdWYF8v9YE-PbJoVaZId4T2thjX8ebP14kVHXhS8"/>
+</div>
+<div class="rounded-2xl overflow-hidden h-32 shadow-sm">
+<img alt="Pet memory" class="w-full h-full object-cover" data-alt="dog sleeping peacefully on a soft beige blanket with gentle morning light from a nearby window" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5zeDP-CWkjHiq4tBE64_h2mOoTxfyxVzCqQkMwH8yZYRdtcEfjS6KYfvhoWS9tl15cpfunSY1nWFNlA2jLAL8NzRHe9vmWQ2tB5f8Hu_dIJoM-ZqYZNT_O32y447EW29d6GGij7PlOxHsKvmT2lGc2TyNtgU2LQaKw9B4DGMQeTLgwcHW-k9v3wjQmAezRATDaLpN4vZ1tVbQE9Zc8yG9eysQHLgUztKyZAHQumXwPmWF7YvRmpf9W2h-V7eBrX_x06GkaYjpdc8"/>
+</div>
+</div>
+<!-- Decorative leaf -->
+<span class="material-symbols-outlined absolute -top-6 -right-6 text-primary/10 text-8xl" data-icon="eco">eco</span>
+</div>
+</div>
+</div>
+</section>
+<!-- How it Works -->
+<section class="bg-stone-900 text-stone-100 py-section-padding px-8 md:px-16 relative overflow-hidden">
+<div class="max-w-screen-2xl mx-auto relative z-10">
+<div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+<div class="space-y-4">
+<span class="font-label-caps text-primary-fixed-dim">PROCESSO</span>
+<h2 class="font-h2 text-h2 text-white">Como criamos o eterno</h2>
+</div>
+<p class="text-stone-400 max-w-sm mb-2">Um caminho suave e acolhedor para preservar o que realmente importa.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-16 relative">
+<!-- Step 1 -->
+<div class="space-y-6 relative">
+<div class="text-7xl font-serif text-primary/20 absolute -top-8 -left-4">01</div>
+<h4 class="text-xl font-h3 mt-8">Registre Momentos</h4>
+<p class="text-stone-400 font-body-md">Suba fotos, vídeos e pequenos causos que definem a personalidade do seu pet.</p>
+</div>
+<!-- Step 2 -->
+<div class="space-y-6 relative">
+<div class="text-7xl font-serif text-primary/20 absolute -top-8 -left-4">02</div>
+<h4 class="text-xl font-h3 mt-8">Convide a Família</h4>
+<p class="text-stone-400 font-body-md">Crie um círculo de amor onde todos podem deixar mensagens e compartilhar suas próprias fotos.</p>
+</div>
+<!-- Step 3 -->
+<div class="space-y-6 relative">
+<div class="text-7xl font-serif text-primary/20 absolute -top-8 -left-4">03</div>
+<h4 class="text-xl font-h3 mt-8">Gere o Memorial</h4>
+<p class="text-stone-400 font-body-md">Transforme tudo em uma página eterna ou em um livro impresso de alta qualidade para sua estante.</p>
+</div>
+</div>
+</div>
+<!-- Background abstraction -->
+<div class="absolute bottom-0 right-0 opacity-10">
+<span class="material-symbols-outlined text-[400px]" data-icon="cruelty_free">cruelty_free</span>
+</div>
+</section>
+<!-- Pricing Section -->
+<section class="py-section-padding px-8 md:px-16 bg-white">
+<div class="max-w-screen-2xl mx-auto">
+<div class="text-center mb-20 space-y-4">
+<span class="font-label-caps text-secondary tracking-widest">PLANOS</span>
+<h2 class="font-h2 text-h2 text-on-surface">Escolha como eternizar</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+<!-- Basic -->
+<div class="p-10 rounded-[32px] border border-stone-100 bg-stone-50 flex flex-col">
+<h4 class="font-h3 text-xl mb-2">Santuário Grátis</h4>
+<div class="text-3xl font-h2 mb-6">R$ 0</div>
+<ul class="space-y-4 mb-10 flex-grow">
+<li class="flex items-center gap-3 text-body-sm text-stone-600"><span class="material-symbols-outlined text-primary text-sm" data-icon="done">done</span> Memorial público simples</li>
+<li class="flex items-center gap-3 text-body-sm text-stone-600"><span class="material-symbols-outlined text-primary text-sm" data-icon="done">done</span> Até 50 fotos</li>
+<li class="flex items-center gap-3 text-body-sm text-stone-600"><span class="material-symbols-outlined text-primary text-sm" data-icon="done">done</span> Mural de condolências</li>
+</ul>
+<button class="w-full py-4 rounded-full border border-primary text-primary font-semibold hover:bg-primary/5 transition-all">Começar Agora</button>
+</div>
+<!-- Premium -->
+<div class="p-10 rounded-[32px] bg-primary text-on-primary shadow-2xl scale-105 z-10 flex flex-col relative">
+<div class="absolute top-6 right-8 bg-white/20 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Popular</div>
+<h4 class="font-h3 text-xl mb-2">Memorial Premium</h4>
+<div class="text-3xl font-h2 mb-6">R$ 19<span class="text-lg opacity-80">/mês</span></div>
+<ul class="space-y-4 mb-10 flex-grow">
+<li class="flex items-center gap-3 text-body-sm"><span class="material-symbols-outlined text-sm" data-icon="done">done</span> Timeline ilimitada</li>
+<li class="flex items-center gap-3 text-body-sm"><span class="material-symbols-outlined text-sm" data-icon="done">done</span> Assistente de Escrita IA</li>
+<li class="flex items-center gap-3 text-body-sm"><span class="material-symbols-outlined text-sm" data-icon="done">done</span> Cápsula do Tempo</li>
+<li class="flex items-center gap-3 text-body-sm"><span class="material-symbols-outlined text-sm" data-icon="done">done</span> Download de todas as fotos em HD</li>
+</ul>
+<button class="w-full py-4 rounded-full bg-white text-primary font-semibold hover:bg-stone-100 transition-all">Escolher Premium</button>
+</div>
+<!-- Life -->
+<div class="p-10 rounded-[32px] border border-stone-100 bg-stone-50 flex flex-col">
+<h4 class="font-h3 text-xl mb-2">Legado Eterno</h4>
+<div class="text-3xl font-h2 mb-6">R$ 490<span class="text-lg opacity-60"> pago uma vez</span></div>
+<ul class="space-y-4 mb-10 flex-grow">
+<li class="flex items-center gap-3 text-body-sm text-stone-600"><span class="material-symbols-outlined text-primary text-sm" data-icon="done">done</span> Tudo do plano Premium</li>
+<li class="flex items-center gap-3 text-body-sm text-stone-600"><span class="material-symbols-outlined text-primary text-sm" data-icon="done">done</span> Domínio personalizado</li>
+<li class="flex items-center gap-3 text-body-sm text-stone-600"><span class="material-symbols-outlined text-primary text-sm" data-icon="done">done</span> Memorial Book impresso</li>
+</ul>
+<button class="w-full py-4 rounded-full border border-primary text-primary font-semibold hover:bg-primary/5 transition-all">Garantir Legado</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-stone-50 dark:bg-neutral-950 border-t border-stone-200 dark:border-neutral-800 flex flex-col items-center py-16 gap-8 w-full text-center">
+<div class="text-lg font-serif text-emerald-900 dark:text-emerald-100">Eterno Pet</div>
+<div class="flex flex-wrap justify-center gap-8 px-4">
+<a class="font-serif text-sm italic text-stone-500 hover:text-emerald-800 transition-opacity" href="#">Privacy</a>
+<a class="font-serif text-sm italic text-stone-500 hover:text-emerald-800 transition-opacity" href="#">Terms</a>
+<a class="font-serif text-sm italic text-stone-500 hover:text-emerald-800 transition-opacity" href="#">Memorial Ethics</a>
+<a class="font-serif text-sm italic text-stone-500 hover:text-emerald-800 transition-opacity" href="#">Grief Resources</a>
+</div>
+<p class="font-serif text-sm italic text-stone-500 max-w-xs md:max-w-none px-6">© 2024 Eterno Pet. Dedicated to the lives that touched our souls.</p>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-lg border-t border-stone-100 dark:border-neutral-800 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] z-50 rounded-t-3xl">
+<div class="flex flex-col items-center justify-center text-emerald-800 dark:text-emerald-200 bg-emerald-50/50 dark:bg-emerald-900/20 rounded-xl px-4 py-1 scale-95 active:scale-90 duration-200 transition-all">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-[11px] font-medium tracking-wide">Sanctuary</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-all scale-95 active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+<span class="text-[11px] font-medium tracking-wide">Memories</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-all scale-95 active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="text-[11px] font-medium tracking-wide">AI Assistant</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-all scale-95 active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[11px] font-medium tracking-wide">Profile</span>
+</div>
+</nav>
+</body></html>

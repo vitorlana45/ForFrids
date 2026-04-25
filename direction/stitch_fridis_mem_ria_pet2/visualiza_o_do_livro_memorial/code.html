@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Eternal Paws - Memorial Book Preview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400;1,600&amp;family=Manrope:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#eaf4e7",
+                        "surface-tint": "#506354",
+                        "surface-variant": "#dbe5d9",
+                        "on-secondary-fixed-variant": "#604025",
+                        "surface-container-high": "#e1ebdf",
+                        "on-surface": "#151e16",
+                        "surface-container-highest": "#dbe5d9",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#e7f1e5",
+                        "secondary-container": "#fdceaa",
+                        "surface": "#f2fcf0",
+                        "outline": "#737872",
+                        "on-secondary-fixed": "#2d1602",
+                        "tertiary-fixed-dim": "#c8c6c3",
+                        "outline-variant": "#c3c8c1",
+                        "surface-container-low": "#ecf6ea",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#f2fcf0",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "tertiary": "#41423f",
+                        "inverse-primary": "#b7ccb9",
+                        "primary-container": "#4a5d4e",
+                        "surface-dim": "#d3ddd1",
+                        "on-secondary-container": "#79563a",
+                        "tertiary-fixed": "#e4e2de",
+                        "on-surface-variant": "#434843",
+                        "on-primary-container": "#c0d5c2",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2a332b",
+                        "primary-fixed": "#d3e8d5",
+                        "secondary": "#7a573b",
+                        "on-tertiary-fixed-variant": "#474744",
+                        "on-tertiary-container": "#d1d0cc",
+                        "on-primary-fixed": "#0e1f13",
+                        "background": "#f2fcf0",
+                        "primary": "#334537",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#1b1c1a",
+                        "tertiary-container": "#595956",
+                        "secondary-fixed-dim": "#ebbd9b",
+                        "primary-fixed-dim": "#b7ccb9",
+                        "on-background": "#151e16",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#ffdcc3",
+                        "on-primary-fixed-variant": "#394b3d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "48px",
+                        "gutter": "32px",
+                        "unit": "8px",
+                        "stack-sm": "12px",
+                        "margin-edge": "40px",
+                        "stack-md": "24px",
+                        "section-gap": "120px",
+                        "container-max": "1120px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Noto Serif"],
+                        "body-lg": ["Manrope"],
+                        "label-caps": ["Manrope"],
+                        "headline-md": ["Noto Serif"],
+                        "headline-sm": ["Noto Serif"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.7", "letterSpacing": "0.03em", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.15em", "fontWeight": "600"}],
+                        "headline-md": ["32px", {"lineHeight": "1.3", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "headline-sm": ["24px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0.02em", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 24
+    }
+.book-spread-shadow {
+    box-shadow: 0 25px 50px -12px rgba(74, 93, 78, 0.15)
+    }
+.editorial-grain {
+    position: relative
+    }
+.editorial-grain::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.03;
+    pointer-events: none;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuByk9b9uxfIcOPRK-i3E6q50YWQ09-rm55F60DNGj9kcUf1ufKTm0ch5ihvw0nHg8RoQLsHClcTx8NiEPQZxOl4idM_Pc1lV1BVpwGkA-3ltpcvzf8qMnrSfPVjlIYAQB56GrVk4EIDgUWUxRohoGsCdcWJE1c8IRXXi2BMgwn3uZ86Rjw0Wm4I7BCbguVFb5D0_RuSflRW9C2ybXvDGzgfMGV1tAkJZbJF2sA23x7fwFrrlJXTWsonGzbgl6Vv9tKAivPIBJ8kdcs)
+    }</style>
+</head>
+<body class="bg-[#FDFCF0] text-primary min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-[#FDFCF0] dark:bg-stone-950 sticky top-0 z-50 border-b border-[#C89D7C]/30">
+<div class="max-w-7xl mx-auto px-10 py-6 flex justify-between items-center w-full">
+<div class="font-serif text-2xl italic font-semibold text-[#4A5D4E] dark:text-stone-100">Eternal Paws</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-stone-500 hover:text-[#4A5D4E] transition-colors font-serif text-lg tracking-tight" href="#">Time Capsule</a>
+<a class="text-stone-500 hover:text-[#4A5D4E] transition-colors font-serif text-lg tracking-tight" href="#">Memorial QR</a>
+<a class="text-[#4A5D4E] font-bold border-b border-[#C89D7C] pb-1 font-serif text-lg tracking-tight" href="#">Memory Book</a>
+<a class="text-stone-500 hover:text-[#4A5D4E] transition-colors font-serif text-lg tracking-tight" href="#">Tributes</a>
+</nav>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-[#4A5D4E] cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-[#4A5D4E] cursor-pointer" data-icon="settings">settings</span>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-serif text-lg hover:opacity-80 transition-opacity">My Sanctuary</button>
+</div>
+</div>
+</header>
+<main class="max-w-[1400px] mx-auto px-margin-edge py-stack-lg">
+<!-- Page Header -->
+<section class="text-center mb-section-gap">
+<h1 class="font-display-lg text-display-lg text-primary mb-4">Memory Book Preview</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto italic">
+                A handcrafted journey through the moments that defined your bond. Review your legacy before it's etched in time.
+            </p>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Left Sidebar: Customization Controls -->
+<aside class="lg:col-span-3 space-y-stack-md">
+<div class="p-8 bg-surface-container-low rounded-xl border border-[#C89D7C]/20">
+<h3 class="font-label-caps text-label-caps text-secondary mb-6">CURATE YOUR LEGACY</h3>
+<!-- Cover Selection -->
+<div class="mb-stack-md">
+<label class="font-label-caps text-[10px] block mb-3 text-on-surface-variant">COVER MATERIAL</label>
+<div class="grid grid-cols-3 gap-3">
+<button class="aspect-square rounded-lg border-2 border-primary bg-[#4A5D4E] ring-offset-2 ring-1 ring-primary/20"></button>
+<button class="aspect-square rounded-lg border border-[#C89D7C]/30 bg-[#7A573B]"></button>
+<button class="aspect-square rounded-lg border border-[#C89D7C]/30 bg-stone-200"></button>
+</div>
+<p class="mt-2 font-body-md text-[12px] italic text-on-surface-variant">Deep Sage Linen</p>
+</div>
+<!-- Layout Options -->
+<div class="mb-stack-md">
+<label class="font-label-caps text-[10px] block mb-3 text-on-surface-variant">PAPER TEXTURE</label>
+<select class="w-full bg-transparent border-b border-[#C89D7C]/40 py-2 focus:ring-0 focus:border-primary font-body-md">
+<option>Museum Grade Matte</option>
+<option>Satin Eggshell</option>
+<option>Hand-pressed Cotton</option>
+</select>
+</div>
+<!-- Action Buttons -->
+<div class="space-y-4 pt-6">
+<button class="w-full bg-primary-container text-on-primary-container py-4 rounded-lg font-body-lg font-semibold flex items-center justify-center gap-3 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+                            Order Printed Book
+                        </button>
+<button class="w-full bg-transparent border border-primary text-primary py-4 rounded-lg font-body-lg flex items-center justify-center gap-3 hover:bg-primary/5 transition-all">
+<span class="material-symbols-outlined" data-icon="picture_as_pdf">picture_as_pdf</span>
+                            Download Digital PDF
+                        </button>
+</div>
+</div>
+<!-- Page Summary -->
+<div class="p-8 bg-surface-container-lowest rounded-xl border border-[#C89D7C]/10">
+<div class="flex justify-between items-center mb-4">
+<span class="font-label-caps text-[10px] text-on-surface-variant">BOOK SPECS</span>
+<span class="font-body-md text-primary font-semibold">42 Pages</span>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between font-body-md text-[13px]">
+<span class="text-on-surface-variant">High-Res Photos</span>
+<span>28</span>
+</div>
+<div class="flex justify-between font-body-md text-[13px]">
+<span class="text-on-surface-variant">Written Tributes</span>
+<span>12</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content: The Book Preview -->
+<div class="lg:col-span-9">
+<div class="relative group">
+<!-- Book Spread Layout -->
+<div class="flex flex-col md:flex-row bg-[#FDFCF0] book-spread-shadow editorial-grain min-h-[600px] overflow-hidden rounded-sm border border-[#C89D7C]/10">
+<!-- Left Page (Narrative) -->
+<div class="flex-1 p-12 md:p-20 border-r border-stone-200/50 flex flex-col justify-center">
+<div class="max-w-sm mx-auto">
+<span class="font-label-caps text-label-caps text-[#C89D7C] block mb-8">CHAPTER TWO: SUNSET MEADOWS</span>
+<h2 class="font-headline-md text-headline-md text-primary mb-8 leading-tight italic">"The quiet joy of a morning chase, and the soft sigh of a dream realized."</h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-10">
+                                    Oliver didn't just walk; he danced through the tall grass of the old park. Every Golden Hour was his stage, where the light caught the amber of his eyes and for a moment, the world felt perfectly still.
+                                </p>
+<div class="w-24 h-px bg-[#C89D7C]/40 mb-10"></div>
+<footer class="font-serif italic text-on-surface-variant">
+                                    — Written by Sarah M.
+                                </footer>
+</div>
+</div>
+<!-- Right Page (Full Bleed Image) -->
+<div class="flex-1 relative overflow-hidden h-[400px] md:h-auto">
+<img class="absolute inset-0 w-full h-full object-cover grayscale-[20%] sepia-[10%]" data-alt="Close up portrait of a golden retriever dog resting peacefully in warm evening sunlight with soft focus garden background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtxEcqNaPgxGQPho4a7XyF6P0vQDtud9uypRJQMUQeLmQtCk14sVPU_Og3WPHzPSMfaDR_zWb5t9gL18nSdqYkHFkj56K7bWoQNm_X7wwEKF9Fe9YeXmoOq4w0uz9DPH3FTtxYw-RKBQEpUVGHrQ7AKI-Sxas8weSzM7cWri5rH0TRSqDy1kmXZ4VQJJdqysEHQtq6s1UUcpun77LyPy7plodYVIvg8ci2oMaGQA3FWMuLLIfOHaCpQfmhJ7y8Hr4bZcIAxpeW64I"/>
+<div class="absolute inset-0 bg-black/5"></div>
+<!-- Page numbering decoration -->
+<div class="absolute bottom-10 right-10 font-serif text-stone-400">24</div>
+</div>
+</div>
+<!-- Navigation Overlays -->
+<button class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-primary hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-primary hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- Spread Thumbnails -->
+<div class="mt-stack-lg flex justify-center gap-6 overflow-x-auto pb-4">
+<div class="w-32 aspect-[3/2] rounded border-2 border-primary overflow-hidden opacity-100 transition-all cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="Small thumbnail preview of book pages showing dog running on a beach" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk2uZWowYsFsx7RntKgLx21LfrcQnW5aQPwkce3BD7Kh4BVllMhAGfhpddeqZ8qr1GjM6DBnflu0SILog60t6gfqv11WOg_MD2ucPLuX8o_Nr5CKc6SCanITpZUHli4lPnA8g_SnOD6XWs0psITEw2DKBCrcPxJTCMruWk9boWsJNRfausMAPVBd-mzxTwcA72mApxjLk5MFWD0iS6A9NdemGOaNfd_Gh7yjAV5VHoOIAhpYuwO7iIOs3PLkMpB_d605hyyImmp5Y"/>
+</div>
+<div class="w-32 aspect-[3/2] rounded border border-[#C89D7C]/20 overflow-hidden opacity-60 hover:opacity-100 transition-all cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="Small thumbnail preview of book pages with text and a paw print illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxWzAVmVGb-E15H8C0lYCh9OdTjHtI82Kem9s_SjVc5Q3GtZw9mjh1bB8ehVmkBvRB2d4q-Ujx82P5bzY3RappNiBFAeC31ukpuNs1QA5JCZQoryUAetgycY_3IYsX2cAOevHgA1Gm2FrBXzBaT-tmf1N5n15ouFlXl6QeVeybqhI8_AfVkq_vXpzjOr77FS5QtbA5RezEz6vRASCpwAaTB4uf1nxNtz-k2YLzzpF2_6K51N1jwjdXlJ8RMgtpaimywOtLj93kG5A"/>
+</div>
+<div class="w-32 aspect-[3/2] rounded border border-[#C89D7C]/20 overflow-hidden opacity-60 hover:opacity-100 transition-all cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="Small thumbnail preview of book pages showing a close up of a dog nose" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArQkXoPNznWfsVooEBjTE0hyYwI0s5-L43FEkdfrfLaRyq3MBZ82BQbaM7PbuhJgSYmoKtsKNt542HDM356ou2F8e_0hiugr3TQOScHPY-62Nd3BZM9uByYrwc1vfChjUEuk6xafp221W5md57p1pgu1Z--AJ05EQd_yR-O5S97N6ygGMhxhxHVJtvHVmIsh8AvLSDOy1MIbAFvV3S1Ev1og447hkjPoslK7i_jnUPwS9D4FJVwZIQ_KjGqTt00lHV-52ZwKDgVr8"/>
+</div>
+<div class="w-32 aspect-[3/2] rounded border border-[#C89D7C]/20 overflow-hidden opacity-60 hover:opacity-100 transition-all cursor-pointer flex items-center justify-center bg-stone-100">
+<span class="material-symbols-outlined text-stone-400" data-icon="add">add</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Detailed Features / Customization Section -->
+<section class="max-w-7xl mx-auto px-margin-edge mt-section-gap">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="text-center p-8">
+<span class="material-symbols-outlined text-[#C89D7C] text-4xl mb-4" data-icon="editor_choice">editor_choice</span>
+<h4 class="font-headline-sm text-headline-sm text-primary mb-2">Editorial Layouts</h4>
+<p class="font-body-md text-on-surface-variant">Professionally designed templates that balance photos and prose with quiet dignity.</p>
+</div>
+<div class="text-center p-8">
+<span class="material-symbols-outlined text-[#C89D7C] text-4xl mb-4" data-icon="ink_highlighter">ink_highlighter</span>
+<h4 class="font-headline-sm text-headline-sm text-primary mb-2">Artisan Printing</h4>
+<p class="font-body-md text-on-surface-variant">Archival quality inks and FSC-certified papers meant to last for generations.</p>
+</div>
+<div class="text-center p-8">
+<span class="material-symbols-outlined text-[#C89D7C] text-4xl mb-4" data-icon="qr_code_scanner">qr_code_scanner</span>
+<h4 class="font-headline-sm text-headline-sm text-primary mb-2">QR Integration</h4>
+<p class="font-body-md text-on-surface-variant">Embed QR codes that link directly to video memories and your digital capsule.</p>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-stone-100 dark:bg-stone-950 full-width py-20 mt-32 border-t border-[#C89D7C]/10">
+<div class="flex flex-col items-center gap-8 max-w-4xl mx-auto text-center">
+<div class="font-serif text-xl text-[#4A5D4E]">Eternal Paws</div>
+<nav class="flex gap-10">
+<a class="text-stone-500 hover:text-[#C89D7C] transition-colors font-serif text-sm italic" href="#">Our Ethos</a>
+<a class="text-stone-500 hover:text-[#C89D7C] transition-colors font-serif text-sm italic" href="#">Privacy</a>
+<a class="text-stone-500 hover:text-[#C89D7C] transition-colors font-serif text-sm italic" href="#">Terms</a>
+<a class="text-stone-500 hover:text-[#C89D7C] transition-colors font-serif text-sm italic" href="#">Support</a>
+</nav>
+<p class="text-stone-600 dark:text-stone-400 font-serif text-sm italic">© 2024 Eternal Paws. Preserving memories with dignity.</p>
+</div>
+</footer>
+<!-- Mobile Bottom Navigation -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-6 pb-8 pt-4 bg-[#FDFCF0]/90 dark:bg-stone-900/90 backdrop-blur-md border-t border-[#C89D7C]/20 shadow-[0_-4px_20px_rgba(74,93,78,0.05)] rounded-t-3xl">
+<div class="flex flex-col items-center justify-center text-stone-400 opacity-70">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-serif text-[10px] tracking-widest uppercase">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 opacity-70">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span class="font-serif text-[10px] tracking-widest uppercase">Capsule</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#4A5D4E] font-bold scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="menu_book" data-weight="fill" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span class="font-serif text-[10px] tracking-widest uppercase">Print</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 opacity-70">
+<span class="material-symbols-outlined" data-icon="qr_code_2">qr_code_2</span>
+<span class="font-serif text-[10px] tracking-widest uppercase">Memorial</span>
+</div>
+</nav>
+</body></html>

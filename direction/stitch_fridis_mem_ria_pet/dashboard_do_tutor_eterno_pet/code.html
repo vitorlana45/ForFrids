@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;1,400&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#33302c",
+                    "secondary": "#5f5c6c",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#b0ceb4",
+                    "surface-container-low": "#f9f2ed",
+                    "surface-container": "#f4ede7",
+                    "on-secondary-container": "#646171",
+                    "on-primary-container": "#253f2b",
+                    "surface": "#fff8f3",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed-dim": "#c9c4d7",
+                    "primary-container": "#8daa91",
+                    "on-secondary-fixed-variant": "#474554",
+                    "inverse-on-surface": "#f7efea",
+                    "on-error": "#ffffff",
+                    "surface-tint": "#4a654f",
+                    "secondary-fixed": "#e5e0f3",
+                    "on-background": "#1e1b18",
+                    "tertiary": "#645d53",
+                    "primary-fixed": "#cceacf",
+                    "primary-fixed-dim": "#b0ceb4",
+                    "error": "#ba1a1a",
+                    "on-secondary": "#ffffff",
+                    "outline": "#737972",
+                    "on-tertiary-fixed": "#1f1b13",
+                    "background": "#fff8f3",
+                    "tertiary-container": "#aaa296",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#ebe1d4",
+                    "on-surface": "#1e1b18",
+                    "surface-container-high": "#eee7e1",
+                    "outline-variant": "#c2c8c0",
+                    "on-tertiary-fixed-variant": "#4c463c",
+                    "on-primary-fixed-variant": "#334d38",
+                    "surface-bright": "#fff8f3",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface-variant": "#424842",
+                    "on-primary-fixed": "#062010",
+                    "tertiary-fixed-dim": "#cfc5b9",
+                    "primary": "#4a654f",
+                    "error-container": "#ffdad6",
+                    "surface-variant": "#e8e1dc",
+                    "on-tertiary-container": "#3e3930",
+                    "on-secondary-fixed": "#1c1a27",
+                    "surface-container-highest": "#e8e1dc",
+                    "secondary-container": "#e2ddf0",
+                    "surface-dim": "#dfd9d4"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "16px",
+                    "section-padding": "120px",
+                    "stack-lg": "64px",
+                    "stack-md": "32px",
+                    "unit": "8px",
+                    "container-max-width": "1140px",
+                    "margin-mobile": "20px",
+                    "gutter": "32px"
+            },
+            "fontFamily": {
+                    "h1": ["Noto Serif"],
+                    "body-lg": ["Manrope"],
+                    "body-sm": ["Manrope"],
+                    "label-caps": ["Manrope"],
+                    "h3": ["Noto Serif"],
+                    "h2": ["Noto Serif"],
+                    "body-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "h1": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.08em", "fontWeight": "600"}],
+                    "h3": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500"}],
+                    "h2": ["32px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #fff8f3; }
+        .backdrop-blur-nav { backdrop-filter: blur(12px); }
+    </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="bg-[#fdfcfb] dark:bg-stone-950 border-b border-stone-100 dark:border-stone-900 shadow-[0_4px_20px_-5px_rgba(141,170,145,0.06)] fixed top-0 w-full z-50">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-h1 italic text-[#8DAA91] dark:text-[#a3bba6]">Eterno Pet</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-[#8DAA91] font-semibold font-body-md text-body-md" href="#">Início</a>
+<a class="text-stone-400 dark:text-stone-500 font-body-md text-body-md hover:bg-[#f4f1ee] px-3 py-1 rounded-lg transition-colors" href="#">Memórias</a>
+<a class="text-stone-400 dark:text-stone-500 font-body-md text-body-md hover:bg-[#f4f1ee] px-3 py-1 rounded-lg transition-colors" href="#">Lembretes</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-stone-500 p-2 hover:bg-[#f4f1ee] rounded-full transition-colors">notifications</button>
+<button class="material-symbols-outlined text-stone-500 p-2 hover:bg-[#f4f1ee] rounded-full transition-colors">settings</button>
+<div class="flex items-center gap-3 ml-2 cursor-pointer transition-opacity active:opacity-70">
+<img alt="Foto do perfil do tutor" class="w-10 h-10 rounded-full object-cover border border-primary-container" data-alt="Close-up portrait of a woman with a gentle smile in soft natural morning light, artistic and warm aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-oe3iMa3Y0e1Xjmo-ZjkcGJAnscUmb3KuSZRxCxKZ405bgR3ZPtvGlONp2l8EpRjGUBsH0rsxbm_P1QplqMSQFSFEO-1_4_vkPa-GMng2ZyiEWXL-AzbNrvE0hVsmevNMQeCMLKCMMZEY-354zPMts56dI6EA9W08M7RdLN6UXr8MDH1ght18SOSfwCy87TgS3GM7bmp2Ys6AACV9rJltLXVhjl8LyH6iaKpyjXTZhzxtLmbBPwQxK2JI8RsQ9g_fDnHPY4FV8Tw"/>
+<span class="hidden lg:block font-body-sm text-body-sm text-on-surface-variant">Helena Silva</span>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 pt-32 pb-24 md:pb-12">
+<!-- Header Welcome -->
+<header class="mb-stack-lg">
+<h1 class="font-h1 text-h1 text-on-surface mb-2">Olá, Helena</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Bem-vinda de volta ao seu santuário de memórias. Um espaço para honrar e celebrar cada momento vivido.</p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Main Feed -->
+<div class="lg:col-span-8 space-y-stack-lg">
+<!-- Quick Actions: Asymmetric Layout -->
+<section>
+<h2 class="font-h2 text-h2 mb-stack-sm">Ações Rápidas</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<button class="flex flex-col items-start p-6 bg-primary-container text-white rounded-xl shadow-sm hover:opacity-90 transition-all text-left">
+<span class="material-symbols-outlined text-3xl mb-4" data-weight="fill">add_a_photo</span>
+<span class="font-body-md font-semibold text-body-md">Novo Momento</span>
+</button>
+<button class="flex flex-col items-start p-6 bg-surface-container-high border border-stone-200 rounded-xl hover:bg-surface-container-highest transition-all text-left">
+<span class="material-symbols-outlined text-3xl mb-4 text-primary" data-weight="fill">edit_note</span>
+<span class="font-body-md font-semibold text-body-md text-on-surface">Escrever Carta</span>
+</button>
+<button class="flex flex-col items-start p-6 bg-surface-container-high border border-stone-200 rounded-xl hover:bg-surface-container-highest transition-all text-left">
+<span class="material-symbols-outlined text-3xl mb-4 text-primary" data-weight="fill">qr_code_2</span>
+<span class="font-body-md font-semibold text-body-md text-on-surface">Gerar QR Code</span>
+</button>
+</div>
+</section>
+<!-- My Pets Section -->
+<section>
+<div class="flex justify-between items-end mb-stack-sm">
+<h2 class="font-h2 text-h2">Meus Pets</h2>
+<button class="text-primary font-body-sm text-body-sm font-semibold hover:underline">Ver todos</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<!-- Pet Card 1 (In Memoriam) -->
+<div class="group relative bg-white border border-stone-100 rounded-2xl overflow-hidden shadow-[0_4px_20px_-5px_rgba(141,170,145,0.04)] transition-all hover:shadow-md">
+<div class="aspect-[16/9] w-full overflow-hidden">
+<img alt="Foto do Golden Retriever Barney" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Beautiful Golden Retriever dog sitting peacefully in a field of wildflowers at sunset, soft warm backlighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1Yx22V03ZuVegDA9Fv-K35WggyhVrDARYTCYmg04WHTyyWTUdv9FMQ32_bYllrqobwywhV_iHq1ub7bSzZ6cJbLHydeUBaau791gebtebIUSCe4yl7Z8soiRy6imDbzoGmm6xY4A6Xf315rnt3649LM0jVZaBKSY-WFDjyzoragauj8H1RJMRG8xt_EVyH0VtLek1RognqEr6q68Jyh08c16rq_uneQzIgnO0Q-vkslIDz5rpAyVOydDNxGs7nkEleOFcIKA4nnM"/>
+</div>
+<div class="p-5 flex justify-between items-center">
+<div>
+<h3 class="font-h3 text-h3 text-on-surface">Barney</h3>
+<span class="inline-flex items-center px-2 py-1 bg-surface-container text-on-surface-variant text-[10px] uppercase tracking-widest font-bold rounded-md mt-1">Memorial</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined" data-weight="fill">favorite</span>
+</div>
+</div>
+</div>
+<!-- Pet Card 2 (Alive) -->
+<div class="group relative bg-white border border-stone-100 rounded-2xl overflow-hidden shadow-[0_4px_20px_-5px_rgba(141,170,145,0.04)] transition-all hover:shadow-md">
+<div class="aspect-[16/9] w-full overflow-hidden">
+<img alt="Foto da gata Luna" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Elegant calico cat resting on a soft beige linen cushion in a bright minimalist living room" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1BHvf2t24k140mYLB4yKaG26AA87O8n-vXATLni8zZi7RGryWVTMv-FlQewEAKWJO6Phm1WEETwudaW3fGYSXMtzujIbD6PqITiX3U7p8dXbdViZCaOCL6AhNHpZyo23AgLAaSUTCwCeqnE3s58Snd3bmBg9SOCIL3cSdt4ECWlC7o4zYkAnwxCgLHGlrwsiO6j1HJhztTTh7jpGH_jsHQNMWLHZHSbDWSDtp8GOomLUc-028pVpRJpHtTHJyayfTOG_XVJDYpgs"/>
+</div>
+<div class="p-5 flex justify-between items-center">
+<div>
+<h3 class="font-h3 text-h3 text-on-surface">Luna</h3>
+<span class="inline-flex items-center px-2 py-1 bg-primary-fixed text-on-primary-fixed-variant text-[10px] uppercase tracking-widest font-bold rounded-md mt-1">Em Vida</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">pets</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent Memories Feed -->
+<section>
+<h2 class="font-h2 text-h2 mb-stack-sm">Memórias Recentes</h2>
+<div class="space-y-6">
+<!-- Timeline Item -->
+<div class="flex gap-6 items-start relative pb-8">
+<div class="absolute left-4 top-8 bottom-0 w-[1px] bg-stone-200"></div>
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex-shrink-0 flex items-center justify-center z-10 border-4 border-background">
+<span class="material-symbols-outlined text-sm text-primary">auto_stories</span>
+</div>
+<div class="flex-1 bg-white p-6 rounded-2xl border border-stone-100 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<span class="font-label-caps text-label-caps text-stone-400">12 DE JUNHO, 2023</span>
+<span class="material-symbols-outlined text-stone-300">more_horiz</span>
+</div>
+<h4 class="font-h3 text-h3 mb-2">Primeiro dia no parque</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">O Barney nunca tinha visto tanta grama. Ele correu como se não houvesse amanhã.</p>
+<div class="grid grid-cols-2 gap-2">
+<img alt="Barney no parque" class="rounded-lg w-full h-32 object-cover" data-alt="Happy Golden Retriever puppy running through green grass in a sun-drenched park" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7-U6dPNHsgRqaDbf60-4FKOyID_rZsuwRehn1VcN2CBmIE5Cx5szlhOqRER7qKTRKRGsbH13J6Hq8fqxlGhffUiGokd7x7hHMxf5W0-VCdEXesjKIgUkV61lmh_qM96xaML2pLc7mT45prCd-f2vxxy4QJEEVBduCJhkKZoh-Uo0qlc7DF7hGANjvx7NqGCbDvvmDDQbXgkbMaiHysJrR5otq9nxngwUWfSoXTQcw_FemEJnXhavv2w-vji_ThhlJ9e5XxXr3SjU"/>
+<img alt="Detalhe da pata" class="rounded-lg w-full h-32 object-cover" data-alt="Close-up of a dog's paw on green grass with soft focus foreground" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcPXuzkOo5pQ1CWaMavYmR3vMSdP4hEFsx5KVEtmqpS3lA2U06OxoeLhy5Lz_WxmGeXRA1gc5_dhDAbCHCHjHPBSKlt2n55SzRCEHbSY3b-st1XeNQYr5toIqSs4uuUzeZx3UlMR_7_z0KUfG8V6N7jVpRs82XymdCzwzJBLaw-0bg9WvIleIiQH_fbOP1HXImbMXlAe0WtHWPJdQ_VfcSFpZtgr0Nu58tJwBEzV2wyCBAhwf7-bQNzm3t2a5U8nLAzwOWiQw-G9E"/>
+</div>
+</div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="flex gap-6 items-start relative">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed flex-shrink-0 flex items-center justify-center z-10 border-4 border-background">
+<span class="material-symbols-outlined text-sm text-tertiary">edit</span>
+</div>
+<div class="flex-1 bg-white p-6 rounded-2xl border border-stone-100 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<span class="font-label-caps text-label-caps text-stone-400">05 DE JUNHO, 2023</span>
+<span class="material-symbols-outlined text-stone-300">more_horiz</span>
+</div>
+<h4 class="font-h3 text-h3 mb-2">Uma carta para o tempo</h4>
+<p class="font-body-md text-body-md text-on-surface-variant italic">"Querido amigo, hoje acordei sentindo o cheiro da sua pelagem molhada..."</p>
+<button class="mt-4 text-primary font-semibold text-body-sm flex items-center gap-1">
+                                    Ler carta completa <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Sidebar -->
+<aside class="lg:col-span-4 space-y-stack-md">
+<!-- Reminders Card -->
+<section class="bg-surface-container-low p-8 rounded-3xl border border-stone-100">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary" data-weight="fill">event</span>
+<h3 class="font-h3 text-h3">Próximas Datas</h3>
+</div>
+<div class="space-y-6">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 bg-white rounded-xl flex flex-col items-center justify-center shadow-sm">
+<span class="text-[10px] font-bold text-stone-400 uppercase">AGO</span>
+<span class="text-lg font-h2 leading-none text-primary">14</span>
+</div>
+<div>
+<h4 class="font-body-md font-bold text-on-surface">Aniversário da Luna</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">4 anos de pura alegria.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 bg-white rounded-xl flex flex-col items-center justify-center shadow-sm">
+<span class="text-[10px] font-bold text-stone-400 uppercase">SET</span>
+<span class="text-lg font-h2 leading-none text-primary">22</span>
+</div>
+<div>
+<h4 class="font-body-md font-bold text-on-surface">Dia da Saudade</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">1 ano sem o Barney.</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-8 py-3 px-4 bg-white border border-stone-200 rounded-xl font-body-sm text-body-sm font-semibold hover:bg-stone-50 transition-colors">
+                        Configurar Lembretes
+                    </button>
+</section>
+<!-- Tribute Progress -->
+<section class="bg-primary-container/10 p-8 rounded-3xl border border-primary-container/20">
+<h3 class="font-h3 text-h3 mb-4 text-on-primary-container">Memorial do Barney</h3>
+<p class="font-body-sm text-body-sm text-on-primary-container/80 mb-6">Sua timeline está 75% completa. Continue compartilhando os momentos especiais.</p>
+<div class="w-full bg-white/50 rounded-full h-2 mb-6 overflow-hidden">
+<div class="bg-primary-container h-full w-3/4 rounded-full"></div>
+</div>
+<div class="flex items-center -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface-container overflow-hidden bg-stone-200">
+<img alt="Amigo" class="w-full h-full object-cover" data-alt="Portrait of a smiling man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAU1y2i3JvPhqIUNe-WXQ28MO0hVCZSKHjOBGIoWENL4czjDShiGCmGX5etwWgZRNWU6itYxJFi-3t2cSS40adYRElq7EmoU5aRXxTekYjH7IYqZvBHZiHCGfb9bv9WDAGnX5DsMmcdsZCyNrf8LOqnoQZB2IL2GenwPjj2YUe3xHfWtnL5EjHk-bKa9YtF-xkjEn2acP_CzwvcdPe1udvlqfzu9B39LNNkRNDG9x6mj1G_fuySlItmt_Zv7Jwj_WcpIOAr3DvYMU"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface-container overflow-hidden bg-stone-200">
+<img alt="Amigo" class="w-full h-full object-cover" data-alt="Portrait of a young woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0rAM4ctqSYkLnMbkAhVO2nGVviD3mxIsBWb0dVzA9UCqFPY-OsHSt6bVovcFCWJ1TqUhSG9S7KRFIA9hLuLJ04vaXt8TuDutvgEIns2DCJpG393tQlNZ_sPDffbcVpCGBCmBV_p6K3kN4RH0JrhYN_XS7gH-81kQu61jhE_9YzpO1vOduQ3xcH3ai6qKhSRCpTe6nMPcEcF80jJSn7qCtbzJZj3b2utSxN4I1rQMDLBd3zvruLpJuBR7EkfSqsnNCWMBHRIxqbDQ"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface-container flex items-center justify-center bg-primary-fixed text-[10px] font-bold text-primary">
+                            +12
+                        </div>
+<span class="ml-4 font-body-sm text-body-sm text-on-primary-container">pessoas contribuíram</span>
+</div>
+</section>
+<!-- Supportive Content -->
+<section class="p-4">
+<div class="rounded-2xl border border-dashed border-stone-300 p-6 flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-stone-300 text-4xl mb-3">psychology_alt</span>
+<h4 class="font-h3 text-h3 text-stone-500 mb-2">Espaço de Apoio</h4>
+<p class="font-body-sm text-body-sm text-stone-400 mb-4">Leia artigos sobre como lidar com o luto e encontrar paz.</p>
+<button class="text-secondary font-semibold text-body-sm hover:underline">Acessar conteúdo</button>
+</div>
+</section>
+</aside>
+</div>
+</main>
+<!-- BottomNavBar (Mobile only) -->
+<nav class="md:hidden bg-[#fdfcfb]/80 backdrop-blur-md dark:bg-stone-950/80 fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-16 border-t border-stone-100 dark:border-stone-900">
+<button class="flex flex-col items-center justify-center text-[#8DAA91] dark:text-[#a3bba6] font-medium scale-95 active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined">home</span>
+<span class="font-serif text-[11px] tracking-wide">Início</span>
+</button>
+<button class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-[#8DAA91] scale-95 active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="font-serif text-[11px] tracking-wide">Memórias</span>
+</button>
+<button class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-[#8DAA91] scale-95 active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined">event</span>
+<span class="font-serif text-[11px] tracking-wide">Lembretes</span>
+</button>
+<button class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 hover:text-[#8DAA91] scale-95 active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined">person</span>
+<span class="font-serif text-[11px] tracking-wide">Perfil</span>
+</button>
+</nav>
+</body></html>
