@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/client';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import OperationLoader from '@/components/ui/OperationLoader';
 
 const schema = z.object({
   full_name: z.string().min(2, 'Nome muito curto'),
@@ -61,6 +62,7 @@ export default function CadastrarPage() {
 
   return (
     <div className="flex-grow flex flex-col md:flex-row min-h-screen">
+      <OperationLoader active={isSubmitting} label="Criando conta" />
 
       {/* Left: image */}
       <section className="hidden md:flex md:w-1/2 lg:w-3/5 relative overflow-hidden bg-surface-container-high">
@@ -111,7 +113,7 @@ export default function CadastrarPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-primary text-on-primary py-4 rounded-full font-sans font-semibold hover:bg-[#3d4d41] transition-all shadow-sm flex items-center justify-center gap-2"
+              className="w-full bg-primary text-on-primary py-4 rounded-full font-sans font-semibold hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim transition-all shadow-sm flex items-center justify-center gap-2"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
               Criar conta grátis

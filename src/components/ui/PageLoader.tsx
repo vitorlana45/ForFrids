@@ -1,39 +1,9 @@
+import { PawLoader } from '@/components/ui/OperationLoader';
+
 export default function PageLoader() {
   return (
     <div className="min-h-screen bg-surface flex flex-col items-center justify-center gap-6">
-      <svg
-        width="64"
-        height="64"
-        viewBox="0 0 64 64"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="text-primary"
-      >
-        {/* Paw pad */}
-        <ellipse cx="32" cy="40" rx="14" ry="12" fill="currentColor" opacity="0.15">
-          <animate attributeName="opacity" values="0.15;0.35;0.15" dur="1.4s" repeatCount="indefinite" />
-        </ellipse>
-        <ellipse cx="32" cy="40" rx="10" ry="8" fill="currentColor" opacity="0.4">
-          <animate attributeName="opacity" values="0.4;0.8;0.4" dur="1.4s" repeatCount="indefinite" />
-        </ellipse>
-        {/* Toe beans */}
-        {[
-          { cx: 18, cy: 26, rx: 5, ry: 6, delay: '0s' },
-          { cx: 28, cy: 20, rx: 5, ry: 6, delay: '0.15s' },
-          { cx: 38, cy: 20, rx: 5, ry: 6, delay: '0.3s' },
-          { cx: 48, cy: 26, rx: 5, ry: 6, delay: '0.45s' },
-        ].map((toe, i) => (
-          <ellipse key={i} cx={toe.cx} cy={toe.cy} rx={toe.rx} ry={toe.ry} fill="currentColor">
-            <animate
-              attributeName="opacity"
-              values="0.3;1;0.3"
-              dur="1.4s"
-              begin={toe.delay}
-              repeatCount="indefinite"
-            />
-          </ellipse>
-        ))}
-      </svg>
+      <PawLoader />
       <p className="font-serif text-sm text-on-surface-variant tracking-widest animate-pulse">
         Eterno Pet
       </p>

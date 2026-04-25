@@ -17,11 +17,14 @@ export default function TributeCard({ tribute, index }: Props) {
   const initial = tribute.author_name.charAt(0).toUpperCase();
 
   return (
-    <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-primary-container/10 flex flex-col h-full relative">
+    <div className="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-primary-container/10 flex flex-col relative">
       <span className="material-symbols-outlined text-primary/20 absolute top-4 right-4 text-4xl select-none">
         format_quote
       </span>
-      <p className="font-serif italic text-on-surface mb-6 flex-grow leading-relaxed">
+      <p
+        className="font-serif italic text-on-surface mb-6 flex-grow leading-relaxed break-words"
+        style={{ overflowWrap: 'anywhere' }}
+      >
         "{tribute.message}"
       </p>
       <div className="flex items-center gap-3">
@@ -29,7 +32,10 @@ export default function TributeCard({ tribute, index }: Props) {
           {initial}
         </div>
         <div>
-          <p className="font-semibold text-on-surface text-xs uppercase tracking-wider">
+          <p
+            className="font-semibold text-on-surface text-xs uppercase tracking-wider break-words"
+            style={{ overflowWrap: 'anywhere' }}
+          >
             {tribute.author_name}
           </p>
           {tribute.author_relation && (

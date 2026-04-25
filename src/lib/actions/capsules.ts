@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { canUse, getEffectivePlan } from '@/lib/plans';
 import { z } from 'zod';
 
 const createSchema = z.object({
@@ -22,6 +23,9 @@ export async function createCapsule(
 
   const parsed = createSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
+
+  const planId = await getEffectivePlan(supabase, user.id);
+  if (!canUse(planId, 'capsules')) return { error: 'UPGRADE_REQUIRED' };
 
   // Verify pet ownership
   const { data: pet } = await supabase

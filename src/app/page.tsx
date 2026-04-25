@@ -5,20 +5,20 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-surface text-on-surface selection:bg-primary-fixed selection:text-primary">
 
-      {/* ── Header ── */}
+      {/* ?? Header ?? */}
       <header className="bg-surface/90 backdrop-blur-md border-b border-secondary/20 fixed top-0 w-full z-50 transition-all">
         <div className="flex justify-between items-center w-full px-10 py-6 max-w-[1200px] mx-auto">
           <div className="font-serif text-2xl font-medium tracking-widest text-primary">Eterno Pet</div>
           <nav className="hidden md:flex gap-10 items-center">
-            <a className="font-serif text-lg tracking-tight text-primary border-b border-secondary pb-1 cursor-pointer">Memórias</a>
-            <a className="font-serif text-lg tracking-tight text-stone-400 hover:text-primary transition-colors cursor-pointer">Tributos</a>
-            <a className="font-serif text-lg tracking-tight text-stone-400 hover:text-primary transition-colors cursor-pointer">Recursos</a>
+            <a href="#proposito" className="font-serif text-lg tracking-tight text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Memórias</a>
+            <a href="#tributos" className="font-serif text-lg tracking-tight text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Tributos</a>
+            <a href="#planos" className="font-serif text-lg tracking-tight text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Planos</a>
           </nav>
           <div className="flex items-center gap-6">
             <Link href="/entrar" className="text-primary font-medium font-serif hover:opacity-70 transition-opacity">
               Login
             </Link>
-            <Link href="/cadastrar" className="bg-primary text-on-primary px-8 py-3 rounded-full font-serif text-sm tracking-wide hover:bg-[#3d4d41] transition-all">
+            <Link href="/cadastrar" className="bg-primary text-on-primary px-8 py-3 rounded-full font-serif text-sm tracking-wide hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim transition-all">
               Criar Memorial
             </Link>
           </div>
@@ -27,7 +27,7 @@ export default function HomePage() {
 
       <main className="pt-24">
 
-        {/* ── Hero ── */}
+        {/* ?? Hero ?? */}
         <section className="px-10 py-24 md:py-40 flex flex-col md:flex-row items-center gap-20 max-w-[1200px] mx-auto">
           <div className="flex-1 space-y-10">
             <h1 className="font-serif text-5xl md:text-6xl leading-[1.1] text-on-background tracking-tight">
@@ -63,20 +63,20 @@ export default function HomePage() {
                 />
               </div>
             </div>
-            <div className="absolute -bottom-10 -left-10 bg-white/95 backdrop-blur-md p-8 rounded-3xl shadow-2xl z-20 max-w-[280px] border border-secondary/10">
+            <div className="absolute -bottom-10 -left-10 bg-surface-container-lowest/95 backdrop-blur-md p-8 rounded-3xl shadow-2xl z-20 max-w-[280px] border border-secondary/10">
               <div className="flex items-center gap-3 mb-3">
                 <span className="material-symbols-outlined text-secondary">auto_awesome</span>
                 <span className="text-[10px] font-bold tracking-[0.2em] text-secondary uppercase">IA de Conforto</span>
               </div>
-              <p className="font-serif italic text-stone-600 leading-relaxed text-sm">
+              <p className="font-serif italic text-on-surface-variant leading-relaxed text-sm">
                 "Sua lealdade era um presente diário que o tempo nunca apagará."
               </p>
             </div>
           </div>
         </section>
 
-        {/* ── Purpose Section ── */}
-        <section className="bg-surface-container py-32 px-10">
+        {/* ?? Purpose Section ?? */}
+        <section id="proposito" className="bg-surface-container py-32 px-10">
           <div className="max-w-[1200px] mx-auto">
             <div className="text-center mb-24 space-y-4">
               <span className="text-[11px] font-bold tracking-[0.3em] text-secondary uppercase">NOSSO PROPÓSITO</span>
@@ -88,7 +88,7 @@ export default function HomePage() {
                 { icon: 'lock_clock', bg: 'bg-secondary/10', color: 'text-secondary', title: 'Cápsula do Tempo', desc: 'Guarde cartas, áudios e vídeos para serem revelados em datas especiais, mantendo a conexão sempre viva.' },
                 { icon: 'auto_awesome', bg: 'bg-primary-fixed/30', color: 'text-primary', title: 'IA de Tributos', desc: 'Nossa inteligência sensível ajuda a transformar sentimentos em palavras, criando homenagens poéticas e únicas.' },
               ].map((f) => (
-                <div key={f.title} className="bg-white p-12 rounded-[2.5rem] soft-elevation border border-secondary/5 flex flex-col gap-8 hover:-translate-y-2 transition-all duration-700">
+                <div key={f.title} className="bg-surface-container-lowest p-12 rounded-[2.5rem] soft-elevation border border-secondary/5 flex flex-col gap-8 hover:-translate-y-2 transition-all duration-700">
                   <div className={`w-16 h-16 ${f.bg} rounded-2xl flex items-center justify-center ${f.color}`}>
                     <span className="material-symbols-outlined text-3xl">{f.icon}</span>
                   </div>
@@ -100,7 +100,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── Memorial Showcase ── */}
+        {/* ?? Memorial Showcase ?? */}
         <section className="py-40 px-10">
           <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-24 items-center">
             <div className="flex-1 space-y-10">
@@ -123,17 +123,17 @@ export default function HomePage() {
             </div>
 
             <div className="flex-1 w-full">
-              <div className="bg-white p-10 md:p-16 rounded-[3.5rem] shadow-memorial border border-surface-variant relative overflow-hidden">
+              <div className="bg-surface-container-lowest p-10 md:p-16 rounded-[3.5rem] shadow-memorial border border-surface-variant relative overflow-hidden">
                 <div className="text-center space-y-8 relative z-10">
                   <div className="w-36 h-36 mx-auto rounded-full overflow-hidden border-4 border-white shadow-xl ring-1 ring-secondary/10 bg-surface-container-high flex items-center justify-center">
                     <span className="material-symbols-outlined text-[60px] text-primary/30">cruelty_free</span>
                   </div>
                   <div>
                     <h3 className="font-serif text-4xl italic mb-2">Para sempre, Max</h3>
-                    <p className="text-[10px] font-bold text-primary tracking-[0.3em] uppercase opacity-70">2012 — 2024</p>
+                    <p className="text-[10px] font-bold text-primary tracking-[0.3em] uppercase opacity-70">2012 - 2024</p>
                   </div>
                   <div className="h-px w-16 bg-secondary/30 mx-auto" />
-                  <p className="font-serif text-xl leading-relaxed text-stone-600 italic px-6">
+                  <p className="font-serif text-xl leading-relaxed text-on-surface-variant italic px-6">
                     "O melhor companheiro de trilhas e o dono do latido mais alegre do bairro.
                     Você nos ensinou o significado de amor incondicional."
                   </p>
@@ -148,7 +148,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── How it Works ── */}
+        {/* ?? How it Works ?? */}
         <section className="bg-on-background text-surface py-40 px-10 relative overflow-hidden">
           <div className="max-w-[1200px] mx-auto relative z-10">
             <div className="flex flex-col md:flex-row justify-between items-end mb-28 gap-10">
@@ -156,7 +156,7 @@ export default function HomePage() {
                 <span className="text-[11px] font-bold tracking-[0.3em] text-secondary uppercase">PROCESSO</span>
                 <h2 className="font-serif text-5xl text-white tracking-tight">Como criamos o eterno</h2>
               </div>
-              <p className="text-stone-400 max-w-sm text-lg">Um caminho suave, respeitoso e acolhedor para preservar o que realmente importa.</p>
+              <p className="text-on-surface-variant max-w-sm text-lg">Um caminho suave, respeitoso e acolhedor para preservar o que realmente importa.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
               {[
@@ -167,7 +167,7 @@ export default function HomePage() {
                 <div key={s.n} className="space-y-8 group">
                   <div className="text-9xl font-serif text-primary/20 group-hover:text-primary/40 transition-colors duration-700">{s.n}</div>
                   <h4 className="text-2xl font-serif text-white">{s.title}</h4>
-                  <p className="text-stone-400 leading-relaxed">{s.desc}</p>
+                  <p className="text-on-surface-variant leading-relaxed">{s.desc}</p>
                 </div>
               ))}
             </div>
@@ -177,8 +177,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── Pricing ── */}
-        <section className="py-40 px-10">
+        {/* ?? Pricing ?? */}
+        <section id="planos" className="py-40 px-10">
           <div className="max-w-[1200px] mx-auto">
             <div className="text-center mb-28 space-y-4">
               <span className="text-[11px] font-bold tracking-[0.3em] text-secondary uppercase">PLANOS</span>
@@ -192,12 +192,12 @@ export default function HomePage() {
                 <div className="text-4xl font-serif mb-8">R$ 0</div>
                 <ul className="space-y-5 mb-12 flex-grow">
                   {['Memorial público simples', 'Até 50 fotos', 'Mural de condolências'].map(f => (
-                    <li key={f} className="flex items-center gap-4 text-stone-600">
+                    <li key={f} className="flex items-center gap-4 text-on-surface-variant">
                       <span className="material-symbols-outlined text-secondary text-sm">done</span> {f}
                     </li>
                   ))}
                 </ul>
-                <Link href="/cadastrar" className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-white transition-all block">
+                <Link href="/cadastrar" className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-surface-container-low transition-all block">
                   Começar Agora
                 </Link>
               </div>
@@ -214,7 +214,7 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/cadastrar?plano=premium" className="w-full py-5 rounded-full bg-white text-primary font-serif font-medium text-center hover:bg-surface transition-all block shadow-lg">
+                <Link href="/cadastrar?plano=premium" className="w-full py-5 rounded-full bg-surface-container-lowest text-primary font-serif font-medium text-center hover:bg-surface transition-all block shadow-lg">
                   Escolher Premium
                 </Link>
               </div>
@@ -226,12 +226,12 @@ export default function HomePage() {
                 <span className="text-base opacity-60 font-sans mb-8 block">pagamento único</span>
                 <ul className="space-y-5 mb-12 flex-grow">
                   {['Tudo do plano Premium', 'Domínio personalizado', 'Memorial Book impresso'].map(f => (
-                    <li key={f} className="flex items-center gap-4 text-stone-600">
+                    <li key={f} className="flex items-center gap-4 text-on-surface-variant">
                       <span className="material-symbols-outlined text-secondary text-sm">done</span> {f}
                     </li>
                   ))}
                 </ul>
-                <Link href="/cadastrar?plano=eterno" className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-white transition-all block">
+                <Link href="/cadastrar?plano=eterno" className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-surface-container-low transition-all block">
                   Garantir Legado
                 </Link>
               </div>
@@ -241,22 +241,22 @@ export default function HomePage() {
         </section>
       </main>
 
-      {/* ── Footer ── */}
-      <footer className="bg-stone-100 border-t border-secondary/30 py-20">
+      {/* ?? Footer ?? */}
+      <footer className="bg-surface-container-lowest border-t border-outline-variant/20 py-20">
         <div className="flex flex-col items-center gap-8 px-10 max-w-4xl mx-auto">
           <div className="font-serif text-lg text-primary">Eterno Pet</div>
           <div className="flex flex-wrap justify-center gap-10">
             {['Guia do Luto', 'Apoio Psicológico', 'Cerimônias', 'Privacidade'].map(l => (
-              <a key={l} className="font-serif italic text-sm text-stone-500 hover:text-primary underline decoration-secondary/50 transition-all" href="#">{l}</a>
+              <a key={l} className="font-serif italic text-sm text-on-surface-variant hover:text-primary underline decoration-secondary/50 transition-all" href="#">{l}</a>
             ))}
           </div>
-          <p className="font-serif italic text-sm text-center text-stone-500">
+          <p className="font-serif italic text-sm text-center text-on-surface-variant">
             © Eterno Pet. Um espaço para honrar quem amamos.
           </p>
         </div>
       </footer>
 
-      {/* ── Mobile Bottom Nav ── */}
+      {/* ?? Mobile Bottom Nav ?? */}
       <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-surface/90 backdrop-blur-md border-t border-secondary/10 shadow-[0_-4px_20px_rgba(74,93,78,0.05)]">
         {[
           { icon: 'home', label: 'Início' },
@@ -264,7 +264,7 @@ export default function HomePage() {
           { icon: 'auto_awesome', label: 'Velar' },
           { icon: 'person', label: 'Perfil' },
         ].map((item, i) => (
-          <div key={item.label} className={`flex flex-col items-center justify-center ${i === 0 ? 'text-primary font-bold' : 'text-stone-400'} hover:scale-105 transition-transform`}>
+          <div key={item.label} className={`flex flex-col items-center justify-center ${i === 0 ? 'text-primary font-bold' : 'text-on-surface-variant'} hover:scale-105 transition-transform`}>
             <span className="material-symbols-outlined">{item.icon}</span>
             <span className="font-serif text-[11px] uppercase tracking-widest">{item.label}</span>
           </div>

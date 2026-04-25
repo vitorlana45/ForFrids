@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Loader2, X, CheckCircle } from 'lucide-react';
 import { createCapsule } from '@/lib/actions/capsules';
+import OperationLoader from '@/components/ui/OperationLoader';
 import type { Pet } from '@/types/database';
 
 const schema = z.object({
@@ -56,6 +57,8 @@ export default function CapsuleForm({ pets, onClose, onCreated }: Props) {
 
   return (
     <div className="space-y-6">
+      <OperationLoader active={isSubmitting} label="Selando capsula" />
+
       <div className="flex items-start justify-between">
         <div>
           <h3 className="font-serif text-2xl text-on-surface">Nova Cápsula do Tempo</h3>
@@ -63,7 +66,7 @@ export default function CapsuleForm({ pets, onClose, onCreated }: Props) {
             Uma mensagem selada até a data escolhida.
           </p>
         </div>
-        <button onClick={onClose} className="p-2 text-stone-400 hover:text-on-surface transition-colors">
+        <button onClick={onClose} className="p-2 text-on-surface-variant hover:text-on-surface transition-colors">
           <X className="w-5 h-5" />
         </button>
       </div>
@@ -137,7 +140,7 @@ export default function CapsuleForm({ pets, onClose, onCreated }: Props) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-4 rounded-full font-serif font-semibold hover:bg-[#3d4d41] transition-all disabled:opacity-60"
+          className="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-4 rounded-full font-serif font-semibold hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim transition-all disabled:opacity-60"
         >
           {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
           Selar Cápsula

@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/client';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import OperationLoader from '@/components/ui/OperationLoader';
 
 const schema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -36,6 +37,7 @@ export default function EntrarPage() {
 
   return (
     <div className="flex-grow flex flex-col md:flex-row min-h-screen">
+      <OperationLoader active={isSubmitting} label="Entrando" />
 
       {/* Left: image */}
       <section className="hidden md:flex md:w-1/2 lg:w-3/5 relative overflow-hidden bg-surface-container-high">
@@ -47,7 +49,7 @@ export default function EntrarPage() {
           </h2>
           <p className="text-white/80 max-w-md leading-relaxed">
             Cada memória é um fio no tapete de uma vida bem amada. Bem-vindo de volta ao lugar
-            onde esses fios são preservados para sempre.
+            onde esses fios sóo preservados para sempre.
           </p>
         </div>
       </section>
@@ -107,7 +109,7 @@ export default function EntrarPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-primary text-on-primary py-4 rounded-full font-sans font-semibold hover:bg-[#3d4d41] transition-all shadow-sm active:opacity-70 flex items-center justify-center gap-2"
+              className="w-full bg-primary text-on-primary py-4 rounded-full font-sans font-semibold hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim transition-all shadow-sm active:opacity-70 flex items-center justify-center gap-2"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
               Entrar

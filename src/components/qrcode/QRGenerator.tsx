@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import type { Pet } from '@/types/database';
 import { Download } from 'lucide-react';
 
@@ -18,7 +18,7 @@ const STYLES = [
 ] as const;
 
 const PRODUCTS = [
-  { name: 'Placa Memorial em Latão', price: 'R$ 189,00', icon: 'square_foot' },
+  { name: 'Placa Memorial em Latéo', price: 'R$ 189,00', icon: 'square_foot' },
   { name: 'Medalha de Coleira Silver', price: 'R$ 124,00', icon: 'star' },
   { name: 'Porta-Retrato Heritage', price: 'R$ 245,00', icon: 'photo_frame' },
 ];
@@ -72,7 +72,7 @@ export default function QRGenerator({ pets, siteUrl }: Props) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-      {/* ── Left sidebar ── */}
+      {/* ?? Left sidebar ?? */}
       <aside className="lg:col-span-4 space-y-6">
 
         {/* Pet selector */}
@@ -130,14 +130,14 @@ export default function QRGenerator({ pets, siteUrl }: Props) {
         {/* Download */}
         <button
           onClick={downloadPNG}
-          className="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-4 rounded-full font-serif font-medium hover:bg-[#3d4d41] transition-all"
+          className="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-4 rounded-full font-serif font-medium hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim transition-all"
         >
           <Download className="w-4 h-4" />
           Exportar QR Digital
         </button>
       </aside>
 
-      {/* ── Main ── */}
+      {/* ?? Main ?? */}
       <div className="lg:col-span-8 space-y-8">
 
         {/* QR Preview */}

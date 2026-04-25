@@ -4,9 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { formatDate } from '@/lib/utils';
-import type { Pet, TimelineEntry } from '@/types/database';
+import type { Chronicle, Pet, TimelineEntry } from '@/types/database';
 import MemorialActions from '@/components/memorial/MemorialActions';
 import TributesSection from '@/components/memorial/TributesSection';
+import ChroniclesSection from '@/components/memorial/ChroniclesSection';
 import type { Tribute } from '@/types/database';
 
 export const revalidate = 60;
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const pet = data as Pick<Pet, 'name' | 'species' | 'tribute_text'> | null;
   if (!pet) return { title: 'Memorial não encontrado' };
   return {
-    title: `${pet.name} — Eterno Pet`,
+    title: `${pet.name} - Eterno Pet`,
     description: pet.tribute_text?.slice(0, 160) ?? `Memorial de ${pet.name}, ${pet.species}.`,
   };
 }
@@ -28,6 +29,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function MemorialPage({ params }: Props) {
   const { slug } = await params;
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data: petData } = await supabase.from('pets').select('*').eq('memorial_slug', slug).eq('is_public', true).single();
   const pet = petData as Pet | null;
@@ -36,8 +40,42 @@ export default async function MemorialPage({ params }: Props) {
   const { data: timelineData } = await supabase.from('timeline_entries').select('*').eq('pet_id', pet.id).order('date', { ascending: true });
   const entries = (timelineData as TimelineEntry[] | null) ?? [];
 
-  const { data: tributesData } = await supabase.from('tributes').select('*').eq('pet_id', pet.id).order('created_at', { ascending: false });
+  const { data: tributesData } = await supabase
+    .from('tributes')
+    .select('*')
+    .eq('pet_id', pet.id)
+    .eq('status', 'approved')
+    .order('created_at', { ascending: false });
   const tributes = (tributesData as Tribute[] | null) ?? [];
+
+  const { data: chroniclesData } = await supabase
+    .from('chronicles')
+    .select('*')
+    .eq('pet_id', pet.id)
+    .eq('is_published', true)
+    .order('event_date', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false });
+  const chronicles = (chroniclesData as Chronicle[] | null) ?? [];
+
+  const { count: reactionsCount } = await supabase
+    .from('memorial_reactions')
+    .select('id', { count: 'exact', head: true })
+    .eq('pet_id', pet.id)
+    .eq('reaction_type', 'heart');
+
+  let initialLiked = false;
+
+  if (user) {
+    const { data: reactionData } = await supabase
+      .from('memorial_reactions')
+      .select('id')
+      .eq('pet_id', pet.id)
+      .eq('user_id', user.id)
+      .eq('reaction_type', 'heart')
+      .maybeSingle();
+
+    initialLiked = !!reactionData;
+  }
 
   const isAlive = !pet.death_date;
 
@@ -51,31 +89,42 @@ export default async function MemorialPage({ params }: Props) {
   const memorialUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://eternopet.com.br'}/memorial/${slug}`;
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-on-surface botanical-bg">
+    <div className="min-h-screen bg-surface text-on-surface botanical-bg">
 
-      {/* ── Header ── */}
-      <header className="bg-[#FDFCF8]/80 backdrop-blur-md border-b border-primary-container/10 sticky top-0 z-50">
+      {/* ?? Header ?? */}
+      <header className="bg-surface/85 backdrop-blur-md border-b border-outline-variant/20 sticky top-0 z-50">
         <div className="flex justify-between items-center w-full px-6 py-4 max-w-[1200px] mx-auto">
           <Link href="/" className="text-2xl font-serif italic text-primary-container">Eterno Pet</Link>
           <nav className="hidden md:flex gap-8 items-center">
             <a href="#memorial" className="text-primary-container border-b-2 border-primary-container pb-1 font-medium font-serif">Memorial</a>
-            <a href="#timeline" className="text-stone-500 hover:text-primary-container transition-colors font-serif">História</a>
-            <a href="#galeria" className="text-stone-500 hover:text-primary-container transition-colors font-serif">Galeria</a>
-            <a href="#tributos" className="text-stone-500 hover:text-primary-container transition-colors font-serif">Tributos</a>
+            <a href="#timeline" className="text-on-surface-variant hover:text-primary transition-colors font-serif">História</a>
+            {chronicles.length > 0 && (
+              <a href="#cronicas" className="text-on-surface-variant hover:text-primary transition-colors font-serif">Crônicas</a>
+            )}
+            <a href="#galeria" className="text-on-surface-variant hover:text-primary transition-colors font-serif">Galeria</a>
+            <a href="#tributos" className="text-on-surface-variant hover:text-primary transition-colors font-serif">Tributos</a>
           </nav>
-          <MemorialActions petName={pet.name} memorialUrl={memorialUrl} />
+          <MemorialActions
+            petId={pet.id}
+            petName={pet.name}
+            memorialSlug={slug}
+            memorialUrl={memorialUrl}
+            isAuthenticated={!!user}
+            initialLiked={initialLiked}
+            initialLikesCount={reactionsCount ?? 0}
+          />
         </div>
       </header>
 
       <main className="max-w-[1200px] mx-auto px-6" id="memorial">
 
-        {/* ── Hero ── */}
+        {/* ?? Hero ?? */}
         <section className="py-32 flex flex-col items-center text-center relative overflow-hidden">
           <span className="material-symbols-outlined absolute -top-10 -left-10 text-[200px] text-primary/5 select-none">eco</span>
           <span className="material-symbols-outlined absolute -bottom-10 -right-10 text-[200px] text-primary/5 select-none">potted_plant</span>
 
           <div className="relative z-10">
-            <div className="w-64 h-64 md:w-80 md:h-80 mx-auto rounded-full border-8 border-white shadow-xl overflow-hidden mb-8 bg-surface-container-high flex items-center justify-center relative">
+            <div className="w-64 h-64 md:w-80 md:h-80 mx-auto rounded-full border-8 border-surface-container-lowest shadow-xl overflow-hidden mb-8 bg-surface-container-high flex items-center justify-center relative">
               {pet.avatar_url ? (
                 <Image src={pet.avatar_url} alt={pet.name} fill unoptimized className="object-cover" priority />
               ) : (
@@ -87,7 +136,7 @@ export default async function MemorialPage({ params }: Props) {
 
             <p className="font-serif text-xl italic text-tertiary mb-6">
               {pet.birth_date && new Date(pet.birth_date).getFullYear()}
-              {pet.birth_date && pet.death_date && ' — '}
+              {pet.birth_date && pet.death_date && ' - '}
               {pet.death_date && new Date(pet.death_date).getFullYear()}
               {!pet.birth_date && !pet.death_date && <span className="capitalize">{pet.species}</span>}
             </p>
@@ -100,7 +149,7 @@ export default async function MemorialPage({ params }: Props) {
           </div>
         </section>
 
-        {/* ── Timeline ── */}
+        {/* ?? Timeline ?? */}
         {entries.length > 0 && (
           <section className="py-16 border-t border-primary/10" id="timeline">
             <div className="max-w-3xl mx-auto">
@@ -140,7 +189,13 @@ export default async function MemorialPage({ params }: Props) {
           </section>
         )}
 
-        {/* ── Gallery ── */}
+        {/* ?? Gallery ?? */}
+        <ChroniclesSection
+          petName={pet.name}
+          memorialSlug={slug}
+          chronicles={chronicles}
+        />
+
         <section className="py-32" id="galeria">
           <h2 className="font-serif text-4xl text-center text-primary mb-16">Álbum Afetivo</h2>
 
@@ -168,43 +223,45 @@ export default async function MemorialPage({ params }: Props) {
           )}
         </section>
 
-        {/* ── Tributes ── */}
+        {/* ?? Tributes ?? */}
         <TributesSection
           petId={pet.id}
           petName={pet.name}
           memorialSlug={slug}
           initialTributes={tributes}
+          isAuthenticated={!!user}
         />
       </main>
 
-      {/* ── Footer ── */}
-      <footer className="bg-[#FDFCF8] w-full mt-32 border-t border-primary-container/10">
+      {/* ?? Footer ?? */}
+      <footer className="bg-surface-container-lowest w-full mt-32 border-t border-primary-container/10">
         <div className="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-[1200px] mx-auto">
           <div className="mb-6 md:mb-0">
             <div className="text-lg font-serif text-primary-container mb-1">Eterno Pet</div>
-            <p className="font-serif text-sm text-stone-500">
+            <p className="font-serif text-sm text-on-surface-variant">
               {isAlive
                 ? `${pet.name} vive cada dia com alegria e amor.`
                 : `${pet.name} sempre viverá em nossas memórias.`}
             </p>
           </div>
           <nav className="flex gap-8">
-            <Link href="/" className="text-stone-400 hover:text-primary-container font-serif text-sm transition-colors">Início</Link>
-            <a href="#" className="text-stone-400 hover:text-primary-container font-serif text-sm transition-colors">Privacidade</a>
-            <a href="#" className="text-stone-400 hover:text-primary-container font-serif text-sm transition-colors">Termos</a>
+            <Link href="/" className="text-on-surface-variant hover:text-primary font-serif text-sm transition-colors">Início</Link>
+            <a href="#" className="text-on-surface-variant hover:text-primary font-serif text-sm transition-colors">Privacidade</a>
+            <a href="#" className="text-on-surface-variant hover:text-primary font-serif text-sm transition-colors">Termos</a>
           </nav>
         </div>
       </footer>
 
       {/* Mobile nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-2 h-16 bg-surface/80 backdrop-blur-md border-t border-stone-100">
+      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-2 h-16 bg-surface/80 backdrop-blur-md border-t border-outline-variant/20">
         {[
           { icon: 'home', label: 'Memorial', href: '#memorial' },
           { icon: 'timeline', label: 'História', href: '#timeline' },
+          ...(chronicles.length > 0 ? [{ icon: 'menu_book', label: 'Cronicas', href: '#cronicas' }] : []),
           { icon: 'photo_library', label: 'Galeria', href: '#galeria' },
           { icon: 'favorite', label: 'Tributos', href: '#tributos' },
         ].map(item => (
-          <a key={item.label} href={item.href} className="flex flex-col items-center justify-center text-stone-400 hover:text-primary-container transition-colors">
+          <a key={item.label} href={item.href} className="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
             <span className="material-symbols-outlined">{item.icon}</span>
             <span className="font-serif text-[11px] tracking-wide">{item.label}</span>
           </a>

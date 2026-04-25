@@ -39,9 +39,12 @@ export interface TimelineEntry {
 export interface Tribute {
   id: string;
   pet_id: string;
+  author_user_id: string | null;
   author_name: string;
   author_relation: string | null;
   message: string;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewed_at: string | null;
   created_at: string;
 }
 
@@ -53,6 +56,47 @@ export interface TimeCapsule {
   open_at: string;
   opened: boolean;
   created_at: string;
+}
+
+export interface MemorialReaction {
+  id: string;
+  pet_id: string;
+  user_id: string;
+  reaction_type: 'heart';
+  created_at: string;
+}
+
+export interface Chronicle {
+  id: string;
+  pet_id: string;
+  title: string;
+  content: string;
+  excerpt: string | null;
+  cover_url: string | null;
+  event_date: string | null;
+  life_phase: string | null;
+  mood: string | null;
+  is_published: boolean;
+  reading_minutes: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Subscription {
+  id: string;
+  profile_id: string;
+  provider: 'stripe';
+  provider_customer_id: string | null;
+  provider_subscription_id: string | null;
+  provider_checkout_id: string | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  plan_id: PlanId;
+  status: string;
+  current_period_end: string | null;
+  canceled_at: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export type Database = {
@@ -77,6 +121,46 @@ export type Database = {
         Row: TimeCapsule;
         Insert: Omit<TimeCapsule, 'id' | 'opened' | 'created_at'> & { title: string };
         Update: Partial<Pick<TimeCapsule, 'opened'>>;
+      };
+      tributes: {
+        Row: Tribute;
+        Insert: Omit<Tribute, 'id' | 'reviewed_at' | 'created_at'> & {
+          status?: Tribute['status'];
+        };
+        Update: Partial<Pick<Tribute, 'status' | 'reviewed_at'>>;
+      };
+      memorial_reactions: {
+        Row: MemorialReaction;
+        Insert: Omit<MemorialReaction, 'id' | 'created_at' | 'reaction_type'> & {
+          reaction_type?: MemorialReaction['reaction_type'];
+        };
+        Update: Partial<Pick<MemorialReaction, 'reaction_type'>>;
+      };
+      chronicles: {
+        Row: Chronicle;
+        Insert: Omit<Chronicle, 'id' | 'reading_minutes' | 'created_at' | 'updated_at'> & {
+          reading_minutes?: number;
+        };
+        Update: Partial<Omit<Chronicle, 'id' | 'pet_id' | 'created_at' | 'updated_at'>>;
+      };
+      subscriptions: {
+        Row: Subscription;
+        Insert: Omit<
+          Subscription,
+          | 'id'
+          | 'provider'
+          | 'provider_customer_id'
+          | 'provider_subscription_id'
+          | 'provider_checkout_id'
+          | 'canceled_at'
+          | 'created_at'
+          | 'updated_at'
+        > &
+          Partial<Pick<
+            Subscription,
+            'provider' | 'provider_customer_id' | 'provider_subscription_id' | 'provider_checkout_id' | 'canceled_at'
+          >>;
+        Update: Partial<Omit<Subscription, 'id' | 'profile_id' | 'created_at' | 'updated_at'>>;
       };
     };
   };

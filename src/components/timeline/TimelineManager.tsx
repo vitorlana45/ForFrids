@@ -1,11 +1,14 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Plus, Pencil, Trash2, X, Check } from 'lucide-react';
+import { ImagePlus, Loader2, Plus, Pencil, Trash2, X, Check } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 import { createTimelineEntry, updateTimelineEntry, deleteTimelineEntry } from '@/lib/actions/timeline';
+import OperationLoader from '@/components/ui/OperationLoader';
 import { formatDate } from '@/lib/utils';
 import type { TimelineEntry } from '@/types/database';
 
@@ -19,12 +22,20 @@ type FormData = z.infer<typeof schema>;
 interface Props {
   petId: string;
   initialEntries: TimelineEntry[];
+  userId: string;
 }
 
-export default function TimelineManager({ petId, initialEntries }: Props) {
+const MAX_PHOTOS = 4;
+const MAX_PHOTO_SIZE = 5 * 1024 * 1024;
+
+export default function TimelineManager({ petId, initialEntries, userId }: Props) {
+  const supabase = createClient();
   const [entries, setEntries] = useState<TimelineEntry[]>(initialEntries);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [existingPhotos, setExistingPhotos] = useState<string[]>([]);
   const [formError, setFormError] = useState('');
   const [isPending, startTransition] = useTransition();
 
@@ -34,6 +45,9 @@ export default function TimelineManager({ petId, initialEntries }: Props) {
   function openAdd() {
     reset({ title: '', description: '', date: '' });
     setEditingId(null);
+    setPhotoFiles([]);
+    setPhotoPreviews([]);
+    setExistingPhotos([]);
     setShowForm(true);
     setFormError('');
   }
@@ -41,6 +55,9 @@ export default function TimelineManager({ petId, initialEntries }: Props) {
   function openEdit(entry: TimelineEntry) {
     reset({ title: entry.title, description: entry.description ?? '', date: entry.date });
     setEditingId(entry.id);
+    setPhotoFiles([]);
+    setPhotoPreviews([]);
+    setExistingPhotos(entry.photo_urls ?? []);
     setShowForm(true);
     setFormError('');
   }
@@ -48,21 +65,106 @@ export default function TimelineManager({ petId, initialEntries }: Props) {
   function closeForm() {
     setShowForm(false);
     setEditingId(null);
+    setPhotoFiles([]);
+    setPhotoPreviews([]);
+    setExistingPhotos([]);
     setFormError('');
     reset();
+  }
+
+  function handlePhotoChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const selected = Array.from(event.target.files ?? []);
+    event.target.value = '';
+    if (selected.length === 0) return;
+
+    const availableSlots = MAX_PHOTOS - existingPhotos.length - photoFiles.length;
+    if (availableSlots <= 0) {
+      setFormError(`Cada momento pode ter ate ${MAX_PHOTOS} imagens.`);
+      return;
+    }
+
+    const accepted: File[] = [];
+
+    for (const file of selected.slice(0, availableSlots)) {
+      if (!file.type.startsWith('image/')) {
+        setFormError('Envie apenas arquivos de imagem.');
+        continue;
+      }
+      if (file.size > MAX_PHOTO_SIZE) {
+        setFormError('Cada imagem deve ter no maximo 5MB.');
+        continue;
+      }
+      accepted.push(file);
+    }
+
+    if (accepted.length === 0) return;
+
+    setPhotoFiles(prev => [...prev, ...accepted]);
+    setPhotoPreviews(prev => [...prev, ...accepted.map(file => URL.createObjectURL(file))]);
+  }
+
+  function removeExistingPhoto(url: string) {
+    setExistingPhotos(prev => prev.filter(photo => photo !== url));
+  }
+
+  function removeNewPhoto(index: number) {
+    setPhotoFiles(prev => prev.filter((_, i) => i !== index));
+    setPhotoPreviews(prev => prev.filter((_, i) => i !== index));
+  }
+
+  async function uploadPhotos(files: File[], entryId: string) {
+    const urls: string[] = [];
+
+    for (const [index, file] of files.entries()) {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${userId}/${petId}/timeline/${entryId}/${Date.now()}-${index}.${ext}`;
+      const { error } = await supabase.storage
+        .from('pet-photos')
+        .upload(path, file, { upsert: true });
+
+      if (error) throw new Error('Nao foi possivel enviar uma das imagens.');
+
+      const { data } = supabase.storage.from('pet-photos').getPublicUrl(path);
+      urls.push(data.publicUrl);
+    }
+
+    return urls;
   }
 
   async function onSubmit(data: FormData) {
     setFormError('');
 
     if (editingId) {
-      const result = await updateTimelineEntry(editingId, data);
+      let uploadedUrls: string[] = [];
+      try {
+        uploadedUrls = await uploadPhotos(photoFiles, editingId);
+      } catch (error) {
+        setFormError(error instanceof Error ? error.message : 'Erro ao enviar imagens.');
+        return;
+      }
+
+      const photo_urls = [...existingPhotos, ...uploadedUrls].slice(0, MAX_PHOTOS);
+      const result = await updateTimelineEntry(editingId, { ...data, photo_urls });
       if (result.error) { setFormError(result.error); return; }
-      setEntries(prev => prev.map(e => e.id === editingId ? { ...e, ...data } : e));
+      setEntries(prev => prev.map(e => e.id === editingId ? { ...e, ...data, photo_urls } : e));
     } else {
       const result = await createTimelineEntry({ pet_id: petId, ...data, photo_urls: [] });
       if (result.error) { setFormError(result.error); return; }
-      const newEntry = result.data as TimelineEntry;
+      let newEntry = result.data as TimelineEntry;
+
+      if (photoFiles.length > 0) {
+        try {
+          const photo_urls = await uploadPhotos(photoFiles, newEntry.id);
+          const updateResult = await updateTimelineEntry(newEntry.id, { photo_urls });
+          if (updateResult.error) { setFormError(updateResult.error); return; }
+          newEntry = { ...newEntry, photo_urls };
+        } catch (error) {
+          setFormError(error instanceof Error ? error.message : 'Momento criado, mas nao foi possivel enviar as imagens.');
+          setEntries(prev => [...prev, newEntry].sort((a, b) => a.date.localeCompare(b.date)));
+          return;
+        }
+      }
+
       setEntries(prev => [...prev, newEntry].sort((a, b) => a.date.localeCompare(b.date)));
     }
 
@@ -80,18 +182,17 @@ export default function TimelineManager({ petId, initialEntries }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-serif text-2xl text-on-surface">Linha do Tempo</h2>
-          <p className="text-sm text-on-surface-variant mt-1">
-            Registre os momentos marcantes da vida do seu pet.
-          </p>
-        </div>
+      <OperationLoader
+        active={isSubmitting || isPending}
+        label={isPending ? 'Atualizando linha do tempo' : 'Salvando momento'}
+      />
+
+      <div className="flex items-center justify-end">
         {!showForm && (
           <button
             type="button"
             onClick={openAdd}
-            className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-[#3d4d41] transition-all"
+            className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim transition-all"
           >
             <Plus className="h-4 w-4" />
             Adicionar
@@ -114,7 +215,7 @@ export default function TimelineManager({ petId, initialEntries }: Props) {
                 </label>
                 <input
                   id="tl-title"
-                  placeholder="Primeiro dia em casa, Vacinação, Passeio na praia…"
+                  placeholder="Primeiro dia em casa, Vacinação, Passeio na praia."
                   className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/30 rounded-lg focus:ring-2 focus:ring-primary/30 text-on-surface placeholder:text-outline text-sm"
                   {...register('title')}
                 />
@@ -141,10 +242,69 @@ export default function TimelineManager({ petId, initialEntries }: Props) {
                 <textarea
                   id="tl-desc"
                   rows={3}
-                  placeholder="Conte o que aconteceu nesse dia especial…"
+                  placeholder="Conte o que aconteceu nesse dia especial."
                   className="w-full px-4 py-3 bg-surface-container-lowest border border-outline-variant/30 rounded-lg focus:ring-2 focus:ring-primary/30 text-on-surface placeholder:text-outline text-sm resize-none"
                   {...register('description')}
                 />
+              </div>
+
+              <div className="space-y-3 sm:col-span-2">
+                <div>
+                  <label className="block text-sm font-semibold text-on-surface" htmlFor="tl-photos">
+                    Imagens do momento
+                  </label>
+                  <p className="mt-1 text-xs text-on-surface-variant">
+                    Adicione ate {MAX_PHOTOS} imagens para representar esse momento.
+                  </p>
+                </div>
+
+                <label
+                  htmlFor="tl-photos"
+                  className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-outline-variant bg-surface-container-lowest px-4 py-8 text-center transition-colors hover:bg-surface-container"
+                >
+                  <ImagePlus className="mb-2 h-6 w-6 text-primary" />
+                  <span className="text-sm font-semibold text-on-surface">Selecionar imagens</span>
+                  <span className="mt-1 text-xs text-on-surface-variant">JPG, PNG ou WebP ate 5MB cada</span>
+                </label>
+                <input
+                  id="tl-photos"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  multiple
+                  className="sr-only"
+                  onChange={handlePhotoChange}
+                />
+
+                {(existingPhotos.length > 0 || photoPreviews.length > 0) && (
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {existingPhotos.map(url => (
+                      <div key={url} className="group/photo relative aspect-square overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container">
+                        <Image src={url} alt="" fill unoptimized className="object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => removeExistingPhoto(url)}
+                          className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-inverse-surface/80 text-inverse-on-surface opacity-0 transition-opacity group-hover/photo:opacity-100"
+                          aria-label="Remover imagem"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                    {photoPreviews.map((url, index) => (
+                      <div key={url} className="group/photo relative aspect-square overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container">
+                        <Image src={url} alt="" fill unoptimized className="object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => removeNewPhoto(index)}
+                          className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-inverse-surface/80 text-inverse-on-surface opacity-0 transition-opacity group-hover/photo:opacity-100"
+                          aria-label="Remover imagem"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -165,7 +325,7 @@ export default function TimelineManager({ petId, initialEntries }: Props) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-[#3d4d41] transition-all disabled:opacity-60"
+                className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim transition-all disabled:opacity-60"
               >
                 {isSubmitting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -187,23 +347,33 @@ export default function TimelineManager({ petId, initialEntries }: Props) {
           <p className="text-sm text-on-surface-variant">Adicione o primeiro momento da linha do tempo.</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="relative space-y-4">
+          <div className="absolute bottom-6 left-5 top-6 hidden w-px bg-outline-variant/60 sm:block" />
           {entries.map((entry) => (
             <div
               key={entry.id}
-              className="flex items-start gap-4 bg-surface-container-lowest border border-outline-variant/10 rounded-xl p-5 group"
+              className="group relative flex items-start gap-4 rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-5 shadow-sm"
             >
-              <div className="w-10 h-10 rounded-full bg-primary-fixed/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="z-10 w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0 mt-0.5 text-on-primary-fixed">
                 <span className="material-symbols-outlined text-sm text-primary">event</span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-serif text-base text-on-surface font-medium">{entry.title}</p>
-                {entry.description && (
-                  <p className="text-sm text-on-surface-variant mt-0.5 line-clamp-2">{entry.description}</p>
-                )}
-                <span className="text-[11px] font-bold tracking-widest text-primary uppercase mt-1 block">
+                <span className="mb-2 block text-[11px] font-bold tracking-widest text-secondary uppercase">
                   {formatDate(entry.date)}
                 </span>
+                <p className="break-words font-serif text-xl text-on-surface">{entry.title}</p>
+                {entry.description && (
+                  <p className="mt-2 break-words text-sm leading-6 text-on-surface-variant">{entry.description}</p>
+                )}
+                {entry.photo_urls.length > 0 && (
+                  <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {entry.photo_urls.slice(0, MAX_PHOTOS).map((url, index) => (
+                      <div key={`${url}-${index}`} className="relative aspect-square overflow-hidden rounded-xl bg-surface-container">
+                        <Image src={url} alt="" fill unoptimized className="object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                 <button

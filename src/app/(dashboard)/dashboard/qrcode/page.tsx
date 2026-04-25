@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { canUse, getEffectivePlan } from '@/lib/plans';
 import QRGenerator from '@/components/qrcode/QRGenerator';
+import UpgradePrompt from '@/components/ui/UpgradePrompt';
 import type { Pet } from '@/types/database';
 
 export default async function QRCodePage() {
@@ -9,6 +11,23 @@ export default async function QRCodePage() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect('/entrar');
+
+  const planId = await getEffectivePlan(supabase, user.id);
+
+  if (!canUse(planId, 'qrcode')) {
+    return (
+      <div className="mx-auto max-w-[800px] px-6 pt-32 pb-24">
+        <div className="mb-12">
+          <span className="text-[11px] font-bold tracking-[0.3em] text-secondary uppercase block mb-2">QR CODE</span>
+          <h1 className="font-serif text-5xl text-on-surface">QR do Memorial</h1>
+        </div>
+        <UpgradePrompt
+          feature="QR Code do Memorial"
+          description="Gere QR codes para imprimir em objetos físicos com os planos Premium e Eterno."
+        />
+      </div>
+    );
+  }
 
   const { data } = await supabase
     .from('pets')
