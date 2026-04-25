@@ -12,6 +12,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import OperationLoader from '@/components/ui/OperationLoader';
+import OAuthButtons from '@/components/auth/OAuthButtons';
 
 const schema = z.object({
   full_name: z.string().min(2, 'Nome muito curto'),
@@ -119,6 +120,17 @@ export default function CadastrarPage() {
               Criar conta grátis
             </button>
           </form>
+
+          <div className="relative py-2">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-outline-variant" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-surface px-4 text-on-surface-variant">ou cadastre com</span>
+            </div>
+          </div>
+
+          <OAuthButtons />
 
           <p className="text-center text-sm text-on-surface-variant">
             Já tem uma conta?{' '}

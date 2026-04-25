@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import ChronicleEditor from '@/components/chronicles/ChronicleEditor';
 import UpgradePrompt from '@/components/ui/UpgradePrompt';
-import { canUse, getEffectivePlan } from '@/lib/plans';
+import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import { createClient } from '@/lib/supabase/server';
 import type { Pet } from '@/types/database';
 
@@ -28,7 +28,7 @@ export default async function NewChroniclePage({ params }: Props) {
   const pet = petData as Pet | null;
   if (!pet) notFound();
 
-  const planId = await getEffectivePlan(supabase, user.id);
+  const planId = await getEffectivePlanServer(user.id);
   const canUseChronicles = canUse(planId, 'chronicles');
 
   return (

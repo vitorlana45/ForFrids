@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   Sparkles,
   Sun,
+  UserRound,
   X,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -33,6 +34,7 @@ interface Props {
 }
 
 const NAV_LINKS = [
+  { href: '/dashboard/perfil',      label: 'Perfil',      Icon: UserRound   },
   { href: '/dashboard',             label: 'Início',      Icon: Home        },
   { href: '/dashboard/capsulas',    label: 'Cápsulas',    Icon: LockKeyhole },
   { href: '/dashboard/qrcode',      label: 'QR Code',     Icon: QrCode      },
@@ -231,7 +233,7 @@ export default function DashboardNav({
             </Link>
 
             {/* Avatar + name */}
-            <div className="ml-1 flex items-center gap-2">
+            <Link href="/dashboard/perfil" className="ml-1 flex items-center gap-2 rounded-full px-1 py-1 transition-colors hover:bg-surface-container-low">
               <div className="flex h-9 w-9 items-center justify-center rounded-full border border-primary-container bg-primary-fixed">
                 <span className="font-serif text-sm font-bold text-primary">
                   {profile?.full_name?.[0]?.toUpperCase() ?? 'U'}
@@ -240,7 +242,7 @@ export default function DashboardNav({
               <span className="hidden text-sm text-on-surface-variant lg:block">
                 {profile?.full_name}
               </span>
-            </div>
+            </Link>
 
             {/* Sign out — hidden on mobile (in drawer) */}
             <button
@@ -326,7 +328,7 @@ export default function DashboardNav({
         {/* Drawer footer */}
         <div className="border-t border-outline-variant/20 p-4 space-y-1">
           {/* User info */}
-          <div className="flex items-center gap-3 rounded-xl px-3 py-3">
+          <Link href="/dashboard/perfil" className="flex items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-surface-container-low">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary-container bg-primary-fixed">
               <span className="font-serif text-sm font-bold text-primary">
                 {profile?.full_name?.[0]?.toUpperCase() ?? 'U'}
@@ -338,7 +340,7 @@ export default function DashboardNav({
               </p>
               <p className="truncate text-xs text-on-surface-variant">{profile?.email}</p>
             </div>
-          </div>
+          </Link>
 
           {/* Settings */}
           <Link

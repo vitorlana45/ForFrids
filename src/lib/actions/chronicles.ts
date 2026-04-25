@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
-import { canUse, getEffectivePlan } from '@/lib/plans';
+import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import { z } from 'zod';
 
 const optionalText = z
@@ -79,7 +79,7 @@ export async function createChronicle(
   const parsed = chronicleSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
-  const planId = await getEffectivePlan(supabase, user.id);
+  const planId = await getEffectivePlanServer(user.id);
   if (!canUse(planId, 'chronicles')) return { error: 'UPGRADE_REQUIRED' };
 
   const pet = await getOwnedPet(supabase, parsed.data.pet_id, user.id);
@@ -114,7 +114,7 @@ export async function updateChronicle(
   const parsed = updateSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
-  const planId = await getEffectivePlan(supabase, user.id);
+  const planId = await getEffectivePlanServer(user.id);
   if (!canUse(planId, 'chronicles')) return { error: 'UPGRADE_REQUIRED' };
 
   const pet = await getOwnedPetByChronicle(supabase, chronicleId, user.id);

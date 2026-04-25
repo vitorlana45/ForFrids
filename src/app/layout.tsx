@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
 import ThemeProvider from '@/components/ui/ThemeProvider';
+import { ConfirmModalProvider } from '@/components/ui/ConfirmModal';
+import { ToastProvider } from '@/components/ui/Toast';
 
 export const metadata: Metadata = {
   title: 'Eterno Pet — Memória Afetiva para Pets',
@@ -31,7 +33,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <ConfirmModalProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </ConfirmModalProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

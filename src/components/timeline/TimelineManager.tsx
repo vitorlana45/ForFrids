@@ -9,6 +9,8 @@ import { ImagePlus, Loader2, Plus, Pencil, Trash2, X, Check } from 'lucide-react
 import { createClient } from '@/lib/supabase/client';
 import { createTimelineEntry, updateTimelineEntry, deleteTimelineEntry } from '@/lib/actions/timeline';
 import OperationLoader from '@/components/ui/OperationLoader';
+import { useConfirm } from '@/components/ui/ConfirmModal';
+import { useToast } from '@/components/ui/Toast';
 import { formatDate } from '@/lib/utils';
 import type { TimelineEntry } from '@/types/database';
 
@@ -30,6 +32,8 @@ const MAX_PHOTO_SIZE = 5 * 1024 * 1024;
 
 export default function TimelineManager({ petId, initialEntries, userId }: Props) {
   const supabase = createClient();
+  const confirm = useConfirm();
+  const toast = useToast();
   const [entries, setEntries] = useState<TimelineEntry[]>(initialEntries);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -171,10 +175,21 @@ export default function TimelineManager({ petId, initialEntries, userId }: Props
     closeForm();
   }
 
-  function handleDelete(id: string) {
+  async function handleDelete(id: string) {
+    const confirmed = await confirm({
+      title: 'Excluir momento',
+      message: 'Esta ação não pode ser desfeita. O momento e suas fotos serão removidos permanentemente.',
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    });
+    if (!confirmed) return;
+
     startTransition(async () => {
       const result = await deleteTimelineEntry(id);
-      if (!result.error) {
+      if (result.error) {
+        toast.error('Erro ao excluir o momento. Tente novamente.');
+      } else {
+        toast.success('Momento excluído com sucesso.');
         setEntries(prev => prev.filter(e => e.id !== id));
       }
     });

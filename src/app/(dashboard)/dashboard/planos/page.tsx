@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { Check, PartyPopper } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import PlanCheckoutButton from '@/components/planos/PlanCheckoutButton';
-import { getEffectivePlan, planLabel } from '@/lib/plans';
+import { getEffectivePlanServer, planLabel } from '@/lib/plans';
 import {
   syncLatestStripeSubscriptionForProfile,
   syncStripeCheckoutSession,
@@ -95,7 +95,7 @@ export default async function PlanosPage({ searchParams }: Props) {
     }
   }
 
-  const effectivePlanId = await getEffectivePlan(supabase, user.id);
+  const effectivePlanId = await getEffectivePlanServer(user.id);
   billingLog('plans.page.effective_plan', { userId: user.id, effectivePlanId });
   let reconciledPlanId = null as PlanId | null;
 

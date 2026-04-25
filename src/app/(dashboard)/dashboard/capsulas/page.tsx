@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { canUse, getEffectivePlan } from '@/lib/plans';
+import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import CapsulaClient from '@/components/capsules/CapsulaClient';
 import UpgradePrompt from '@/components/ui/UpgradePrompt';
 
@@ -11,7 +11,7 @@ export default async function CapsulaPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect('/entrar');
 
-  const planId = await getEffectivePlan(supabase, user.id);
+  const planId = await getEffectivePlanServer(user.id);
 
   if (!canUse(planId, 'capsules')) {
     return (

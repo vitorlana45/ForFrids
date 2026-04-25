@@ -1,5 +1,6 @@
 import type { PlanId } from '@/types/database';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export type Feature = 'capsules' | 'chronicles' | 'qrcode';
 
@@ -51,6 +52,34 @@ export async function getEffectivePlan(
       .eq('id', userId)
       .single(),
     supabase
+      .from('subscriptions')
+      .select('plan_id, status')
+      .eq('profile_id', userId)
+      .in('status', ['active', 'trialing', 'past_due', 'paid'])
+      .order('created_at', { ascending: false }),
+  ]);
+
+  const subscriptionPlan = strongestPaidPlan(
+    (subscriptionsData as { plan_id: PlanId; status: string }[] | null) ?? [],
+  );
+  if (subscriptionPlan) return subscriptionPlan;
+
+  return ((profileData as { plan_id?: PlanId } | null)?.plan_id) ?? 'free';
+}
+
+/**
+ * Server-side plan resolution using the admin client.
+ * Use this in server components and server actions to bypass RLS on the
+ * subscriptions table and avoid read-after-write replication lag that can
+ * occur when the webhook/sync writes via admin and the user client reads
+ * from a replica.
+ */
+export async function getEffectivePlanServer(userId: string): Promise<PlanId> {
+  const admin = createAdminClient();
+
+  const [{ data: profileData }, { data: subscriptionsData }] = await Promise.all([
+    admin.from('profiles').select('plan_id').eq('id', userId).single(),
+    admin
       .from('subscriptions')
       .select('plan_id, status')
       .eq('profile_id', userId)

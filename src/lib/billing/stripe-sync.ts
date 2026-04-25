@@ -290,6 +290,23 @@ export async function syncStripeCheckoutSession(sessionId: string, expectedProfi
 export async function syncLatestStripeSubscriptionForProfile(profileId: string) {
   billingLog('profile.reconcile.start', { profileId });
   const admin = createAdminClient();
+
+  // Lifetime purchases are one-time payments (no Stripe subscription object).
+  // If a paid lifetime record already exists in the DB, restore the profile directly.
+  const { data: lifetimeRow } = await admin
+    .from('subscriptions')
+    .select('id')
+    .eq('profile_id', profileId)
+    .eq('plan_id', 'lifetime')
+    .eq('status', 'paid')
+    .maybeSingle();
+
+  if (lifetimeRow) {
+    billingLog('profile.reconcile.lifetime_restore', { profileId });
+    await updateProfilePlan(profileId, 'lifetime', 'paid');
+    return 'lifetime' as const;
+  }
+
   const { data } = await admin
     .from('subscriptions')
     .select('provider_customer_id, stripe_customer_id')

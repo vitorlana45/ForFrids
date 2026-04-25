@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
-import { getEffectivePlan, maxPets } from '@/lib/plans';
+import { getEffectivePlanServer, maxPets } from '@/lib/plans';
 import { z } from 'zod';
 import { slugify } from '@/lib/utils';
 
@@ -31,7 +31,7 @@ export async function createPet(
   const parsed = petSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
-  const planId = await getEffectivePlan(supabase, user.id);
+  const planId = await getEffectivePlanServer(user.id);
   const { count } = await supabase
     .from('pets').select('*', { count: 'exact', head: true }).eq('owner_id', user.id);
   if ((count ?? 0) >= maxPets(planId)) return { error: 'UPGRADE_REQUIRED' };

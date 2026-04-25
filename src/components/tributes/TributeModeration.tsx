@@ -3,6 +3,8 @@
 import { useState, useTransition } from 'react';
 import { Check, X } from 'lucide-react';
 import { approveTribute, rejectTribute } from '@/lib/actions/tributes';
+import { useConfirm } from '@/components/ui/ConfirmModal';
+import { useToast } from '@/components/ui/Toast';
 import type { Tribute } from '@/types/database';
 
 interface Props {
@@ -10,16 +12,31 @@ interface Props {
 }
 
 export default function TributeModeration({ initialTributes }: Props) {
+  const confirm = useConfirm();
+  const toast = useToast();
   const [tributes, setTributes] = useState(initialTributes);
   const [isPending, startTransition] = useTransition();
 
-  function review(id: string, action: 'approve' | 'reject') {
+  async function review(id: string, action: 'approve' | 'reject') {
+    if (action === 'reject') {
+      const confirmed = await confirm({
+        title: 'Rejeitar homenagem',
+        message: 'A homenagem será removida e não aparecerá no memorial.',
+        confirmLabel: 'Rejeitar',
+        variant: 'danger',
+      });
+      if (!confirmed) return;
+    }
+
     startTransition(async () => {
       const result = action === 'approve'
         ? await approveTribute(id)
         : await rejectTribute(id);
 
-      if (!result.error) {
+      if (result.error) {
+        toast.error('Erro ao processar a homenagem. Tente novamente.');
+      } else {
+        toast.success(action === 'approve' ? 'Homenagem aprovada.' : 'Homenagem rejeitada.');
         setTributes(prev => prev.filter(tribute => tribute.id !== id));
       }
     });

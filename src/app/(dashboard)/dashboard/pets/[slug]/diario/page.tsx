@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react';
 import ChronicleList from '@/components/chronicles/ChronicleList';
 import UpgradePrompt from '@/components/ui/UpgradePrompt';
 import { createClient } from '@/lib/supabase/server';
-import { canUse, getEffectivePlan } from '@/lib/plans';
+import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import type { Chronicle, Pet } from '@/types/database';
 
 interface Props {
@@ -29,7 +29,7 @@ export default async function DiaryPage({ params }: Props) {
   const pet = petData as Pet | null;
   if (!pet) notFound();
 
-  const planId = await getEffectivePlan(supabase, user.id);
+  const planId = await getEffectivePlanServer(user.id);
 
   if (!canUse(planId, 'chronicles')) {
     return (

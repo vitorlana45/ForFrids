@@ -30,13 +30,83 @@ export function petDateReminderEmail({
   memorialUrl,
 }: ReminderEmailInput) {
   return {
-    subject: `Hoje e uma data especial de ${petName}`,
-    html: `
-      <div style="font-family: Manrope, Arial, sans-serif; color: #1e1b18; line-height: 1.6;">
-        <h1 style="font-family: Georgia, serif; color: #4a654f;">${dateLabel}</h1>
-        <p>Oi, ${tutorName}. Hoje pode ser um bom dia para revisitar uma lembranca de ${petName}.</p>
-        <p><a href="${memorialUrl}" style="color: #4a654f; font-weight: 700;">Ver memorial</a></p>
-      </div>
-    `,
+    subject: `🌿 ${dateLabel} — Eterno Pet`,
+    html: `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0;padding:0;background:#f5f0eb;font-family:Georgia,serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f0eb;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#fdfbf7;border-radius:24px;overflow:hidden;box-shadow:0 4px 24px rgba(74,101,79,0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:#4a654f;padding:40px 48px;text-align:center;">
+              <p style="margin:0;font-family:Georgia,serif;font-size:28px;font-style:italic;color:#fdfbf7;letter-spacing:0.02em;">Eterno Pet</p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:48px 48px 40px;">
+              <p style="margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7a9c7e;">
+                Lembrete especial
+              </p>
+              <h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:32px;color:#1c1f1d;line-height:1.2;">
+                ${dateLabel}
+              </h1>
+              <p style="margin:0 0 16px;font-size:17px;color:#4a5568;line-height:1.7;">
+                Oi, ${tutorName}. Hoje é uma data especial para lembrar de ${petName}.
+              </p>
+              <p style="margin:0 0 32px;font-size:17px;color:#4a5568;line-height:1.7;">
+                Que tal acender uma vela digital, reler uma crônica ou simplesmente visitar o memorial e deixar o amor fluir?
+              </p>
+
+              <!-- CTA -->
+              <table cellpadding="0" cellspacing="0" style="margin-bottom:40px;">
+                <tr>
+                  <td style="border-radius:100px;background:#4a654f;">
+                    <a href="${memorialUrl}" style="display:inline-block;padding:16px 40px;font-family:Georgia,serif;font-size:16px;font-weight:600;color:#fdfbf7;text-decoration:none;border-radius:100px;">
+                      Visitar memorial de ${petName} →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Decorative quote -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f7f5;border-radius:12px;padding:20px 24px;">
+                <tr>
+                  <td>
+                    <p style="margin:0;font-family:Georgia,serif;font-style:italic;font-size:16px;color:#4a654f;line-height:1.6;">
+                      "As memórias são o único jardim que nenhuma estação pode destruir."
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 48px 40px;text-align:center;border-top:1px solid #f0ebe4;">
+              <p style="margin:0;font-size:12px;color:#9ca3af;">
+                Eterno Pet · <a href="https://eternopet.com.br" style="color:#7a9c7e;text-decoration:none;">eternopet.com.br</a>
+              </p>
+              <p style="margin:8px 0 0;font-size:11px;color:#b0b7bf;">
+                Você recebeu este e-mail porque tem um memorial ativo no Eterno Pet.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
   };
 }

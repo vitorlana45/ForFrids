@@ -6,12 +6,16 @@ import CapsuleCountdown from '@/components/capsules/CapsuleCountdown';
 import CapsuleForm from '@/components/capsules/CapsuleForm';
 import OperationLoader from '@/components/ui/OperationLoader';
 import { openCapsule, deleteCapsule } from '@/lib/actions/capsules';
+import { useConfirm } from '@/components/ui/ConfirmModal';
+import { useToast } from '@/components/ui/Toast';
 import type { TimeCapsule, Pet } from '@/types/database';
 import { formatDate } from '@/lib/utils';
 import { Trash2 } from 'lucide-react';
 
 export default function CapsulaClient() {
   const supabase = createClient();
+  const confirm = useConfirm();
+  const toast = useToast();
   const [capsules, setCapsules] = useState<(TimeCapsule & { pet: Pick<Pet, 'name' | 'species' | 'avatar_url'> })[]>([]);
   const [pets, setPets] = useState<Pick<Pet, 'id' | 'name' | 'species'>[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,10 +60,23 @@ export default function CapsulaClient() {
     });
   }
 
-  function handleDelete(id: string) {
+  async function handleDelete(id: string) {
+    const confirmed = await confirm({
+      title: 'Excluir cápsula',
+      message: 'Esta ação não pode ser desfeita. A cápsula e sua mensagem serão removidas permanentemente.',
+      confirmLabel: 'Excluir',
+      variant: 'danger',
+    });
+    if (!confirmed) return;
+
     startTransition(async () => {
-      await deleteCapsule(id);
-      load();
+      const result = await deleteCapsule(id);
+      if (result?.error) {
+        toast.error('Erro ao excluir a cápsula. Tente novamente.');
+      } else {
+        toast.success('Cápsula excluída com sucesso.');
+        load();
+      }
     });
   }
 
