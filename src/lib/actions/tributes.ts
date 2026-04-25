@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { z } from 'zod';
-import { resend, FROM_EMAIL } from '@/lib/resend';
+import { getResend, FROM_EMAIL } from '@/lib/resend';
 import { tributeNotificationEmail } from '@/lib/emails/tribute-notification';
 import type { Tribute } from '@/types/database';
 
@@ -82,6 +82,7 @@ export async function createTribute(
           authorRelation: parsed.data.author_relation ?? null,
           message: parsed.data.message,
         });
+        const resend = getResend();
         await resend.emails.send({
           from: FROM_EMAIL,
           to: owner.email,

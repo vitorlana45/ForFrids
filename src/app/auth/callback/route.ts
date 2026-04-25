@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
-import { resend, FROM_EMAIL } from '@/lib/resend';
+import { getResend, FROM_EMAIL } from '@/lib/resend';
 import { welcomeEmail } from '@/lib/emails/welcome';
 
 export async function GET(request: Request) {
@@ -40,6 +40,7 @@ export async function GET(request: Request) {
 
           if (isNewUser && emailTo) {
             const { subject, html } = welcomeEmail(name ?? 'Tutor');
+            const resend = getResend();
             await resend.emails.send({
               from: FROM_EMAIL,
               to: emailTo,
