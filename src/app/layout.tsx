@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import './globals.css';
 import ThemeProvider from '@/components/ui/ThemeProvider';
 import { ConfirmModalProvider } from '@/components/ui/ConfirmModal';
-import { ToastProvider } from '@/components/ui/Toast';
+import { ToastProvider } from '@/components/ui/toast';
 
 export const metadata: Metadata = {
   title: 'Eterno Pet — Memória Afetiva para Pets',

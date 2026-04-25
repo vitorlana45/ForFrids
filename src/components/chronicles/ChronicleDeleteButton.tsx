@@ -6,7 +6,7 @@ import { Trash2 } from 'lucide-react';
 import { deleteChronicle } from '@/lib/actions/chronicles';
 import OperationLoader from '@/components/ui/OperationLoader';
 import { useConfirm } from '@/components/ui/ConfirmModal';
-import { useToast } from '@/components/ui/Toast';
+import { useToast } from '@/components/ui/toast';
 
 interface Props {
   chronicleId: string;

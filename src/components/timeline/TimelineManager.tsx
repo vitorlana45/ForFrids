@@ -10,7 +10,7 @@ import { createClient } from '@/lib/supabase/client';
 import { createTimelineEntry, updateTimelineEntry, deleteTimelineEntry } from '@/lib/actions/timeline';
 import OperationLoader from '@/components/ui/OperationLoader';
 import { useConfirm } from '@/components/ui/ConfirmModal';
-import { useToast } from '@/components/ui/Toast';
+import { useToast } from '@/components/ui/toast';
 import { formatDate } from '@/lib/utils';
 import type { TimelineEntry } from '@/types/database';
 

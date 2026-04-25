@@ -5,7 +5,7 @@ import { useMemo, useState, useTransition } from 'react';
 import { Check, ExternalLink, X } from 'lucide-react';
 import { approveTribute, rejectTribute } from '@/lib/actions/tributes';
 import { useConfirm } from '@/components/ui/ConfirmModal';
-import { useToast } from '@/components/ui/Toast';
+import { useToast } from '@/components/ui/toast';
 import type { Tribute } from '@/types/database';
 
 export type PendingTribute = Tribute & {

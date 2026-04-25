@@ -7,7 +7,7 @@ import CapsuleForm from '@/components/capsules/CapsuleForm';
 import OperationLoader from '@/components/ui/OperationLoader';
 import { openCapsule, deleteCapsule } from '@/lib/actions/capsules';
 import { useConfirm } from '@/components/ui/ConfirmModal';
-import { useToast } from '@/components/ui/Toast';
+import { useToast } from '@/components/ui/toast';
 import type { TimeCapsule, Pet } from '@/types/database';
 import { formatDate } from '@/lib/utils';
 import { Trash2 } from 'lucide-react';
