@@ -5,7 +5,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install -g npm@11.12.1 && npm ci --no-audit --no-fund
 
 FROM node:20-alpine AS builder
 WORKDIR /app
