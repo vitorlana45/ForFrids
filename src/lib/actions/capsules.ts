@@ -53,6 +53,9 @@ export async function openCapsule(
   } = await supabase.auth.getUser();
   if (!user) return { error: 'Não autenticado' };
 
+  const planId = await getEffectivePlanServer(user.id);
+  if (!canUse(planId, 'capsules')) return { error: 'UPGRADE_REQUIRED' };
+
   const { data: capsuleData } = await supabase
     .from('time_capsules')
     .select('pet_id, open_at, opened')

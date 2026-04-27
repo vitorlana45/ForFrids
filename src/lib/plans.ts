@@ -4,10 +4,17 @@ import { createAdminClient } from '@/lib/supabase/admin';
 
 export type Feature = 'capsules' | 'chronicles' | 'qrcode';
 
-const LIMITS: Record<PlanId, { maxPets: number; capsules: boolean; chronicles: boolean; qrcode: boolean }> = {
-  free:     { maxPets: 1,        capsules: false, chronicles: false, qrcode: false },
-  premium:  { maxPets: 5,        capsules: true,  chronicles: true,  qrcode: true  },
-  lifetime: { maxPets: Infinity, capsules: true,  chronicles: true,  qrcode: true  },
+const LIMITS: Record<PlanId, {
+  maxPets: number;
+  maxTimelineEntries: number;
+  maxChroniclesPerPet: number;
+  capsules: boolean;
+  chronicles: boolean;
+  qrcode: boolean;
+}> = {
+  free:     { maxPets: 1,        maxTimelineEntries: 10,       maxChroniclesPerPet: 0,        capsules: false, chronicles: false, qrcode: false },
+  premium:  { maxPets: 5,        maxTimelineEntries: 50,        maxChroniclesPerPet: 20,       capsules: true,  chronicles: true,  qrcode: true  },
+  lifetime: { maxPets: Infinity, maxTimelineEntries: Infinity,  maxChroniclesPerPet: Infinity, capsules: true,  chronicles: true,  qrcode: true  },
 };
 
 export function canUse(planId: PlanId, feature: Feature): boolean {
@@ -16,6 +23,14 @@ export function canUse(planId: PlanId, feature: Feature): boolean {
 
 export function maxPets(planId: PlanId): number {
   return LIMITS[planId].maxPets;
+}
+
+export function maxTimelineEntries(planId: PlanId): number {
+  return LIMITS[planId].maxTimelineEntries;
+}
+
+export function maxChroniclesPerPet(planId: PlanId): number {
+  return LIMITS[planId].maxChroniclesPerPet;
 }
 
 export function planLabel(planId: PlanId): string {

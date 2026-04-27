@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/client';
+import { compress } from '@/lib/storage/compress';
+import { deleteUploadedMedia } from '@/lib/storage/rollback';
 import { createPet, updatePet } from '@/lib/actions/pets';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,16 +14,18 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import OperationLoader from '@/components/ui/OperationLoader';
+import { useConfirm } from '@/components/ui/ConfirmModal';
+import { useToast } from '@/components/ui/toast';
 import { Loader2, Pencil, Upload, X } from 'lucide-react';
 import type { Pet } from '@/types/database';
 
 const schema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   species: z.string().min(1, 'Espécie é obrigatória'),
-  breed: z.string().optional(),
+  breed: z.string().max(80, 'Raca muito longa').optional(),
   birth_date: z.string().optional(),
   death_date: z.string().optional(),
-  tribute_text: z.string().optional(),
+  tribute_text: z.string().max(400, 'Máximo de 400 caracteres').optional(),
   is_public: z.boolean(),
 });
 
@@ -31,17 +34,21 @@ type FormData = z.infer<typeof schema>;
 interface Props {
   userId: string;
   pet?: Pet;
+  onAvatarChange?: (url: string | null) => void;
 }
 
-export default function PetForm({ userId, pet }: Props) {
+export default function PetForm({ userId, pet, onAvatarChange }: Props) {
   const router = useRouter();
-  const supabase = createClient();
+  const confirm = useConfirm();
+  const toast = useToast();
   const isEdit = !!pet;
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
 
   // In edit mode fields start locked; in create mode they're always editable
   const [editing, setEditing] = useState(!isEdit);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(pet?.avatar_url ?? null);
+  const [avatarRemoved, setAvatarRemoved] = useState(false);
   const [serverError, setServerError] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -49,6 +56,7 @@ export default function PetForm({ userId, pet }: Props) {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -66,27 +74,49 @@ export default function PetForm({ userId, pet }: Props) {
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    const preview = URL.createObjectURL(file);
     setAvatarFile(file);
-    setAvatarPreview(URL.createObjectURL(file));
+    setAvatarRemoved(false);
+    setAvatarPreview(preview);
+    onAvatarChange?.(preview);
+    e.currentTarget.value = '';
+  }
+
+  async function handleRemoveAvatar() {
+    const confirmed = await confirm({
+      title: 'Remover foto',
+      message: 'A foto atual do pet sera removida do memorial e do bucket quando voce salvar as alteracoes.',
+      confirmLabel: 'Remover',
+      variant: 'danger',
+    });
+    if (!confirmed) return;
+
+    setAvatarFile(null);
+    setAvatarPreview(null);
+    setAvatarRemoved(isEdit && Boolean(pet?.avatar_url));
+    onAvatarChange?.(null);
+    if (avatarInputRef.current) avatarInputRef.current.value = '';
   }
 
   function handleCancel() {
     reset();
     setAvatarFile(null);
     setAvatarPreview(pet?.avatar_url ?? null);
+    setAvatarRemoved(false);
     setServerError('');
     setEditing(false);
   }
 
   async function uploadAvatar(file: File, petId: string): Promise<string | null> {
-    const ext = file.name.split('.').pop();
-    const path = `${userId}/${petId}/avatar.${ext}`;
-    const { error } = await supabase.storage
-      .from('pet-photos')
-      .upload(path, file, { upsert: true });
-    if (error) return null;
-    const { data } = supabase.storage.from('pet-photos').getPublicUrl(path);
-    return data.publicUrl;
+    const compressed = await compress(file, 'avatar');
+    const path = `pets/${userId}/${petId}/avatar-${Date.now()}.webp`;
+    const form = new FormData();
+    form.append('file', compressed);
+    form.append('path', path);
+    const res = await fetch('/api/upload', { method: 'POST', body: form });
+    if (!res.ok) return null;
+    const { url } = await res.json();
+    return url as string;
   }
 
   async function onSubmit(data: FormData) {
@@ -94,13 +124,27 @@ export default function PetForm({ userId, pet }: Props) {
     setSaveSuccess(false);
 
     if (isEdit) {
-      let avatar_url = pet.avatar_url ?? undefined;
+      let avatar_url: string | null = avatarRemoved ? null : (pet.avatar_url ?? null);
       if (avatarFile) {
-        avatar_url = (await uploadAvatar(avatarFile, pet.id)) ?? undefined;
+        const uploaded = await uploadAvatar(avatarFile, pet.id);
+        if (!uploaded) {
+          toast.error('Não foi possível enviar a foto. Verifique o tamanho e tente novamente.');
+          return;
+        }
+        avatar_url = uploaded;
       }
       const result = await updatePet(pet.id, { ...data, avatar_url });
-      if (result.error) { setServerError(result.error); return; }
+      if (result.error) {
+        if (avatarFile && avatar_url) await deleteUploadedMedia(avatar_url);
+        setServerError(result.error);
+        return;
+      }
+      toast.success('Dados do pet salvos com sucesso.');
       setSaveSuccess(true);
+      setAvatarFile(null);
+      setAvatarRemoved(false);
+      setAvatarPreview(avatar_url);
+      onAvatarChange?.(avatar_url);
       setEditing(false);
       router.refresh();
     } else {
@@ -109,8 +153,15 @@ export default function PetForm({ userId, pet }: Props) {
       if (result.error || !result.petId) { setServerError(result.error ?? 'Erro ao criar'); return; }
       if (avatarFile) {
         const avatar_url = await uploadAvatar(avatarFile, result.petId);
+        if (!avatar_url) {
+          toast.error('Pet criado, mas não foi possível enviar a foto. Edite o pet para tentar novamente.');
+        }
         if (avatar_url) {
-          await updatePet(result.petId, { ...data, avatar_url });
+          const updateResult = await updatePet(result.petId, { ...data, avatar_url });
+          if (updateResult.error) {
+            await deleteUploadedMedia(avatar_url);
+            toast.error('Pet criado, mas nao foi possivel salvar a foto. Edite o pet para tentar novamente.');
+          }
         }
       }
       router.push('/dashboard');
@@ -179,6 +230,7 @@ export default function PetForm({ userId, pet }: Props) {
             </div>
             <div>
               <input
+                ref={avatarInputRef}
                 type="file"
                 id="avatar"
                 accept="image/*"
@@ -194,7 +246,7 @@ export default function PetForm({ userId, pet }: Props) {
               {avatarPreview && !locked && (
                 <button
                   type="button"
-                  onClick={() => { setAvatarFile(null); setAvatarPreview(null); }}
+                  onClick={handleRemoveAvatar}
                   className="ml-3 text-xs text-muted-foreground hover:text-destructive"
                 >
                   Remover
@@ -248,14 +300,21 @@ export default function PetForm({ userId, pet }: Props) {
         <CardContent className="pt-6 space-y-3">
           <h2 className="font-serif text-lg text-on-surface">Homenagem</h2>
           <div className="space-y-1.5">
-            <Label htmlFor="tribute_text">Escreva sobre o seu pet</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="tribute_text">Escreva sobre o seu pet</Label>
+              <span className={`text-xs tabular-nums ${(watch('tribute_text') ?? '').length > 370 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                {(watch('tribute_text') ?? '').length}/400
+              </span>
+            </div>
             <Textarea
               id="tribute_text"
               placeholder="Conte a história do seu companheiro, o que ele significou para você, os momentos inesquecíveis…"
               rows={6}
+              maxLength={400}
               disabled={locked}
               {...register('tribute_text')}
             />
+            {errors.tribute_text && <p className="text-xs text-destructive">{errors.tribute_text.message}</p>}
           </div>
         </CardContent>
       </Card>
@@ -272,7 +331,7 @@ export default function PetForm({ userId, pet }: Props) {
             </div>
             <label className="relative inline-flex cursor-pointer items-center">
               <input type="checkbox" className="sr-only peer" disabled={locked} {...register('is_public')} />
-              <div className="peer h-6 w-11 rounded-full bg-surface-container-high peer-checked:bg-primary transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-5" />
+              <div className="peer h-6 w-11 rounded-full bg-surface-container-high peer-checked:bg-primary transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white dark:after:bg-surface-container-lowest after:transition-all peer-checked:after:translate-x-5" />
             </label>
           </div>
         </CardContent>

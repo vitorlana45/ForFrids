@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BarChart2, BookOpen, Clock3, ExternalLink, Heart, PawPrint, QrCode } from 'lucide-react';
@@ -39,6 +39,11 @@ export default function PetEditTabs({
   chroniclesCount,
 }: Props) {
   const [active, setActive] = useState<Tab>('dados');
+  const [sidebarAvatar, setSidebarAvatar] = useState<string | null>(pet.avatar_url ?? null);
+
+  useEffect(() => {
+    setSidebarAvatar(pet.avatar_url ?? null);
+  }, [pet.avatar_url]);
 
   return (
     <div>
@@ -75,7 +80,7 @@ export default function PetEditTabs({
         <div className="grid gap-8 lg:grid-cols-12">
           {/* Form */}
           <div className="lg:col-span-7">
-            <PetForm userId={userId} pet={pet} />
+            <PetForm userId={userId} pet={pet} onAvatarChange={setSidebarAvatar} />
           </div>
 
           {/* Sidebar */}
@@ -83,9 +88,9 @@ export default function PetEditTabs({
             {/* Avatar card */}
             <div className="overflow-hidden rounded-3xl border border-outline-variant/20 bg-surface-container-low">
               <div className="relative aspect-square w-full overflow-hidden bg-surface-container">
-                {pet.avatar_url ? (
+                {sidebarAvatar ? (
                   <Image
-                    src={pet.avatar_url}
+                    src={sidebarAvatar}
                     alt={pet.name}
                     fill
                     unoptimized
@@ -100,10 +105,10 @@ export default function PetEditTabs({
                 )}
               </div>
               <div className="px-6 py-5">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary">
+                <p className="break-words text-xs font-bold uppercase tracking-[0.18em] text-secondary" style={{ overflowWrap: 'anywhere' }}>
                   {pet.species}
                 </p>
-                <h3 className="font-serif text-2xl text-on-surface">{pet.name}</h3>
+                <h3 className="break-words font-serif text-2xl text-on-surface" style={{ overflowWrap: 'anywhere' }}>{pet.name}</h3>
                 {pet.birth_date && (
                   <p className="mt-1 text-sm text-on-surface-variant">
                     Nasceu em {new Date(pet.birth_date).toLocaleDateString('pt-BR')}

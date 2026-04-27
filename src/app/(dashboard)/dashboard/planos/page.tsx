@@ -122,7 +122,7 @@ export default async function PlanosPage({ searchParams }: Props) {
     : planLabel(currentPlanId);
 
   return (
-    <div className="mx-auto min-h-screen max-w-[1000px] px-6 pb-24 pt-32 animate-fade-in">
+    <div className="mx-auto max-w-[1000px] px-6 pb-24 animate-fade-in">
       {success === 'true' && (
         <div className="mb-10 flex items-center gap-4 rounded-2xl border border-primary-fixed-dim/30 bg-primary-fixed px-6 py-4 text-on-primary-fixed">
           <PartyPopper className="h-6 w-6 shrink-0 text-on-primary-fixed" />
@@ -224,8 +224,8 @@ export default async function PlanosPage({ searchParams }: Props) {
         <h2 className="mb-8 text-center font-serif text-3xl text-on-surface">
           Comparação de recursos
         </h2>
-        <div className="overflow-hidden rounded-3xl border border-outline-variant/20">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-3xl border border-outline-variant/20">
+          <table className="w-full min-w-[480px] text-sm">
             <thead>
               <tr className="border-b border-outline-variant/20 bg-surface-container">
                 <th className="px-6 py-4 text-left font-semibold text-on-surface">Recurso</th>

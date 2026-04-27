@@ -37,27 +37,28 @@ export default function EntrarPage() {
   }
 
   return (
-    <div className="flex-grow flex flex-col md:flex-row min-h-screen">
+    <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
       <OperationLoader active={isSubmitting} label="Entrando" />
 
       {/* Left: image */}
-      <section className="hidden md:flex md:w-1/2 lg:w-3/5 relative overflow-hidden bg-surface-container-high">
-        <Image src="/login.png" alt="" fill className="object-cover grayscale-[20%] opacity-90" priority sizes="50vw" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent z-10" />
-        <div className="absolute bottom-16 left-16 right-16 text-white z-20">
-          <h2 className="font-serif text-3xl text-white mb-4">
+      <section className="hidden md:flex md:w-2/5 relative overflow-hidden bg-surface-container-high">
+        <Image src="/login.png" alt="" fill className="object-cover object-center grayscale-[15%] opacity-95" priority sizes="40vw" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
+        <div className="absolute bottom-12 left-12 right-12 text-white z-20">
+          <h2 className="font-serif text-2xl text-white mb-3">
             Um santuário para suas memórias mais preciosas.
           </h2>
-          <p className="text-white/80 max-w-md leading-relaxed">
+          <p className="text-white/80 max-w-md leading-relaxed text-sm">
             Cada memória é um fio no tapete de uma vida bem amada. Bem-vindo de volta ao lugar
-            onde esses fios sóo preservados para sempre.
+            onde esses fios são preservados para sempre.
           </p>
         </div>
       </section>
 
       {/* Right: form */}
-      <section className="flex-grow flex items-center justify-center p-8 md:p-16 lg:p-24 bg-surface">
-        <div className="w-full max-w-md flex flex-col space-y-8 mt-16 md:mt-0 animate-slide-up">
+      <section className="flex-1 overflow-y-auto bg-surface">
+        <div className="flex min-h-full items-center justify-center px-8 py-6 md:px-16 pt-24">
+        <div className="w-full max-w-md flex flex-col space-y-6 animate-slide-up">
           <div className="space-y-3">
             <h1 className="font-serif text-3xl text-primary">
               Bem-vindo de volta ao seu santuário
@@ -134,6 +135,7 @@ export default function EntrarPage() {
               Criar Memorial
             </Link>
           </p>
+        </div>
         </div>
       </section>
     </div>

@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import { formatDate } from '@/lib/utils';
 import type { Chronicle, Pet } from '@/types/database';
 
@@ -25,6 +26,8 @@ async function getPublishedChronicle(slug: string, chronicleId: string) {
 
   const pet = petData as Pet | null;
   if (!pet) return { pet: null, chronicle: null };
+  const ownerPlanId = await getEffectivePlanServer(pet.owner_id);
+  if (!canUse(ownerPlanId, 'chronicles')) return { pet: null, chronicle: null };
 
   const { data: chronicleData } = await supabase
     .from('chronicles')

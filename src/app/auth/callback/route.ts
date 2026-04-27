@@ -48,6 +48,10 @@ export async function GET(request: Request) {
               html,
             });
           }
+
+          if (isNewUser) {
+            return NextResponse.redirect(`${origin}/onboarding`);
+          }
         }
       } catch {
         // Email failure must never break the auth flow

@@ -160,7 +160,7 @@ export default async function TutorProfilePage() {
     'Cada memoria guardada aqui celebra os encontros, os cuidados e o amor que continuam fazendo parte da minha historia.';
 
   return (
-    <main className="mx-auto min-h-screen max-w-[1200px] px-6 pb-28 pt-32 animate-fade-in">
+    <main className="mx-auto max-w-[1200px] px-6 pb-28 animate-fade-in">
       <section className="mb-24 flex flex-col items-center gap-10 md:flex-row md:items-start md:gap-12">
         <div className="relative shrink-0">
           <div className="relative h-44 w-44 overflow-hidden rounded-full border border-secondary/20 bg-surface-container p-1 md:h-48 md:w-48">
@@ -189,14 +189,14 @@ export default async function TutorProfilePage() {
           </Link>
         </div>
 
-        <div className="max-w-3xl text-center md:text-left">
-          <div className="mb-5">
-            <h1 className="font-serif text-5xl text-on-surface md:text-6xl">{displayName}</h1>
-            <p className="mt-3 text-xs font-bold uppercase tracking-[0.18em] text-secondary">
+        <div className="min-w-0 max-w-3xl text-center md:text-left">
+          <div className="mb-5 min-w-0">
+            <h1 className="break-words font-serif text-5xl text-on-surface md:text-6xl" style={{ overflowWrap: 'anywhere' }}>{displayName}</h1>
+            <p className="mt-3 break-words text-xs font-bold uppercase tracking-[0.18em] text-secondary" style={{ overflowWrap: 'anywhere' }}>
               {guardianTitle}
             </p>
           </div>
-          <p className="max-w-2xl font-serif text-xl italic leading-relaxed text-on-surface-variant">
+          <p className="max-w-2xl break-words font-serif text-xl italic leading-relaxed text-on-surface-variant" style={{ overflowWrap: 'anywhere' }}>
             "{bio}"
           </p>
           <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row md:items-start">

@@ -26,7 +26,7 @@ export default function ChroniclesSection({ petName, memorialSlug, chronicles }:
         {chronicles.slice(0, 4).map((chronicle) => (
           <article
             key={chronicle.id}
-            className="group grid min-w-0 gap-5 rounded-3xl border border-primary-container/10 bg-surface-container-lowest p-4 shadow-sm transition-colors hover:border-primary/20 sm:grid-cols-[150px_minmax(0,1fr)]"
+            className="group grid min-w-0 grid-cols-[88px_minmax(0,1fr)] gap-4 rounded-3xl border border-primary-container/10 bg-surface-container-lowest p-4 shadow-sm transition-colors hover:border-primary/20 sm:grid-cols-[150px_minmax(0,1fr)] sm:gap-5"
           >
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-surface-container">
               {chronicle.cover_url ? (

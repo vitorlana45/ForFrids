@@ -6,7 +6,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { BookOpen, Calendar, ImagePlus, Loader2, Save } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import { compress } from '@/lib/storage/compress';
+import { deleteUploadedMedia } from '@/lib/storage/rollback';
 import { createChronicle, updateChronicle } from '@/lib/actions/chronicles';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,7 +46,6 @@ const moods = ['Alegre', 'Nostalgico', 'Reflexivo', 'Grato', 'Saudade'];
 
 export default function ChronicleEditor({ pet, userId, chronicle }: Props) {
   const router = useRouter();
-  const supabase = createClient();
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(chronicle?.cover_url ?? null);
   const [serverError, setServerError] = useState('');
@@ -80,27 +80,29 @@ export default function ChronicleEditor({ pet, userId, chronicle }: Props) {
   }
 
   async function uploadCover(file: File) {
-    const ext = file.name.split('.').pop() || 'jpg';
-    const path = `${userId}/${pet.id}/${chronicle?.id ?? crypto.randomUUID()}.${ext}`;
-    const { error } = await supabase.storage
-      .from('chronicle-photos')
-      .upload(path, file, { upsert: true });
-
-    if (error) return null;
-    const { data } = supabase.storage.from('chronicle-photos').getPublicUrl(path);
-    return data.publicUrl;
+    const compressed = await compress(file, 'cover');
+    const path = `chronicles/${userId}/${pet.id}/${chronicle?.id ?? crypto.randomUUID()}.webp`;
+    const form = new FormData();
+    form.append('file', compressed);
+    form.append('path', path);
+    const res = await fetch('/api/upload', { method: 'POST', body: form });
+    if (!res.ok) return null;
+    const { url } = await res.json();
+    return url as string;
   }
 
   async function onSubmit(data: FormData) {
     setServerError('');
 
     let cover_url = chronicle?.cover_url ?? '';
+    let uploadedCoverUrl: string | null = null;
     if (coverFile) {
       cover_url = (await uploadCover(coverFile)) ?? '';
       if (!cover_url) {
         setServerError('Nao foi possivel enviar a imagem de capa.');
         return;
       }
+      uploadedCoverUrl = cover_url;
     }
 
     const payload = {
@@ -113,8 +115,13 @@ export default function ChronicleEditor({ pet, userId, chronicle }: Props) {
       ? await updateChronicle(chronicle.id, payload)
       : await createChronicle({ ...payload, pet_id: pet.id });
 
-    if (result.error === 'UPGRADE_REQUIRED') { router.push('/dashboard/planos'); return; }
+    if (result.error === 'UPGRADE_REQUIRED' || result.error === 'LIMIT_REACHED') {
+      if (uploadedCoverUrl) await deleteUploadedMedia(uploadedCoverUrl);
+      router.push('/dashboard/planos');
+      return;
+    }
     if (result.error) {
+      if (uploadedCoverUrl) await deleteUploadedMedia(uploadedCoverUrl);
       setServerError(result.error);
       return;
     }

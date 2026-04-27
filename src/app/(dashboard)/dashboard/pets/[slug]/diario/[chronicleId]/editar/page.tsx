@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import ChronicleEditor from '@/components/chronicles/ChronicleEditor';
-import UpgradePrompt from '@/components/ui/UpgradePrompt';
+import LockedFeaturePreview from '@/components/ui/LockedFeaturePreview';
 import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import { createClient } from '@/lib/supabase/server';
 import type { Chronicle, Pet } from '@/types/database';
@@ -57,10 +57,13 @@ export default async function EditChroniclePage({ params }: Props) {
       {canUseChronicles ? (
         <ChronicleEditor pet={pet} userId={user.id} chronicle={chronicle} />
       ) : (
-        <UpgradePrompt
+        <LockedFeaturePreview
           feature="Diario de Cronicas"
           description="A edicao de cronicas esta disponivel nos planos Premium e Eterno. Voce ainda pode remover cronicas antigas pelo diario."
-        />
+          minHeight="min-h-[760px]"
+        >
+          <ChronicleEditor pet={pet} userId={user.id} chronicle={chronicle} />
+        </LockedFeaturePreview>
       )}
     </div>
   );

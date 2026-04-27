@@ -3,11 +3,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
+import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import { formatDate } from '@/lib/utils';
 import type { Chronicle, Pet, TimelineEntry } from '@/types/database';
 import MemorialActions from '@/components/memorial/MemorialActions';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 import TributesSection from '@/components/memorial/TributesSection';
 import ChroniclesSection from '@/components/memorial/ChroniclesSection';
+import TutorSection from '@/components/memorial/TutorSection';
 import type { Tribute } from '@/types/database';
 
 export const revalidate = 60;
@@ -36,6 +39,8 @@ export default async function MemorialPage({ params }: Props) {
   const { data: petData } = await supabase.from('pets').select('*').eq('memorial_slug', slug).eq('is_public', true).single();
   const pet = petData as Pet | null;
   if (!pet) notFound();
+  const ownerPlanId = await getEffectivePlanServer(pet.owner_id);
+  const canShowChronicles = canUse(ownerPlanId, 'chronicles');
 
   const { data: timelineData } = await supabase.from('timeline_entries').select('*').eq('pet_id', pet.id).order('date', { ascending: true });
   const entries = (timelineData as TimelineEntry[] | null) ?? [];
@@ -48,14 +53,22 @@ export default async function MemorialPage({ params }: Props) {
     .order('created_at', { ascending: false });
   const tributes = (tributesData as Tribute[] | null) ?? [];
 
-  const { data: chroniclesData } = await supabase
-    .from('chronicles')
-    .select('*')
-    .eq('pet_id', pet.id)
-    .eq('is_published', true)
-    .order('event_date', { ascending: false, nullsFirst: false })
-    .order('created_at', { ascending: false });
-  const chronicles = (chroniclesData as Chronicle[] | null) ?? [];
+  const chronicles = canShowChronicles
+    ? ((await supabase
+        .from('chronicles')
+        .select('*')
+        .eq('pet_id', pet.id)
+        .eq('is_published', true)
+        .order('event_date', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false })).data as Chronicle[] | null) ?? []
+    : [];
+
+  const { data: ownerProfileData } = await supabase
+    .from('profiles')
+    .select('full_name, avatar_url, guardian_title, bio')
+    .eq('id', pet.owner_id)
+    .single();
+  const ownerProfile = ownerProfileData as { full_name: string | null; avatar_url: string | null; guardian_title: string | null; bio: string | null } | null;
 
   const { count: reactionsCount } = await supabase
     .from('memorial_reactions')
@@ -94,7 +107,7 @@ export default async function MemorialPage({ params }: Props) {
       {/* ?? Header ?? */}
       <header className="bg-surface/85 backdrop-blur-md border-b border-outline-variant/20 sticky top-0 z-50">
         <div className="flex justify-between items-center w-full px-6 py-4 max-w-[1200px] mx-auto">
-          <Link href="/" className="text-2xl font-serif italic text-primary-container">Eterno Pet</Link>
+          <Link href={user ? '/dashboard' : '/'} className="text-2xl font-serif italic text-primary-container">Eterno Pet</Link>
           <nav className="hidden md:flex gap-8 items-center">
             <a href="#memorial" className="text-primary-container border-b-2 border-primary-container pb-1 font-medium font-serif">Memorial</a>
             <a href="#timeline" className="text-on-surface-variant hover:text-primary transition-colors font-serif">História</a>
@@ -102,17 +115,23 @@ export default async function MemorialPage({ params }: Props) {
               <a href="#cronicas" className="text-on-surface-variant hover:text-primary transition-colors font-serif">Crônicas</a>
             )}
             <a href="#galeria" className="text-on-surface-variant hover:text-primary transition-colors font-serif">Galeria</a>
+            {ownerProfile?.full_name && (
+              <a href="#tutor" className="text-on-surface-variant hover:text-primary transition-colors font-serif">Tutor</a>
+            )}
             <a href="#tributos" className="text-on-surface-variant hover:text-primary transition-colors font-serif">Tributos</a>
           </nav>
-          <MemorialActions
-            petId={pet.id}
-            petName={pet.name}
-            memorialSlug={slug}
-            memorialUrl={memorialUrl}
-            isAuthenticated={!!user}
-            initialLiked={initialLiked}
-            initialLikesCount={reactionsCount ?? 0}
-          />
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <MemorialActions
+              petId={pet.id}
+              petName={pet.name}
+              memorialSlug={slug}
+              memorialUrl={memorialUrl}
+              isAuthenticated={!!user}
+              initialLiked={initialLiked}
+              initialLikesCount={reactionsCount ?? 0}
+            />
+          </div>
         </div>
       </header>
 
@@ -132,7 +151,7 @@ export default async function MemorialPage({ params }: Props) {
               )}
             </div>
 
-            <h1 className="font-serif text-6xl text-primary mb-4">{pet.name}</h1>
+            <h1 className="font-serif text-6xl text-primary mb-4 break-words" style={{ overflowWrap: 'anywhere' }}>{pet.name}</h1>
 
             <p className="font-serif text-xl italic text-tertiary mb-6">
               {pet.birth_date && new Date(pet.birth_date).getFullYear()}
@@ -142,7 +161,7 @@ export default async function MemorialPage({ params }: Props) {
             </p>
 
             {pet.tribute_text && (
-              <p className="font-serif text-2xl text-on-surface-variant max-w-2xl mx-auto font-light italic">
+              <p className="font-serif text-2xl text-on-surface-variant max-w-2xl mx-auto font-light italic break-words" style={{ overflowWrap: 'anywhere' }}>
                 "{pet.tribute_text}"
               </p>
             )}
@@ -160,21 +179,25 @@ export default async function MemorialPage({ params }: Props) {
                 {entries.map((entry, i) => {
                   const isLeft = i % 2 === 0;
                   return (
-                    <div key={entry.id} className="relative flex flex-col md:flex-row items-center mb-8">
-                      <div className={`hidden md:flex flex-1 ${isLeft ? 'justify-end pr-12 text-right' : 'order-3 pl-12'}`}>
+                    <div key={entry.id} className="relative mb-8 flex w-full flex-col items-start md:flex-row md:items-center">
+                      <div className={`hidden min-w-0 md:flex md:w-1/2 ${isLeft ? 'justify-end pr-12 text-right' : 'order-3 pl-12'}`}>
                         <span className="text-[11px] font-bold tracking-widest text-primary uppercase">{formatDate(entry.date)}</span>
                       </div>
                       <div className="absolute left-0 md:left-1/2 w-4 h-4 rounded-full bg-primary-container border-4 border-surface -translate-x-1/2 z-10" />
-                      <div className={`flex-1 ${isLeft ? 'md:pl-12' : 'md:pr-12 md:text-right order-2 md:order-1'}`}>
-                        <div className="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
-                          <h3 className="font-serif text-xl text-on-surface mb-1">{entry.title}</h3>
-                          {entry.description && <p className="text-sm text-on-surface-variant">{entry.description}</p>}
+                      <div className={`w-full min-w-0 pl-8 md:w-1/2 md:pl-0 ${isLeft ? 'md:pl-12' : 'md:pr-12 md:text-right order-2 md:order-1'}`}>
+                        <div className="w-full min-w-0 overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-sm">
+                          <h3 className="break-words font-serif text-xl text-on-surface mb-1">{entry.title}</h3>
+                          {entry.description && (
+                            <p className="break-words text-sm text-on-surface-variant line-clamp-4" style={{ overflowWrap: 'anywhere' }}>
+                              {entry.description}
+                            </p>
+                          )}
                           <span className="md:hidden text-[11px] font-bold tracking-widest text-primary uppercase mt-2 block">{formatDate(entry.date)}</span>
                           {entry.photo_urls.length > 0 && (
-                            <div className="mt-4 grid grid-cols-3 gap-2">
+                            <div className="mt-4 grid max-w-full grid-cols-2 gap-2 sm:grid-cols-3">
                               {entry.photo_urls.slice(0, 3).map((url, j) => (
-                                <div key={j} className="aspect-square rounded-lg overflow-hidden relative">
-                                  <Image src={url} alt="" fill unoptimized className="object-cover" />
+                                <div key={`${entry.id}-photo-${j}`} className="relative h-24 min-h-0 w-full overflow-hidden rounded-lg bg-surface-container sm:h-28">
+                                  <Image src={url} alt="" fill sizes="(max-width: 768px) 40vw, 120px" unoptimized className="object-cover" />
                                 </div>
                               ))}
                             </div>
@@ -200,20 +223,35 @@ export default async function MemorialPage({ params }: Props) {
           <h2 className="font-serif text-4xl text-center text-primary mb-16">Álbum Afetivo</h2>
 
           {allPhotos.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 items-start">
-              {columns.map((colPhotos, col) => (
-                <div key={col} className={`grid gap-4 md:gap-6 ${col % 2 !== 0 ? 'pt-8 md:pt-12' : ''}`}>
-                  {colPhotos.map((url, idx) => (
-                    <div
-                      key={url + idx}
-                      className={`rounded-xl overflow-hidden relative ${idx % 2 === 0 ? 'aspect-[3/4]' : 'aspect-square'}`}
-                    >
-                      <Image src={url} alt="" fill unoptimized className="object-cover hover:scale-105 transition-transform duration-700" />
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
+            allPhotos.length < 4 ? (
+              // Layout simples para poucas fotos — sem offset masonry
+              <div className={`flex flex-wrap justify-center gap-4 md:gap-6`}>
+                {allPhotos.map((url, idx) => (
+                  <div
+                    key={url + idx}
+                    className="rounded-xl overflow-hidden relative aspect-[3/4] w-48 md:w-64 shrink-0"
+                  >
+                    <Image src={url} alt="" fill unoptimized className="object-cover hover:scale-105 transition-transform duration-700" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              // Layout masonry para 4+ fotos
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 items-start">
+                {columns.map((colPhotos, col) => (
+                  <div key={col} className={`grid gap-4 md:gap-6 ${col % 2 !== 0 ? 'pt-8 md:pt-12' : ''}`}>
+                    {colPhotos.map((url, idx) => (
+                      <div
+                        key={url + idx}
+                        className={`rounded-xl overflow-hidden relative ${idx % 2 === 0 ? 'aspect-[3/4]' : 'aspect-square'}`}
+                      >
+                        <Image src={url} alt="" fill unoptimized className="object-cover hover:scale-105 transition-transform duration-700" />
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )
           ) : (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <span className="material-symbols-outlined text-[64px] text-outline mb-4">photo_library</span>
@@ -222,6 +260,16 @@ export default async function MemorialPage({ params }: Props) {
             </div>
           )}
         </section>
+
+        {/* ?? Tutor Profile ?? */}
+        {ownerProfile?.full_name && (
+          <TutorSection
+            fullName={ownerProfile.full_name}
+            avatarUrl={ownerProfile.avatar_url}
+            guardianTitle={ownerProfile.guardian_title}
+            bio={ownerProfile.bio}
+          />
+        )}
 
         {/* ?? Tributes ?? */}
         <TributesSection
@@ -246,8 +294,8 @@ export default async function MemorialPage({ params }: Props) {
           </div>
           <nav className="flex gap-8">
             <Link href="/" className="text-on-surface-variant hover:text-primary font-serif text-sm transition-colors">Início</Link>
-            <a href="#" className="text-on-surface-variant hover:text-primary font-serif text-sm transition-colors">Privacidade</a>
-            <a href="#" className="text-on-surface-variant hover:text-primary font-serif text-sm transition-colors">Termos</a>
+            <Link href="/privacidade" className="text-on-surface-variant hover:text-primary font-serif text-sm transition-colors">Privacidade</Link>
+            <Link href="/termos" className="text-on-surface-variant hover:text-primary font-serif text-sm transition-colors">Termos</Link>
           </nav>
         </div>
       </footer>
@@ -259,6 +307,7 @@ export default async function MemorialPage({ params }: Props) {
           { icon: 'timeline', label: 'História', href: '#timeline' },
           ...(chronicles.length > 0 ? [{ icon: 'menu_book', label: 'Cronicas', href: '#cronicas' }] : []),
           { icon: 'photo_library', label: 'Galeria', href: '#galeria' },
+          ...(ownerProfile?.full_name ? [{ icon: 'person', label: 'Tutor', href: '#tutor' }] : []),
           { icon: 'favorite', label: 'Tributos', href: '#tributos' },
         ].map(item => (
           <a key={item.label} href={item.href} className="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors">

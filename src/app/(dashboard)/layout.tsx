@@ -23,7 +23,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         readyCapsulesCount={alerts.readyCapsulesCount}
         memorialLikesCount={alerts.memorialLikesCount}
       />
-      <main>{children}</main>
+      <main className="pt-32">{children}</main>
     </div>
   );
 }

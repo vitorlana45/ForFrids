@@ -220,7 +220,7 @@ export default function ChronicleList({ pet, chronicles }: Props) {
                     {chronicle.title}
                   </h2>
                   <p
-                    className="mt-3 max-w-full overflow-hidden break-words text-base leading-7 text-on-surface-variant sm:text-lg"
+                    className="mt-3 max-w-full break-words text-base leading-7 text-on-surface-variant line-clamp-4 sm:text-lg"
                     style={{ overflowWrap: 'anywhere' }}
                   >
                     {chronicle.excerpt ?? chronicle.content.slice(0, 220)}

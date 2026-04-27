@@ -22,6 +22,7 @@ import {
   X,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 import { createClient } from '@/lib/supabase/client';
 import { useDashboardAlerts } from '@/hooks/useDashboardAlerts';
 import type { Profile } from '@/types/database';
@@ -130,14 +131,7 @@ export default function DashboardNav({
           {/* Right: actions */}
           <div className="flex items-center gap-1 sm:gap-2">
             {/* Theme toggle */}
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-low hover:text-primary"
-              aria-label="Alternar tema"
-            >
-              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </button>
+            <ThemeToggle />
 
             {/* Alerts bell */}
             <div className="relative">

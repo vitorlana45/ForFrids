@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import ChronicleEditor from '@/components/chronicles/ChronicleEditor';
-import UpgradePrompt from '@/components/ui/UpgradePrompt';
+import LockedFeaturePreview from '@/components/ui/LockedFeaturePreview';
 import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import { createClient } from '@/lib/supabase/server';
 import type { Pet } from '@/types/database';
@@ -47,10 +47,13 @@ export default async function NewChroniclePage({ params }: Props) {
       {canUseChronicles ? (
         <ChronicleEditor pet={pet} userId={user.id} />
       ) : (
-        <UpgradePrompt
+        <LockedFeaturePreview
           feature="Diario de Cronicas"
           description="Crie textos mais longos, com capa, fase da vida e publicacao no memorial nos planos Premium e Eterno."
-        />
+          minHeight="min-h-[760px]"
+        >
+          <ChronicleEditor pet={pet} userId={user.id} />
+        </LockedFeaturePreview>
       )}
     </div>
   );

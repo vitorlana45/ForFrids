@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(node -e \"require\\('dotenv'\\).config\\({path:'c:/Users/vitor/Documents/github/ForFrids/.env.local'}\\); const k = process.env.SUPABASE_SERVICE_ROLE_KEY; console.log\\('length:', k?.length, 'prefix:', k?.slice\\(0,6\\)\\);\")",
-      "Bash(node -e \"const fs=require\\('fs'\\); const line=fs.readFileSync\\('.env.local','utf8'\\).split\\('\\\\n'\\).find\\(l=>l.startsWith\\('SUPABASE_SERVICE_ROLE_KEY='\\)\\); const val=line?.split\\('='\\).slice\\(1\\).join\\('='\\).trim\\(\\); console.log\\('prefix:', val?.slice\\(0,6\\), 'length:', val?.length\\);\")"
+      "Bash(node -e \"const fs=require\\('fs'\\); const line=fs.readFileSync\\('.env.local','utf8'\\).split\\('\\\\n'\\).find\\(l=>l.startsWith\\('SUPABASE_SERVICE_ROLE_KEY='\\)\\); const val=line?.split\\('='\\).slice\\(1\\).join\\('='\\).trim\\(\\); console.log\\('prefix:', val?.slice\\(0,6\\), 'length:', val?.length\\);\")",
+      "Bash(find c:\\\\\\\\Users\\\\\\\\vitor\\\\\\\\Documents\\\\\\\\github\\\\\\\\ForFrids\\\\\\\\src\\\\\\\\app -name \"page.tsx\" -o -name \"layout.tsx\")",
+      "Bash(grep -r \"skeleton\\\\|Skeleton\" c:\\\\\\\\Users\\\\\\\\vitor\\\\\\\\Documents\\\\\\\\github\\\\\\\\ForFrids\\\\\\\\src --include=\"*.tsx\" --include=\"*.ts\")"
     ]
   }
 }

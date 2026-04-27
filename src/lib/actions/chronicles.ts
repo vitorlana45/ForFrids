@@ -2,7 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
-import { canUse, getEffectivePlanServer } from '@/lib/plans';
+import { canUse, getEffectivePlanServer, maxChroniclesPerPet } from '@/lib/plans';
+import { publicUrlMatchesKeyPrefix } from '@/lib/storage/client';
 import { z } from 'zod';
 
 const optionalText = z
@@ -58,13 +59,15 @@ async function getOwnedPetByChronicle(
 ) {
   const { data } = await supabase
     .from('chronicles')
-    .select('pet_id')
+    .select('pet_id, cover_url')
     .eq('id', chronicleId)
     .single();
 
-  const chronicle = data as { pet_id: string } | null;
+  const chronicle = data as { pet_id: string; cover_url: string | null } | null;
   if (!chronicle) return null;
-  return getOwnedPet(supabase, chronicle.pet_id, userId);
+  const pet = await getOwnedPet(supabase, chronicle.pet_id, userId);
+  if (!pet) return null;
+  return { ...pet, pet_id: chronicle.pet_id, cover_url: chronicle.cover_url };
 }
 
 export async function createChronicle(
@@ -84,6 +87,19 @@ export async function createChronicle(
 
   const pet = await getOwnedPet(supabase, parsed.data.pet_id, user.id);
   if (!pet) return { error: 'Nao autorizado' };
+
+  if (
+    parsed.data.cover_url &&
+    !publicUrlMatchesKeyPrefix(parsed.data.cover_url, `chronicles/${user.id}/${parsed.data.pet_id}/`)
+  ) {
+    return { error: 'Imagem de capa invalida' };
+  }
+
+  const { count } = await supabase
+    .from('chronicles')
+    .select('*', { count: 'exact', head: true })
+    .eq('pet_id', parsed.data.pet_id);
+  if ((count ?? 0) >= maxChroniclesPerPet(planId)) return { error: 'LIMIT_REACHED' };
 
   const { data, error } = await supabase
     .from('chronicles')
@@ -119,6 +135,14 @@ export async function updateChronicle(
 
   const pet = await getOwnedPetByChronicle(supabase, chronicleId, user.id);
   if (!pet) return { error: 'Nao autorizado' };
+
+  if (
+    parsed.data.cover_url &&
+    parsed.data.cover_url !== pet.cover_url &&
+    !publicUrlMatchesKeyPrefix(parsed.data.cover_url, `chronicles/${user.id}/${pet.pet_id}/`)
+  ) {
+    return { error: 'Imagem de capa invalida' };
+  }
 
   const { data, error } = await supabase
     .from('chronicles')

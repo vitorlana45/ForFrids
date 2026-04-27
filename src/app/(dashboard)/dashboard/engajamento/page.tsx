@@ -78,7 +78,7 @@ export default async function EngagementPage() {
   );
 
   return (
-    <div className="mx-auto min-h-screen max-w-[1000px] px-6 pb-24 pt-32 animate-fade-in">
+    <div className="mx-auto max-w-[1000px] px-6 pb-24 animate-fade-in">
       <header className="mb-10">
         <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-secondary">
           Engajamento

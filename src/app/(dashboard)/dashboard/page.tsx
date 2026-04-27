@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import PetDashboardCard from '@/components/dashboard/PetDashboardCard';
+import { getMemorialCompletion } from '@/lib/memorial-completion';
 import type { Pet, Profile } from '@/types/database';
 
 export default async function DashboardPage() {
@@ -17,10 +18,29 @@ export default async function DashboardPage() {
     .from('profiles').select('*').eq('id', user.id).single();
   const profile = profileData as Profile | null;
 
+  const firstPet = pets[0] ?? null;
+  const { data: firstPetTimelineData } = firstPet
+    ? await supabase
+        .from('timeline_entries')
+        .select('photo_urls')
+        .eq('pet_id', firstPet.id)
+    : { data: [] };
+  const firstPetTimeline = (firstPetTimelineData as { photo_urls: string[] | null }[] | null) ?? [];
+  const firstPetCompletion = firstPet
+    ? getMemorialCompletion({
+        pet: firstPet,
+        timelineEntryCount: firstPetTimeline.length,
+        timelinePhotoCount: firstPetTimeline.reduce(
+          (total, entry) => total + ((entry.photo_urls ?? []).filter(Boolean).length),
+          0,
+        ),
+      })
+    : null;
+
   const firstName = profile?.full_name?.split(' ')[0] ?? 'Tutor';
 
   return (
-    <div className="max-w-[1200px] mx-auto px-6 pt-32 pb-24 md:pb-12 botanical-bg">
+    <div className="max-w-[1200px] mx-auto px-6 pb-24 md:pb-12 botanical-bg">
 
       {/* Welcome */}
       <header className="mb-16">
@@ -147,16 +167,23 @@ export default async function DashboardPage() {
           </section>
 
           {/* Progress */}
-          {pets[0] && (
+          {firstPet && firstPetCompletion && (
             <section className="bg-surface-container-low p-8 rounded-3xl border border-outline-variant/20">
-              <h3 className="font-serif text-xl mb-4 text-on-surface">Memorial de {pets[0].name}</h3>
+              <h3 className="font-serif text-xl mb-4 text-on-surface">Memorial de {firstPet.name}</h3>
               <p className="text-sm text-on-surface-variant mb-6">Complete o perfil para criar uma página memorável.</p>
               <div className="w-full bg-surface-container-high rounded-full h-2 mb-6 overflow-hidden">
-                <div className="bg-primary h-full rounded-full" style={{ width: pets[0].tribute_text ? '75%' : '30%' }} />
+                <div className="bg-primary h-full rounded-full" style={{ width: `${firstPetCompletion.percent}%` }} />
               </div>
-              <p className="text-xs text-on-surface-variant">
-                {pets[0].tribute_text ? '75%' : '30%'} completo
-              </p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs text-on-surface-variant">
+                  {firstPetCompletion.percent}% completo
+                </p>
+                {firstPetCompletion.nextAction && (
+                  <p className="text-right text-xs font-semibold text-primary">
+                    {firstPetCompletion.nextAction}
+                  </p>
+                )}
+              </div>
             </section>
           )}
 

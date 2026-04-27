@@ -42,8 +42,8 @@ export default function PetDashboardCard({ pet }: Props) {
 
       {/* Info */}
       <div className="px-5 pb-4 pt-4">
-        <h3 className="font-serif text-xl text-on-surface">{pet.name}</h3>
-        <p className="mt-0.5 text-xs capitalize text-on-surface-variant">{pet.species}</p>
+        <h3 className="break-words font-serif text-xl text-on-surface" style={{ overflowWrap: 'anywhere' }}>{pet.name}</h3>
+        <p className="mt-0.5 break-words text-xs capitalize text-on-surface-variant" style={{ overflowWrap: 'anywhere' }}>{pet.species}</p>
       </div>
 
       {/* Action buttons */}

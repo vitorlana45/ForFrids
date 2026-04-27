@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { getPaymentGateway } from '@/lib/payments';
 import { billingError, billingLog } from '@/lib/billing/debug';
 import type { PaidPlanId } from '@/lib/payments';
@@ -19,8 +20,8 @@ async function getCurrentUser() {
 }
 
 async function getLatestCustomerId(profileId: string) {
-  const supabase = await createClient();
-  const { data } = await supabase
+  const admin = createAdminClient();
+  const { data } = await admin
     .from('subscriptions')
     .select('provider_customer_id, stripe_customer_id')
     .eq('profile_id', profileId)

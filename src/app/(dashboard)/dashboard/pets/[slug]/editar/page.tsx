@@ -67,7 +67,7 @@ export default async function EditarPetPage({ params }: Props) {
   const chroniclesCount = chroniclesResult.count ?? 0;
 
   return (
-    <div className="mx-auto max-w-[1100px] px-6 pb-24 pt-32 animate-fade-in">
+    <div className="mx-auto max-w-[1100px] px-6 pb-24 animate-fade-in">
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>
           <Link

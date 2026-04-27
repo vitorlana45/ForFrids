@@ -2,6 +2,7 @@
 
 import { useTransition } from 'react';
 import { createCheckoutSession } from '@/lib/actions/stripe';
+import { useToast } from '@/components/ui/toast';
 import type { PaidPlanId } from '@/lib/payments';
 
 interface Props {
@@ -12,12 +13,13 @@ interface Props {
 
 export default function PlanCheckoutButton({ planId, label, highlight }: Props) {
   const [isPending, startTransition] = useTransition();
+  const toast = useToast();
 
   function handleClick() {
     startTransition(async () => {
       const result = await createCheckoutSession(planId);
       if (result?.error) {
-        alert(result.error);
+        toast.error(result.error);
         return;
       }
 
