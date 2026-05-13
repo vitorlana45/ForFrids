@@ -10,6 +10,7 @@ import {
   Heart,
   Home,
   LockKeyhole,
+  Loader2,
   LogOut,
   Menu,
   Moon,
@@ -23,7 +24,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import ThemeToggle from '@/components/ui/ThemeToggle';
-import { createClient } from '@/lib/supabase/client';
+import { authClient } from '@/lib/auth-client';
 import { useDashboardAlerts } from '@/hooks/useDashboardAlerts';
 import type { Profile } from '@/types/database';
 
@@ -52,11 +53,11 @@ export default function DashboardNav({
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const supabase = createClient();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const alerts = useDashboardAlerts({ pendingApprovalsCount, readyCapsulesCount, memorialLikesCount });
 
   const totalAlerts = alerts.total;
@@ -74,9 +75,25 @@ export default function DashboardNav({
   }, [menuOpen]);
 
   async function signOut() {
-    await supabase.auth.signOut();
-    router.push('/');
-    router.refresh();
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      const { error } = await authClient.signOut();
+      if (error) throw error;
+    } catch {
+      try {
+        await fetch('/api/auth/sign-out', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        });
+      } catch {
+        // best-effort fallback
+      }
+    }
+    window.location.assign('/');
+    setSigningOut(false);
   }
 
   function toggleTheme() {
@@ -241,10 +258,11 @@ export default function DashboardNav({
             {/* Sign out — hidden on mobile (in drawer) */}
             <button
               onClick={signOut}
-              className="hidden text-on-surface-variant transition-colors hover:text-on-surface sm:block"
+              disabled={signingOut}
+              className="hidden text-on-surface-variant transition-colors hover:text-on-surface disabled:opacity-60 sm:block"
               title="Sair"
             >
-              <LogOut className="h-5 w-5" />
+              {signingOut ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogOut className="h-5 w-5" />}
             </button>
           </div>
         </div>
@@ -359,10 +377,11 @@ export default function DashboardNav({
           <button
             type="button"
             onClick={signOut}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-on-surface-variant transition-colors hover:bg-surface-container-low hover:text-error"
+            disabled={signingOut}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-on-surface-variant transition-colors hover:bg-surface-container-low hover:text-error disabled:opacity-60"
           >
-            <LogOut className="h-4 w-4" />
-            Sair
+            {signingOut ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
+            {signingOut ? 'Saindo...' : 'Sair'}
           </button>
         </div>
       </aside>

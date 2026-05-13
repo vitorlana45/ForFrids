@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
 import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import CapsulaClient from '@/components/capsules/CapsulaClient';
 import LockedFeaturePreview from '@/components/ui/LockedFeaturePreview';
@@ -70,13 +70,10 @@ function CapsulePreview() {
 }
 
 export default async function CapsulaPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect('/entrar');
+  const session = await getServerSession();
+  if (!session) redirect('/entrar');
 
-  const planId = await getEffectivePlanServer(user.id);
+  const planId = await getEffectivePlanServer(session.user.id);
 
   if (!canUse(planId, 'capsules')) {
     return (

@@ -1,7 +1,7 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 import { getPaymentGateway } from '@/lib/payments';
 import { billingError, billingLog } from '@/lib/billing/debug';
 import type { PaidPlanId } from '@/lib/payments';
@@ -10,40 +10,23 @@ function siteUrl() {
   return process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 }
 
-async function getCurrentUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  return { supabase, user };
-}
-
 async function getLatestCustomerId(profileId: string) {
-  const admin = createAdminClient();
-  const { data } = await admin
-    .from('subscriptions')
-    .select('provider_customer_id, stripe_customer_id')
-    .eq('profile_id', profileId)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const subscription = data as {
-    provider_customer_id?: string | null;
-    stripe_customer_id?: string | null;
-  } | null;
-
-  const customerId = subscription?.provider_customer_id ?? subscription?.stripe_customer_id ?? null;
-  billingLog('checkout.customer.lookup', { profileId, customerId, found: !!subscription });
+  const sub = await prisma.subscription.findFirst({
+    where: { profile_id: profileId },
+    select: { provider_customer_id: true, stripe_customer_id: true },
+    orderBy: { created_at: 'desc' },
+  });
+  const customerId = sub?.provider_customer_id ?? sub?.stripe_customer_id ?? null;
+  billingLog('checkout.customer.lookup', { profileId, customerId, found: !!sub });
   return customerId;
 }
 
 export async function createCheckoutSession(
   planId: PaidPlanId,
 ): Promise<{ url?: string; error?: string }> {
-  const { user } = await getCurrentUser();
-  if (!user) return { error: 'Nao autenticado' };
+  const session = await getServerSession();
+  if (!session) return { error: 'Nao autenticado' };
+  const user = session.user;
 
   try {
     const gateway = getPaymentGateway();
@@ -56,7 +39,7 @@ export async function createCheckoutSession(
       customerId,
       siteUrl: siteUrl(),
     });
-    const session = await gateway.createCheckoutSession({
+    const checkoutSession = await gateway.createCheckoutSession({
       planId,
       profileId: user.id,
       email: user.email,
@@ -68,9 +51,9 @@ export async function createCheckoutSession(
       profileId: user.id,
       planId,
       provider: gateway.id,
-      hasUrl: !!session.url,
+      hasUrl: !!checkoutSession.url,
     });
-    return { url: session.url };
+    return { url: checkoutSession.url };
   } catch (error) {
     billingError('checkout.create.error', error, { profileId: user.id, planId });
     return { error: error instanceof Error ? error.message : 'Erro ao iniciar pagamento.' };
@@ -78,8 +61,9 @@ export async function createCheckoutSession(
 }
 
 export async function createPortalSession(): Promise<{ url?: string; error?: string }> {
-  const { user } = await getCurrentUser();
-  if (!user) return { error: 'Nao autenticado' };
+  const session = await getServerSession();
+  if (!session) return { error: 'Nao autenticado' };
+  const user = session.user;
 
   const customerId = await getLatestCustomerId(user.id);
   if (!customerId) {
@@ -88,12 +72,11 @@ export async function createPortalSession(): Promise<{ url?: string; error?: str
 
   try {
     const gateway = getPaymentGateway();
-    const session = await gateway.createPortalSession({
+    const portalSession = await gateway.createPortalSession({
       customerId,
       returnUrl: `${siteUrl()}/dashboard/configuracoes`,
     });
-
-    return { url: session.url };
+    return { url: portalSession.url };
   } catch (error) {
     return { error: error instanceof Error ? error.message : 'Erro ao abrir portal de assinatura.' };
   }

@@ -1,6 +1,5 @@
 import type { PlanId } from '@/types/database';
-import type { SupabaseClient } from '@supabase/supabase-js';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { prisma } from './prisma';
 
 export type Feature = 'capsules' | 'chronicles' | 'qrcode';
 
@@ -41,71 +40,33 @@ export function planLabel(planId: PlanId): string {
 export function strongestPaidPlan(
   subscriptions: { plan_id: PlanId; status: string }[],
 ): PlanId | null {
-  const activeSubscriptions = subscriptions.filter(subscription =>
-    ['active', 'trialing', 'past_due', 'paid'].includes(subscription.status),
+  const active = subscriptions.filter(s =>
+    ['active', 'trialing', 'past_due', 'paid'].includes(s.status),
   );
-
-  if (activeSubscriptions.some(subscription => subscription.plan_id === 'lifetime')) {
-    return 'lifetime';
-  }
-
-  if (activeSubscriptions.some(subscription => subscription.plan_id === 'premium')) {
-    return 'premium';
-  }
-
+  if (active.some(s => s.plan_id === 'lifetime')) return 'lifetime';
+  if (active.some(s => s.plan_id === 'premium')) return 'premium';
   return null;
 }
 
-export async function getEffectivePlan(
-  supabase: SupabaseClient,
-  userId: string,
-): Promise<PlanId> {
-  const [{ data: profileData }, { data: subscriptionsData }] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('plan_id')
-      .eq('id', userId)
-      .single(),
-    supabase
-      .from('subscriptions')
-      .select('plan_id, status')
-      .eq('profile_id', userId)
-      .in('status', ['active', 'trialing', 'past_due', 'paid'])
-      .order('created_at', { ascending: false }),
+export async function getEffectivePlan(userId: string): Promise<PlanId> {
+  const [profile, subscriptions] = await Promise.all([
+    prisma.profile.findUnique({ where: { id: userId }, select: { plan_id: true } }),
+    prisma.subscription.findMany({
+      where: {
+        profile_id: userId,
+        status: { in: ['active', 'trialing', 'past_due', 'paid'] },
+      },
+      select: { plan_id: true, status: true },
+      orderBy: { created_at: 'desc' },
+    }),
   ]);
 
   const subscriptionPlan = strongestPaidPlan(
-    (subscriptionsData as { plan_id: PlanId; status: string }[] | null) ?? [],
+    subscriptions.map(s => ({ plan_id: s.plan_id as PlanId, status: s.status })),
   );
   if (subscriptionPlan) return subscriptionPlan;
 
-  return ((profileData as { plan_id?: PlanId } | null)?.plan_id) ?? 'free';
+  return (profile?.plan_id as PlanId | null) ?? 'free';
 }
 
-/**
- * Server-side plan resolution using the admin client.
- * Use this in server components and server actions to bypass RLS on the
- * subscriptions table and avoid read-after-write replication lag that can
- * occur when the webhook/sync writes via admin and the user client reads
- * from a replica.
- */
-export async function getEffectivePlanServer(userId: string): Promise<PlanId> {
-  const admin = createAdminClient();
-
-  const [{ data: profileData }, { data: subscriptionsData }] = await Promise.all([
-    admin.from('profiles').select('plan_id').eq('id', userId).single(),
-    admin
-      .from('subscriptions')
-      .select('plan_id, status')
-      .eq('profile_id', userId)
-      .in('status', ['active', 'trialing', 'past_due', 'paid'])
-      .order('created_at', { ascending: false }),
-  ]);
-
-  const subscriptionPlan = strongestPaidPlan(
-    (subscriptionsData as { plan_id: PlanId; status: string }[] | null) ?? [],
-  );
-  if (subscriptionPlan) return subscriptionPlan;
-
-  return ((profileData as { plan_id?: PlanId } | null)?.plan_id) ?? 'free';
-}
+export const getEffectivePlanServer = getEffectivePlan;

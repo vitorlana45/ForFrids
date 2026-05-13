@@ -101,6 +101,26 @@ export interface Subscription {
   updated_at: string;
 }
 
+export interface SupportTicket {
+  id: string;
+  user_id: string | null;
+  type: 'support' | 'suggestion' | 'bug' | 'donation_intent';
+  status: 'open' | 'in_progress' | 'resolved';
+  title: string;
+  message: string;
+  category: string | null;
+  impact: string | null;
+  steps: string | null;
+  expected_result: string | null;
+  actual_result: string | null;
+  contact_email: string | null;
+  page_url: string | null;
+  user_agent: string | null;
+  image_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -163,6 +183,13 @@ export type Database = {
             'provider' | 'provider_customer_id' | 'provider_subscription_id' | 'provider_checkout_id' | 'canceled_at'
           >>;
         Update: Partial<Omit<Subscription, 'id' | 'profile_id' | 'created_at' | 'updated_at'>>;
+      };
+      support_tickets: {
+        Row: SupportTicket;
+        Insert: Omit<SupportTicket, 'id' | 'status' | 'created_at' | 'updated_at'> & {
+          status?: SupportTicket['status'];
+        };
+        Update: Partial<Omit<SupportTicket, 'id' | 'created_at' | 'updated_at'>>;
       };
     };
   };

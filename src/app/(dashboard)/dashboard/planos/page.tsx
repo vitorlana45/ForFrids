@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { Check, PartyPopper } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
 import PlanCheckoutButton from '@/components/planos/PlanCheckoutButton';
 import { getEffectivePlanServer, planLabel } from '@/lib/plans';
 import {
@@ -64,11 +64,9 @@ interface Props {
 }
 
 export default async function PlanosPage({ searchParams }: Props) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect('/entrar');
+  const session = await getServerSession();
+  if (!session) redirect('/entrar');
+  const user = session.user;
 
   const { cancelled, session_id: sessionId, success } = await searchParams;
   let checkoutSyncedPlan = null as PlanId | null;

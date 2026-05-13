@@ -2,11 +2,13 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import { formatDate } from '@/lib/utils';
 import type { Chronicle, Pet, TimelineEntry } from '@/types/database';
 import MemorialActions from '@/components/memorial/MemorialActions';
+import MemorialNav, { type MemorialNavItem } from '@/components/memorial/MemorialNav';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import TributesSection from '@/components/memorial/TributesSection';
 import ChroniclesSection from '@/components/memorial/ChroniclesSection';
@@ -19,107 +21,98 @@ interface Props { params: Promise<{ slug: string }>; }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const supabase = await createClient();
-  const { data } = await supabase.from('pets').select('name,species,tribute_text').eq('memorial_slug', slug).eq('is_public', true).single();
-  const pet = data as Pick<Pet, 'name' | 'species' | 'tribute_text'> | null;
+  const pet = await prisma.pet.findFirst({
+    where: { memorial_slug: slug, is_public: true, moderation_status: { not: 'blocked' } },
+    select: { name: true, species: true, tribute_text: true },
+  });
   if (!pet) return { title: 'Memorial não encontrado' };
   return {
     title: `${pet.name} - Eterno Pet`,
-    description: pet.tribute_text?.slice(0, 160) ?? `Memorial de ${pet.name}, ${pet.species}.`,
+    description: (pet.tribute_text as string | null)?.slice(0, 160) ?? `Memorial de ${pet.name}, ${pet.species}.`,
   };
 }
 
 export default async function MemorialPage({ params }: Props) {
   const { slug } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
-  const { data: petData } = await supabase.from('pets').select('*').eq('memorial_slug', slug).eq('is_public', true).single();
-  const pet = petData as Pet | null;
+  const session = await getServerSession();
+  const userId = session?.user.id ?? null;
+
+  const petData = await prisma.pet.findFirst({
+    where: { memorial_slug: slug, is_public: true },
+  });
+  const pet = petData as unknown as Pet | null;
   if (!pet) notFound();
+
+  if ((petData as unknown as { moderation_status?: string })?.moderation_status === 'blocked') {
+    notFound();
+  }
+
   const ownerPlanId = await getEffectivePlanServer(pet.owner_id);
   const canShowChronicles = canUse(ownerPlanId, 'chronicles');
 
-  const { data: timelineData } = await supabase.from('timeline_entries').select('*').eq('pet_id', pet.id).order('date', { ascending: true });
-  const entries = (timelineData as TimelineEntry[] | null) ?? [];
+  const [timelineData, tributesData, ownerProfileData, reactionsCount] = await Promise.all([
+    prisma.timelineEntry.findMany({
+      where: { pet_id: pet.id },
+      orderBy: { date: 'asc' },
+    }),
+    prisma.tribute.findMany({
+      where: { pet_id: pet.id, status: 'approved' },
+      orderBy: { created_at: 'desc' },
+    }),
+    prisma.profile.findUnique({
+      where: { id: pet.owner_id },
+      select: { full_name: true, avatar_url: true, guardian_title: true, bio: true },
+    }),
+    prisma.memorialReaction.count({
+      where: { pet_id: pet.id, reaction_type: 'heart' },
+    }),
+  ]);
 
-  const { data: tributesData } = await supabase
-    .from('tributes')
-    .select('*')
-    .eq('pet_id', pet.id)
-    .eq('status', 'approved')
-    .order('created_at', { ascending: false });
-  const tributes = (tributesData as Tribute[] | null) ?? [];
-
-  const chronicles = canShowChronicles
-    ? ((await supabase
-        .from('chronicles')
-        .select('*')
-        .eq('pet_id', pet.id)
-        .eq('is_published', true)
-        .order('event_date', { ascending: false, nullsFirst: false })
-        .order('created_at', { ascending: false })).data as Chronicle[] | null) ?? []
-    : [];
-
-  const { data: ownerProfileData } = await supabase
-    .from('profiles')
-    .select('full_name, avatar_url, guardian_title, bio')
-    .eq('id', pet.owner_id)
-    .single();
+  const entries = timelineData as unknown as TimelineEntry[];
+  const tributes = tributesData as unknown as Tribute[];
   const ownerProfile = ownerProfileData as { full_name: string | null; avatar_url: string | null; guardian_title: string | null; bio: string | null } | null;
 
-  const { count: reactionsCount } = await supabase
-    .from('memorial_reactions')
-    .select('id', { count: 'exact', head: true })
-    .eq('pet_id', pet.id)
-    .eq('reaction_type', 'heart');
+  const chronicles: Chronicle[] = canShowChronicles
+    ? (await prisma.chronicle.findMany({
+        where: { pet_id: pet.id, is_published: true },
+        orderBy: [{ event_date: 'desc' }, { created_at: 'desc' }],
+      })) as unknown as Chronicle[]
+    : [];
 
   let initialLiked = false;
-
-  if (user) {
-    const { data: reactionData } = await supabase
-      .from('memorial_reactions')
-      .select('id')
-      .eq('pet_id', pet.id)
-      .eq('user_id', user.id)
-      .eq('reaction_type', 'heart')
-      .maybeSingle();
-
-    initialLiked = !!reactionData;
+  if (userId) {
+    const reaction = await prisma.memorialReaction.findFirst({
+      where: { pet_id: pet.id, user_id: userId, reaction_type: 'heart' },
+      select: { id: true },
+    });
+    initialLiked = !!reaction;
   }
 
   const isAlive = !pet.death_date;
-
-  // Collect all photos from timeline for the gallery
   const allPhotos = entries.flatMap(e => e.photo_urls).filter(Boolean);
-
-  // Distribute photos across 4 masonry columns
   const columns: string[][] = [[], [], [], []];
   allPhotos.forEach((url, i) => columns[i % 4].push(url));
 
   const memorialUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://eternopet.com.br'}/memorial/${slug}`;
 
+  const navItems: MemorialNavItem[] = [
+    { id: 'memorial', label: 'Memorial', icon: 'home' },
+    ...(entries.length > 0 ? [{ id: 'timeline', label: 'História', icon: 'timeline' }] : []),
+    ...(chronicles.length > 0 ? [{ id: 'cronicas', label: 'Crônicas', icon: 'menu_book' }] : []),
+    { id: 'galeria', label: 'Galeria', icon: 'photo_library' },
+    ...(ownerProfile?.full_name ? [{ id: 'tutor', label: 'Tutor', icon: 'person' }] : []),
+    { id: 'tributos', label: 'Tributos', icon: 'favorite' },
+  ];
+
   return (
     <div className="min-h-screen bg-surface text-on-surface botanical-bg">
 
-      {/* ?? Header ?? */}
+      {/* Header */}
       <header className="bg-surface/85 backdrop-blur-md border-b border-outline-variant/20 sticky top-0 z-50">
         <div className="flex justify-between items-center w-full px-6 py-4 max-w-[1200px] mx-auto">
-          <Link href={user ? '/dashboard' : '/'} className="text-2xl font-serif italic text-primary-container">Eterno Pet</Link>
-          <nav className="hidden md:flex gap-8 items-center">
-            <a href="#memorial" className="text-primary-container border-b-2 border-primary-container pb-1 font-medium font-serif">Memorial</a>
-            <a href="#timeline" className="text-on-surface-variant hover:text-primary transition-colors font-serif">História</a>
-            {chronicles.length > 0 && (
-              <a href="#cronicas" className="text-on-surface-variant hover:text-primary transition-colors font-serif">Crônicas</a>
-            )}
-            <a href="#galeria" className="text-on-surface-variant hover:text-primary transition-colors font-serif">Galeria</a>
-            {ownerProfile?.full_name && (
-              <a href="#tutor" className="text-on-surface-variant hover:text-primary transition-colors font-serif">Tutor</a>
-            )}
-            <a href="#tributos" className="text-on-surface-variant hover:text-primary transition-colors font-serif">Tributos</a>
-          </nav>
+          <Link href={userId ? '/dashboard' : '/'} className="text-2xl font-serif italic text-primary-container">Eterno Pet</Link>
+          <MemorialNav items={navItems} variant="desktop" />
           <div className="flex items-center gap-1">
             <ThemeToggle />
             <MemorialActions
@@ -127,9 +120,9 @@ export default async function MemorialPage({ params }: Props) {
               petName={pet.name}
               memorialSlug={slug}
               memorialUrl={memorialUrl}
-              isAuthenticated={!!user}
+              isAuthenticated={!!userId}
               initialLiked={initialLiked}
-              initialLikesCount={reactionsCount ?? 0}
+              initialLikesCount={reactionsCount}
             />
           </div>
         </div>
@@ -137,7 +130,7 @@ export default async function MemorialPage({ params }: Props) {
 
       <main className="max-w-[1200px] mx-auto px-6" id="memorial">
 
-        {/* ?? Hero ?? */}
+        {/* Hero */}
         <section className="py-32 flex flex-col items-center text-center relative overflow-hidden">
           <span className="material-symbols-outlined absolute -top-10 -left-10 text-[200px] text-primary/5 select-none">eco</span>
           <span className="material-symbols-outlined absolute -bottom-10 -right-10 text-[200px] text-primary/5 select-none">potted_plant</span>
@@ -168,7 +161,7 @@ export default async function MemorialPage({ params }: Props) {
           </div>
         </section>
 
-        {/* ?? Timeline ?? */}
+        {/* Timeline */}
         {entries.length > 0 && (
           <section className="py-16 border-t border-primary/10" id="timeline">
             <div className="max-w-3xl mx-auto">
@@ -212,20 +205,20 @@ export default async function MemorialPage({ params }: Props) {
           </section>
         )}
 
-        {/* ?? Gallery ?? */}
+        {/* Chronicles */}
         <ChroniclesSection
           petName={pet.name}
           memorialSlug={slug}
           chronicles={chronicles}
         />
 
+        {/* Gallery */}
         <section className="py-32" id="galeria">
           <h2 className="font-serif text-4xl text-center text-primary mb-16">Álbum Afetivo</h2>
 
           {allPhotos.length > 0 ? (
             allPhotos.length < 4 ? (
-              // Layout simples para poucas fotos — sem offset masonry
-              <div className={`flex flex-wrap justify-center gap-4 md:gap-6`}>
+              <div className="flex flex-wrap justify-center gap-4 md:gap-6">
                 {allPhotos.map((url, idx) => (
                   <div
                     key={url + idx}
@@ -236,7 +229,6 @@ export default async function MemorialPage({ params }: Props) {
                 ))}
               </div>
             ) : (
-              // Layout masonry para 4+ fotos
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 items-start">
                 {columns.map((colPhotos, col) => (
                   <div key={col} className={`grid gap-4 md:gap-6 ${col % 2 !== 0 ? 'pt-8 md:pt-12' : ''}`}>
@@ -261,7 +253,7 @@ export default async function MemorialPage({ params }: Props) {
           )}
         </section>
 
-        {/* ?? Tutor Profile ?? */}
+        {/* Tutor Profile */}
         {ownerProfile?.full_name && (
           <TutorSection
             fullName={ownerProfile.full_name}
@@ -271,17 +263,17 @@ export default async function MemorialPage({ params }: Props) {
           />
         )}
 
-        {/* ?? Tributes ?? */}
+        {/* Tributes */}
         <TributesSection
           petId={pet.id}
           petName={pet.name}
           memorialSlug={slug}
           initialTributes={tributes}
-          isAuthenticated={!!user}
+          isAuthenticated={!!userId}
         />
       </main>
 
-      {/* ?? Footer ?? */}
+      {/* Footer */}
       <footer className="bg-surface-container-lowest w-full mt-32 border-t border-primary-container/10">
         <div className="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-[1200px] mx-auto">
           <div className="mb-6 md:mb-0">
@@ -300,22 +292,7 @@ export default async function MemorialPage({ params }: Props) {
         </div>
       </footer>
 
-      {/* Mobile nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-2 h-16 bg-surface/80 backdrop-blur-md border-t border-outline-variant/20">
-        {[
-          { icon: 'home', label: 'Memorial', href: '#memorial' },
-          { icon: 'timeline', label: 'História', href: '#timeline' },
-          ...(chronicles.length > 0 ? [{ icon: 'menu_book', label: 'Cronicas', href: '#cronicas' }] : []),
-          { icon: 'photo_library', label: 'Galeria', href: '#galeria' },
-          ...(ownerProfile?.full_name ? [{ icon: 'person', label: 'Tutor', href: '#tutor' }] : []),
-          { icon: 'favorite', label: 'Tributos', href: '#tributos' },
-        ].map(item => (
-          <a key={item.label} href={item.href} className="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
-            <span className="material-symbols-outlined">{item.icon}</span>
-            <span className="font-serif text-[11px] tracking-wide">{item.label}</span>
-          </a>
-        ))}
-      </nav>
+      <MemorialNav items={navItems} variant="mobile" />
     </div>
   );
 }

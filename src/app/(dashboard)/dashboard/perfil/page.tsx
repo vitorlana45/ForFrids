@@ -3,11 +3,12 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { ArrowRight, BookOpen, Camera, Heart, Mail, Plus, Sparkles } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 import { getEffectivePlan, planLabel } from '@/lib/plans';
 import type { Chronicle, Pet, Profile, TimelineEntry } from '@/types/database';
 
-function year(date?: string | null) {
+function year(date?: string | Date | null) {
   return date ? new Date(date).getFullYear() : null;
 }
 
@@ -31,7 +32,7 @@ function petSubtitle(pet: Pet) {
   return pet.species;
 }
 
-function daysSince(date: string) {
+function daysSince(date: string | Date) {
   const start = new Date(date).getTime();
   const now = Date.now();
   return Math.max(1, Math.ceil((now - start) / 86400000));
@@ -109,38 +110,42 @@ function TutorPetCard({ pet }: { pet: Pet }) {
 }
 
 export default async function TutorProfilePage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect('/entrar');
+  const session = await getServerSession();
+  if (!session) redirect('/entrar');
+  const userId = session.user.id;
 
-  const [{ data: profileData }, { data: petsData }] = await Promise.all([
-    supabase.from('profiles').select('*').eq('id', user.id).single(),
-    supabase.from('pets').select('*').eq('owner_id', user.id).order('created_at', { ascending: false }),
+  const [profileData, petsData] = await Promise.all([
+    prisma.profile.findUnique({ where: { id: userId } }),
+    prisma.pet.findMany({ where: { owner_id: userId }, orderBy: { created_at: 'desc' } }),
   ]);
 
-  const profile = profileData as Profile | null;
+  const profile = profileData as unknown as Profile | null;
   if (!profile) redirect('/entrar');
 
-  const pets = (petsData as Pet[] | null) ?? [];
+  const pets = petsData as unknown as Pet[];
   const petIds = pets.map(pet => pet.id);
-  const planId = await getEffectivePlan(supabase, user.id);
+  const planId = await getEffectivePlan(userId);
 
   let timelineEntries: TimelineEntry[] = [];
   let chronicles: Pick<Chronicle, 'id' | 'cover_url'>[] = [];
   let capsuleCount = 0;
 
   if (petIds.length > 0) {
-    const [timelineResult, chroniclesResult, capsulesResult] = await Promise.all([
-      supabase.from('timeline_entries').select('id, pet_id, title, description, date, photo_urls, created_at').in('pet_id', petIds),
-      supabase.from('chronicles').select('id, cover_url').in('pet_id', petIds),
-      supabase.from('time_capsules').select('id', { count: 'exact', head: true }).in('pet_id', petIds),
+    const [timelineData, chroniclesData, capsCount] = await Promise.all([
+      prisma.timelineEntry.findMany({
+        where: { pet_id: { in: petIds } },
+        select: { id: true, pet_id: true, title: true, description: true, date: true, photo_urls: true, created_at: true },
+      }),
+      prisma.chronicle.findMany({
+        where: { pet_id: { in: petIds } },
+        select: { id: true, cover_url: true },
+      }),
+      prisma.timeCapsule.count({ where: { pet_id: { in: petIds } } }),
     ]);
 
-    timelineEntries = (timelineResult.data as TimelineEntry[] | null) ?? [];
-    chronicles = (chroniclesResult.data as Pick<Chronicle, 'id' | 'cover_url'>[] | null) ?? [];
-    capsuleCount = capsulesResult.count ?? 0;
+    timelineEntries = timelineData as unknown as TimelineEntry[];
+    chronicles = chroniclesData as unknown as Pick<Chronicle, 'id' | 'cover_url'>[];
+    capsuleCount = capsCount;
   }
 
   const memoryDates = [
@@ -148,13 +153,13 @@ export default async function TutorProfilePage() {
     ...pets.map(pet => pet.created_at),
     ...timelineEntries.map(entry => entry.date),
   ].filter(Boolean).sort();
-  const legacyDays = daysSince(memoryDates[0] ?? profile.created_at);
+  const legacyDays = daysSince((memoryDates[0] ?? profile.created_at) as string | Date);
   const totalStories = chronicles.length;
   const totalPhotos =
     pets.filter(pet => pet.avatar_url).length +
     timelineEntries.reduce((total, entry) => total + ((entry.photo_urls ?? []).length), 0) +
     chronicles.filter(chronicle => chronicle.cover_url).length;
-  const displayName = profile.full_name ?? user.email?.split('@')[0] ?? 'Tutor';
+  const displayName = profile.full_name ?? session.user.email?.split('@')[0] ?? 'Tutor';
   const guardianTitle = profile.guardian_title ?? 'Tutor e guardiao de memorias';
   const bio = profile.bio ??
     'Cada memoria guardada aqui celebra os encontros, os cuidados e o amor que continuam fazendo parte da minha historia.';

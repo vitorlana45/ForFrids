@@ -1,7 +1,9 @@
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 import PetEditTabs from '@/components/pets/PetEditTabs';
+import ModerationBanner from '@/components/pets/ModerationBanner';
 import type { Pet, TimelineEntry, Tribute } from '@/types/database';
 
 interface Props {
@@ -10,61 +12,43 @@ interface Props {
 
 export default async function EditarPetPage({ params }: Props) {
   const { slug } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect('/entrar');
+  const session = await getServerSession();
+  if (!session) redirect('/entrar');
+  const userId = session.user.id;
 
-  const { data: petData } = await supabase
-    .from('pets')
-    .select('*')
-    .eq('memorial_slug', slug)
-    .eq('owner_id', user.id)
-    .single();
+  const petData = await prisma.pet.findFirst({
+    where: { memorial_slug: slug, owner_id: userId },
+  });
 
-  const pet = petData as Pet | null;
+  const pet = petData as unknown as Pet | null;
   if (!pet) notFound();
 
-  const [
-    timelineResult,
-    pendingResult,
-    approvedResult,
-    reactionsResult,
-    chroniclesResult,
-  ] = await Promise.all([
-    supabase
-      .from('timeline_entries')
-      .select('*')
-      .eq('pet_id', pet.id)
-      .order('date', { ascending: true }),
-    supabase
-      .from('tributes')
-      .select('*')
-      .eq('pet_id', pet.id)
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false }),
-    supabase
-      .from('tributes')
-      .select('*', { count: 'exact', head: true })
-      .eq('pet_id', pet.id)
-      .eq('status', 'approved'),
-    supabase
-      .from('memorial_reactions')
-      .select('*', { count: 'exact', head: true })
-      .eq('pet_id', pet.id)
-      .eq('reaction_type', 'heart'),
-    supabase
-      .from('chronicles')
-      .select('*', { count: 'exact', head: true })
-      .eq('pet_id', pet.id),
-  ]);
+  const moderation = petData as unknown as {
+    moderation_status?: 'active' | 'flagged' | 'hidden' | 'blocked';
+    blocked_reason?: string | null;
+    blocked_at?: Date | null;
+  };
+  const moderationStatus = moderation.moderation_status ?? 'active';
 
-  const entries = (timelineResult.data as TimelineEntry[] | null) ?? [];
-  const pendingTributes = (pendingResult.data as Tribute[] | null) ?? [];
-  const approvedTributesCount = approvedResult.count ?? 0;
-  const likesCount = reactionsResult.count ?? 0;
-  const chroniclesCount = chroniclesResult.count ?? 0;
+  const [
+    entries,
+    pendingTributes,
+    approvedTributesCount,
+    likesCount,
+    chroniclesCount,
+  ] = await Promise.all([
+    prisma.timelineEntry.findMany({
+      where: { pet_id: pet.id },
+      orderBy: { date: 'asc' },
+    }),
+    prisma.tribute.findMany({
+      where: { pet_id: pet.id, status: 'pending' },
+      orderBy: { created_at: 'desc' },
+    }),
+    prisma.tribute.count({ where: { pet_id: pet.id, status: 'approved' } }),
+    prisma.memorialReaction.count({ where: { pet_id: pet.id, reaction_type: 'heart' } }),
+    prisma.chronicle.count({ where: { pet_id: pet.id } }),
+  ]);
 
   return (
     <div className="mx-auto max-w-[1100px] px-6 pb-24 animate-fade-in">
@@ -92,11 +76,19 @@ export default async function EditarPetPage({ params }: Props) {
         )}
       </div>
 
+      {moderationStatus !== 'active' && (
+        <ModerationBanner
+          status={moderationStatus}
+          reason={moderation.blocked_reason}
+          blockedAt={moderation.blocked_at}
+        />
+      )}
+
       <PetEditTabs
-        userId={user.id}
+        userId={userId}
         pet={pet}
-        entries={entries}
-        pendingTributes={pendingTributes}
+        entries={entries as unknown as TimelineEntry[]}
+        pendingTributes={pendingTributes as unknown as Tribute[]}
         approvedTributesCount={approvedTributesCount}
         likesCount={likesCount}
         chroniclesCount={chroniclesCount}

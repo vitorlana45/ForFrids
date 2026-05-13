@@ -1,9 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
 import { getEffectivePlanServer, maxTimelineEntries } from '@/lib/plans';
 import { deletePublicObject, publicUrlMatchesKeyPrefix } from '@/lib/storage/client';
+import { prisma } from '@/lib/prisma';
 import { log } from '@/lib/logger';
 import { z } from 'zod';
 
@@ -23,13 +24,11 @@ const updateEntrySchema = entrySchema.omit({ pet_id: true }).partial().extend({
 
 type EntryInput = z.infer<typeof entrySchema>;
 
-async function getPetByEntry(supabase: Awaited<ReturnType<typeof createClient>>, petId: string, userId: string) {
-  const { data } = await supabase
-    .from('pets')
-    .select('owner_id, memorial_slug')
-    .eq('id', petId)
-    .single();
-  const pet = data as { owner_id: string; memorial_slug: string } | null;
+async function getPetByEntry(petId: string, userId: string) {
+  const pet = await prisma.pet.findUnique({
+    where: { id: petId },
+    select: { owner_id: true, memorial_slug: true },
+  });
   if (!pet || pet.owner_id !== userId) return null;
   return pet;
 }
@@ -37,32 +36,27 @@ async function getPetByEntry(supabase: Awaited<ReturnType<typeof createClient>>,
 export async function createTimelineEntry(
   input: EntryInput,
 ): Promise<{ data?: unknown; error?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: 'Não autenticado' };
+  const session = await getServerSession();
+  if (!session) return { error: 'Não autenticado' };
+  const userId = session.user.id;
 
-  const pet = await getPetByEntry(supabase, input.pet_id, user.id);
+  const pet = await getPetByEntry(input.pet_id, userId);
   if (!pet) return { error: 'Não autorizado' };
 
   const parsed = entrySchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
-  const planId = await getEffectivePlanServer(user.id);
-  const { count } = await supabase
-    .from('timeline_entries')
-    .select('*', { count: 'exact', head: true })
-    .eq('pet_id', input.pet_id);
-  if ((count ?? 0) >= maxTimelineEntries(planId)) return { error: 'LIMIT_REACHED' };
+  const planId = await getEffectivePlanServer(userId);
+  const count = await prisma.timelineEntry.count({ where: { pet_id: input.pet_id } });
+  if (count >= maxTimelineEntries(planId)) return { error: 'LIMIT_REACHED' };
 
-  const { data, error } = await supabase
-    .from('timeline_entries')
-    .insert({ ...parsed.data, photo_urls: [] })
-    .select()
-    .single();
-
-  if (error) return { error: error.message };
+  const data = await prisma.timelineEntry.create({
+    data: {
+      ...parsed.data,
+      date: new Date(parsed.data.date),
+      photo_urls: [],
+    },
+  });
 
   revalidatePath(`/memorial/${pet.memorial_slug}`);
   return { data };
@@ -72,21 +66,17 @@ export async function updateTimelineEntry(
   entryId: string,
   input: Partial<Omit<EntryInput, 'pet_id'>>,
 ): Promise<{ error?: string; success?: boolean }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: 'Não autenticado' };
+  const session = await getServerSession();
+  if (!session) return { error: 'Não autenticado' };
+  const userId = session.user.id;
 
-  const { data: entryData } = await supabase
-    .from('timeline_entries')
-    .select('pet_id, photo_urls')
-    .eq('id', entryId)
-    .single();
-  const entry = entryData as { pet_id: string; photo_urls: string[] | null } | null;
+  const entry = await prisma.timelineEntry.findUnique({
+    where: { id: entryId },
+    select: { pet_id: true, photo_urls: true },
+  });
   if (!entry) return { error: 'Entrada não encontrada' };
 
-  const pet = await getPetByEntry(supabase, entry.pet_id, user.id);
+  const pet = await getPetByEntry(entry.pet_id, userId);
   if (!pet) return { error: 'Não autorizado' };
 
   const parsed = updateEntrySchema.safeParse(input);
@@ -94,19 +84,20 @@ export async function updateTimelineEntry(
 
   if (parsed.data.photo_urls) {
     const existingPhotos = new Set(entry.photo_urls ?? []);
-    const keyPrefix = `pets/${user.id}/${entry.pet_id}/timeline/${entryId}/`;
+    const keyPrefix = `pets/${userId}/${entry.pet_id}/timeline/${entryId}/`;
     const hasInvalidPhoto = parsed.data.photo_urls.some(url =>
       !existingPhotos.has(url) && !publicUrlMatchesKeyPrefix(url, keyPrefix)
     );
-
     if (hasInvalidPhoto) return { error: 'Imagem da linha do tempo invalida' };
   }
 
-  const { error } = await supabase
-    .from('timeline_entries')
-    .update(parsed.data)
-    .eq('id', entryId);
-  if (error) return { error: error.message };
+  await prisma.timelineEntry.update({
+    where: { id: entryId },
+    data: {
+      ...parsed.data,
+      date: parsed.data.date ? new Date(parsed.data.date) : undefined,
+    },
+  });
 
   revalidatePath(`/memorial/${pet.memorial_slug}`);
   revalidatePath(`/dashboard/pets/${pet.memorial_slug}/editar`);
@@ -128,28 +119,20 @@ export async function updateTimelineEntry(
 export async function deleteTimelineEntry(
   entryId: string,
 ): Promise<{ error?: string; success?: boolean }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: 'Não autenticado' };
+  const session = await getServerSession();
+  if (!session) return { error: 'Não autenticado' };
+  const userId = session.user.id;
 
-  const { data: entryData } = await supabase
-    .from('timeline_entries')
-    .select('pet_id, photo_urls')
-    .eq('id', entryId)
-    .single();
-  const entry = entryData as { pet_id: string; photo_urls: string[] | null } | null;
+  const entry = await prisma.timelineEntry.findUnique({
+    where: { id: entryId },
+    select: { pet_id: true, photo_urls: true },
+  });
   if (!entry) return { error: 'Entrada não encontrada' };
 
-  const pet = await getPetByEntry(supabase, entry.pet_id, user.id);
+  const pet = await getPetByEntry(entry.pet_id, userId);
   if (!pet) return { error: 'Não autorizado' };
 
-  const { error } = await supabase
-    .from('timeline_entries')
-    .delete()
-    .eq('id', entryId);
-  if (error) return { error: error.message };
+  await prisma.timelineEntry.delete({ where: { id: entryId } });
 
   revalidatePath(`/memorial/${pet.memorial_slug}`);
   revalidatePath(`/dashboard/pets/${pet.memorial_slug}/editar`);

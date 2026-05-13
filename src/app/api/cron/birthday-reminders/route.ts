@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { petDateReminderEmail } from '@/lib/email/templates';
+import { petBirthdayEmail, petAnniversaryEmail } from '@/lib/email/templates';
 import { emailFrom, getResend } from '@/lib/email/resend';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { prisma } from '@/lib/prisma';
 import type { Pet, Profile } from '@/types/database';
 
 function saoPauloMonthDay() {
@@ -16,9 +16,10 @@ function saoPauloMonthDay() {
   return `${month}-${day}`;
 }
 
-function monthDay(value: string | null) {
+function monthDay(value: string | Date | null) {
   if (!value) return null;
-  const [, month, day] = value.slice(0, 10).split('-');
+  const str = value instanceof Date ? value.toISOString() : value;
+  const [, month, day] = str.slice(0, 10).split('-');
   return `${month}-${day}`;
 }
 
@@ -30,20 +31,19 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const admin = createAdminClient();
   const resend = getResend();
   const today = saoPauloMonthDay();
 
-  const { data: petsData, error: petsError } = await admin
-    .from('pets')
-    .select('*')
-    .or('birth_date.not.is.null,death_date.not.is.null');
+  const allPets = await prisma.pet.findMany({
+    where: {
+      OR: [
+        { birth_date: { not: null } },
+        { death_date: { not: null } },
+      ],
+    },
+  });
 
-  if (petsError) {
-    return NextResponse.json({ error: petsError.message }, { status: 500 });
-  }
-
-  const pets = ((petsData as Pet[] | null) ?? []).filter(
+  const pets = (allPets as unknown as Pet[]).filter(
     (pet) => monthDay(pet.birth_date) === today || monthDay(pet.death_date) === today,
   );
 
@@ -52,32 +52,36 @@ export async function GET(request: Request) {
   }
 
   const ownerIds = Array.from(new Set(pets.map((pet) => pet.owner_id)));
-  const { data: profilesData, error: profilesError } = await admin
-    .from('profiles')
-    .select('*')
-    .in('id', ownerIds);
-
-  if (profilesError) {
-    return NextResponse.json({ error: profilesError.message }, { status: 500 });
-  }
+  const profilesData = await prisma.profile.findMany({
+    where: { id: { in: ownerIds } },
+  });
 
   const profiles = new Map(
-    ((profilesData as Profile[] | null) ?? []).map((profile) => [profile.id, profile]),
+    (profilesData as unknown as Profile[]).map((profile) => [profile.id, profile]),
   );
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3001';
   let sent = 0;
+
+  const currentYear = new Date().getFullYear();
 
   for (const pet of pets) {
     const profile = profiles.get(pet.owner_id);
     if (!profile?.email) continue;
 
     const isBirthday = monthDay(pet.birth_date) === today;
-    const template = petDateReminderEmail({
-      tutorName: profile.full_name?.split(' ')[0] ?? 'Tutor',
-      petName: pet.name,
-      dateLabel: isBirthday ? `Aniversario de ${pet.name}` : `Dia de lembrar ${pet.name}`,
-      memorialUrl: `${siteUrl}/memorial/${pet.memorial_slug}`,
-    });
+    const tutorName = profile.full_name?.split(' ')[0] ?? 'Tutor';
+    const memorialUrl = `${siteUrl}/memorial/${pet.memorial_slug}`;
+
+    let template;
+    if (isBirthday) {
+      const birthYear = pet.birth_date ? new Date(pet.birth_date).getFullYear() : null;
+      const ageYears = birthYear ? currentYear - birthYear : null;
+      template = petBirthdayEmail({ tutorName, petName: pet.name, memorialUrl, ageYears });
+    } else {
+      const deathYear = pet.death_date ? new Date(pet.death_date).getFullYear() : null;
+      const yearsSince = deathYear ? currentYear - deathYear : null;
+      template = petAnniversaryEmail({ tutorName, petName: pet.name, memorialUrl, yearsSince });
+    }
 
     await resend.emails.send({
       from: emailFrom,

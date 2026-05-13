@@ -3,7 +3,8 @@ import { notFound, redirect } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import ChronicleList from '@/components/chronicles/ChronicleList';
 import LockedFeaturePreview from '@/components/ui/LockedFeaturePreview';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import type { Chronicle, Pet } from '@/types/database';
 
@@ -13,23 +14,18 @@ interface Props {
 
 export default async function DiaryPage({ params }: Props) {
   const { slug } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect('/entrar');
+  const session = await getServerSession();
+  if (!session) redirect('/entrar');
+  const userId = session.user.id;
 
-  const { data: petData } = await supabase
-    .from('pets')
-    .select('*')
-    .eq('memorial_slug', slug)
-    .eq('owner_id', user.id)
-    .single();
+  const petData = await prisma.pet.findFirst({
+    where: { memorial_slug: slug, owner_id: userId },
+  });
 
-  const pet = petData as Pet | null;
+  const pet = petData as unknown as Pet | null;
   if (!pet) notFound();
 
-  const planId = await getEffectivePlanServer(user.id);
+  const planId = await getEffectivePlanServer(userId);
 
   if (!canUse(planId, 'chronicles')) {
     const previewChronicles: Chronicle[] = [
@@ -90,14 +86,12 @@ export default async function DiaryPage({ params }: Props) {
     );
   }
 
-  const { data: chroniclesData } = await supabase
-    .from('chronicles')
-    .select('*')
-    .eq('pet_id', pet.id)
-    .order('event_date', { ascending: false, nullsFirst: false })
-    .order('created_at', { ascending: false });
+  const chroniclesData = await prisma.chronicle.findMany({
+    where: { pet_id: pet.id },
+    orderBy: [{ event_date: 'desc' }, { created_at: 'desc' }],
+  });
 
-  const chronicles = (chroniclesData as Chronicle[] | null) ?? [];
+  const chronicles = chroniclesData as unknown as Chronicle[];
 
   return (
     <div className="mx-auto min-h-screen max-w-[1120px] px-6 pb-28 pt-32 animate-fade-in">

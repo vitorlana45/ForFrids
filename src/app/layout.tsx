@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { Suspense } from 'react';
 import './globals.css';
 import ThemeProvider from '@/components/ui/ThemeProvider';
 import { ConfirmModalProvider } from '@/components/ui/ConfirmModal';
 import { ToastProvider } from '@/components/ui/toast';
+import NavigationProgress from '@/components/ui/NavigationProgress';
+import HelpFab from '@/components/support/HelpFab';
 
 export const metadata: Metadata = {
   title: 'Eterno Pet — Memória Afetiva para Pets',
@@ -36,7 +39,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <ThemeProvider>
           <ConfirmModalProvider>
             <ToastProvider>
+              <Suspense fallback={null}>
+                <NavigationProgress />
+              </Suspense>
               {children}
+              <HelpFab />
             </ToastProvider>
           </ConfirmModalProvider>
         </ThemeProvider>

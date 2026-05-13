@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { authClient } from '@/lib/auth-client';
 import { Loader2 } from 'lucide-react';
 
 export default function RedefinirSenhaPage() {
   const router = useRouter();
-  const supabase = createClient();
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token') ?? '';
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,9 +26,13 @@ export default function RedefinirSenhaPage() {
       setError('As senhas não coincidem.');
       return;
     }
+    if (!token) {
+      setError('Link inválido. Solicite um novo link de redefinição.');
+      return;
+    }
 
     setLoading(true);
-    const { error } = await supabase.auth.updateUser({ password });
+    const { error } = await authClient.resetPassword({ newPassword: password, token });
     setLoading(false);
 
     if (error) {
@@ -35,8 +40,7 @@ export default function RedefinirSenhaPage() {
       return;
     }
 
-    router.push('/dashboard');
-    router.refresh();
+    router.push('/entrar');
   }
 
   return (

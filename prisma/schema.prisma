@@ -1,0 +1,383 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// USER / PROFILE — Better Auth user table (mapped to "profiles")
+// ============================================================
+model Profile {
+  id             String    @id @default(uuid()) @db.Uuid
+  email          String    @unique
+  emailVerified  Boolean   @default(false) @map("email_verified")
+  name           String?
+  image          String?
+
+  // Custom app fields
+  full_name       String?
+  avatar_url      String?
+  guardian_title  String?  @default("Tutor e guardiao de memorias")
+  bio             String?
+  plan_id         PlanId   @default(free)
+
+  created_at DateTime @default(now()) @db.Timestamptz()
+  updated_at DateTime @updatedAt @db.Timestamptz()
+
+  sessions       Session[]
+  accounts       Account[]
+  pets           Pet[]
+  subscriptions  Subscription[]
+  reactions      MemorialReaction[]
+  tributesAuthored Tribute[]        @relation("TributeAuthor")
+  uploadEvents   UploadEvent[]
+  collaborations PetCollaborator[]
+  reportsMade    MemorialReport[]   @relation("ReporterProfile")
+  supportTickets SupportTicket[]
+
+  @@map("profiles")
+}
+
+// ============================================================
+// BETTER AUTH — Session, Account, Verification
+// ============================================================
+model Session {
+  id        String   @id @default(uuid()) @db.Uuid
+  expiresAt DateTime @map("expires_at") @db.Timestamptz()
+  token     String   @unique
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  userId    String   @map("user_id") @db.Uuid
+  user      Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(uuid()) @db.Uuid
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id") @db.Uuid
+  user                  Profile   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at") @db.Timestamptz()
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at") @db.Timestamptz()
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(uuid()) @db.Uuid
+  identifier String
+  value      String
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz()
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  @@map("verification")
+}
+
+// ============================================================
+// APP DOMAIN
+// ============================================================
+model Pet {
+  id            String    @id @default(uuid()) @db.Uuid
+  owner_id      String    @db.Uuid
+  owner         Profile   @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  name          String
+  species       String
+  breed         String?
+  birth_date    DateTime? @db.Date
+  death_date    DateTime? @db.Date
+  avatar_url    String?
+  memorial_slug String    @unique
+  is_public     Boolean   @default(true)
+  tribute_text  String?
+  created_at    DateTime  @default(now()) @db.Timestamptz()
+  updated_at    DateTime  @updatedAt @db.Timestamptz()
+
+  moderation_status ModerationStatus @default(active)
+  blocked_reason    String?
+  blocked_at        DateTime?        @db.Timestamptz()
+  blocked_by        String?          @db.Uuid
+
+  tributes        Tribute[]
+  time_capsules   TimeCapsule[]
+  timeline_entries TimelineEntry[]
+  chronicles      Chronicle[]
+  reactions       MemorialReaction[]
+  collaborators   PetCollaborator[]
+  reports         MemorialReport[]
+
+  @@index([owner_id])
+  @@index([moderation_status], map: "idx_pets_moderation_status")
+  @@map("pets")
+}
+
+model MemorialReport {
+  id                String          @id @default(uuid()) @db.Uuid
+  pet_id            String          @db.Uuid
+  pet               Pet             @relation(fields: [pet_id], references: [id], onDelete: Cascade)
+  reporter_user_id  String?         @db.Uuid
+  reporter          Profile?        @relation("ReporterProfile", fields: [reporter_user_id], references: [id], onDelete: SetNull)
+  reporter_email    String?
+  reporter_ip       String?
+  category          ReportCategory
+  description       String
+  memorial_url      String
+  status            ReportStatus    @default(pending)
+  resolved_by       String?         @db.Uuid
+  resolved_at       DateTime?       @db.Timestamptz()
+  resolution_note   String?
+  created_at        DateTime        @default(now()) @db.Timestamptz()
+
+  @@index([pet_id], map: "idx_memorial_reports_pet_id")
+  @@index([status, created_at(sort: Desc)], map: "idx_memorial_reports_status_created")
+  @@index([reporter_user_id], map: "idx_memorial_reports_reporter_user")
+  @@map("memorial_reports")
+}
+
+model PetCollaborator {
+  id           String              @id @default(uuid()) @db.Uuid
+  pet_id       String              @db.Uuid
+  pet          Pet                 @relation(fields: [pet_id], references: [id], onDelete: Cascade)
+  profile_id   String              @db.Uuid
+  profile      Profile             @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+  role         CollaboratorRole    @default(editor)
+  invited_by   String              @db.Uuid
+  created_at   DateTime            @default(now()) @db.Timestamptz()
+
+  @@unique([pet_id, profile_id], map: "pet_collaborators_unique")
+  @@index([pet_id], map: "idx_pet_collaborators_pet_id")
+  @@index([profile_id], map: "idx_pet_collaborators_profile_id")
+  @@map("pet_collaborators")
+}
+
+model Tribute {
+  id              String         @id @default(uuid()) @db.Uuid
+  pet_id          String         @db.Uuid
+  pet             Pet            @relation(fields: [pet_id], references: [id], onDelete: Cascade)
+  author_user_id  String?        @db.Uuid
+  author          Profile?       @relation("TributeAuthor", fields: [author_user_id], references: [id], onDelete: SetNull)
+  author_name     String
+  author_relation String?
+  message         String
+  status          TributeStatus  @default(pending)
+  reviewed_at     DateTime?      @db.Timestamptz()
+  created_at      DateTime       @default(now()) @db.Timestamptz()
+
+  @@index([pet_id], map: "idx_tributes_pet_id")
+  @@index([created_at], map: "idx_tributes_created_at")
+  @@index([status], map: "idx_tributes_status")
+  @@index([author_user_id], map: "idx_tributes_author_user_id")
+  @@map("tributes")
+}
+
+model TimeCapsule {
+  id         String   @id @default(uuid()) @db.Uuid
+  pet_id     String   @db.Uuid
+  pet        Pet      @relation(fields: [pet_id], references: [id], onDelete: Cascade)
+  title      String   @default("Capsula do tempo")
+  message    String
+  open_at    DateTime @db.Timestamptz()
+  opened     Boolean  @default(false)
+  created_at DateTime @default(now()) @db.Timestamptz()
+
+  @@index([pet_id])
+  @@map("time_capsules")
+}
+
+model TimelineEntry {
+  id          String    @id @default(uuid()) @db.Uuid
+  pet_id      String    @db.Uuid
+  pet         Pet       @relation(fields: [pet_id], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  date        DateTime  @db.Date
+  photo_urls  String[]  @default([])
+  created_at  DateTime  @default(now()) @db.Timestamptz()
+
+  @@index([pet_id])
+  @@map("timeline_entries")
+}
+
+model Chronicle {
+  id              String    @id @default(uuid()) @db.Uuid
+  pet_id          String    @db.Uuid
+  pet             Pet       @relation(fields: [pet_id], references: [id], onDelete: Cascade)
+  title           String
+  content         String
+  excerpt         String?
+  cover_url       String?
+  event_date      DateTime? @db.Date
+  life_phase      String?
+  mood            String?
+  is_published    Boolean   @default(true)
+  reading_minutes Int       @default(1)
+  created_at      DateTime  @default(now()) @db.Timestamptz()
+  updated_at      DateTime  @updatedAt @db.Timestamptz()
+
+  @@index([pet_id], map: "idx_chronicles_pet_id")
+  @@index([event_date], map: "idx_chronicles_event_date")
+  @@index([is_published], map: "idx_chronicles_published")
+  @@map("chronicles")
+}
+
+model MemorialReaction {
+  id            String   @id @default(uuid()) @db.Uuid
+  pet_id        String   @db.Uuid
+  pet           Pet      @relation(fields: [pet_id], references: [id], onDelete: Cascade)
+  user_id       String   @db.Uuid
+  user          Profile  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  reaction_type String   @default("heart")
+  created_at    DateTime @default(now()) @db.Timestamptz()
+
+  @@unique([pet_id, user_id, reaction_type], map: "memorial_reactions_unique")
+  @@index([pet_id], map: "idx_memorial_reactions_pet_id")
+  @@index([user_id], map: "idx_memorial_reactions_user_id")
+  @@map("memorial_reactions")
+}
+
+model Subscription {
+  id                       String    @id @default(uuid()) @db.Uuid
+  profile_id               String    @db.Uuid
+  profile                  Profile   @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+  provider                 String    @default("stripe")
+  provider_customer_id     String?
+  provider_subscription_id String?
+  provider_checkout_id     String?
+  stripe_customer_id       String?
+  stripe_subscription_id   String?   @unique
+  plan_id                  PlanId    @default(free)
+  status                   String    @default("inactive")
+  current_period_end       DateTime? @db.Timestamptz()
+  canceled_at              DateTime? @db.Timestamptz()
+  created_at               DateTime  @default(now()) @db.Timestamptz()
+  updated_at               DateTime  @updatedAt @db.Timestamptz()
+
+  @@index([profile_id], map: "idx_subscriptions_profile_id")
+  @@index([stripe_customer_id], map: "idx_subscriptions_customer_id")
+  @@index([provider, provider_customer_id], map: "idx_subscriptions_provider_customer_id")
+  @@index([provider, profile_id], map: "idx_subscriptions_provider_profile_id")
+  @@unique([provider, provider_subscription_id], map: "idx_subscriptions_provider_subscription_id")
+  @@map("subscriptions")
+}
+
+model UploadEvent {
+  id         String       @id @default(uuid()) @db.Uuid
+  user_id    String       @db.Uuid
+  user       Profile      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  scope      UploadScope
+  object_key String
+  bytes      Int
+  created_at DateTime     @default(now()) @db.Timestamptz()
+
+  @@index([user_id, created_at(sort: Desc)], map: "idx_upload_events_user_created")
+  @@index([scope, created_at(sort: Desc)], map: "idx_upload_events_scope_created")
+  @@map("upload_events")
+}
+
+model SupportTicket {
+  id              String             @id @default(uuid()) @db.Uuid
+  user_id         String?            @db.Uuid
+  user            Profile?           @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  type            SupportTicketType
+  status          SupportTicketStatus @default(open)
+  title           String
+  message         String
+  category        String?
+  impact          String?
+  steps           String?
+  expected_result String?
+  actual_result   String?
+  contact_email   String?
+  page_url        String?
+  user_agent      String?
+  image_url       String?
+  created_at      DateTime           @default(now()) @db.Timestamptz()
+  updated_at      DateTime           @updatedAt @db.Timestamptz()
+
+  @@index([status, created_at(sort: Desc)], map: "idx_support_tickets_status_created")
+  @@index([type, created_at(sort: Desc)], map: "idx_support_tickets_type_created")
+  @@index([user_id], map: "idx_support_tickets_user_id")
+  @@map("support_tickets")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+enum PlanId {
+  free
+  premium
+  lifetime
+}
+
+enum TributeStatus {
+  pending
+  approved
+  rejected
+}
+
+enum UploadScope {
+  profile_avatar
+  pet_avatar
+  pet_timeline
+  chronicle_cover
+}
+
+enum SupportTicketType {
+  support
+  suggestion
+  bug
+  donation_intent
+}
+
+enum SupportTicketStatus {
+  open
+  in_progress
+  resolved
+}
+
+enum CollaboratorRole {
+  editor
+  viewer
+}
+
+enum ModerationStatus {
+  active
+  flagged
+  hidden
+  blocked
+}
+
+enum ReportCategory {
+  sexual_content
+  child_safety
+  animal_cruelty
+  hate_speech
+  spam
+  fake_memorial
+  copyright
+  harassment
+  personal_info
+  other
+}
+
+enum ReportStatus {
+  pending
+  under_review
+  resolved_valid
+  resolved_invalid
+  duplicate
+}

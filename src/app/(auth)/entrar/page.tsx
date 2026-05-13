@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/client';
+import { authClient } from '@/lib/auth-client';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import OperationLoader from '@/components/ui/OperationLoader';
@@ -23,14 +23,17 @@ type FormData = z.infer<typeof schema>;
 export default function EntrarPage() {
   const router = useRouter();
   const [serverError, setServerError] = useState('');
-  const supabase = createClient();
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } =
     useForm<FormData>({ resolver: zodResolver(schema) });
 
   async function onSubmit(data: FormData) {
     setServerError('');
-    const { error } = await supabase.auth.signInWithPassword({ email: data.email, password: data.password });
+    const { error } = await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+      callbackURL: '/dashboard',
+    });
     if (error) { setServerError('E-mail ou senha incorretos. Tente novamente.'); return; }
     router.push('/dashboard');
     router.refresh();

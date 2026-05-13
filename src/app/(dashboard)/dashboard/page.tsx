@@ -1,31 +1,35 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 import PetDashboardCard from '@/components/dashboard/PetDashboardCard';
 import { getMemorialCompletion } from '@/lib/memorial-completion';
 import type { Pet, Profile } from '@/types/database';
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/entrar');
+  const session = await getServerSession();
+  if (!session) redirect('/entrar');
+  const userId = session.user.id;
 
-  const { data: petsData } = await supabase
-    .from('pets').select('*').eq('owner_id', user.id).order('created_at', { ascending: false });
-  const pets = (petsData as Pet[] | null) ?? [];
+  const [petsData, profileData] = await Promise.all([
+    prisma.pet.findMany({
+      where: { owner_id: userId },
+      orderBy: { created_at: 'desc' },
+    }),
+    prisma.profile.findUnique({ where: { id: userId } }),
+  ]);
 
-  const { data: profileData } = await supabase
-    .from('profiles').select('*').eq('id', user.id).single();
-  const profile = profileData as Profile | null;
+  const pets = petsData as unknown as Pet[];
+  const profile = profileData as unknown as Profile | null;
 
   const firstPet = pets[0] ?? null;
-  const { data: firstPetTimelineData } = firstPet
-    ? await supabase
-        .from('timeline_entries')
-        .select('photo_urls')
-        .eq('pet_id', firstPet.id)
-    : { data: [] };
-  const firstPetTimeline = (firstPetTimelineData as { photo_urls: string[] | null }[] | null) ?? [];
+  const firstPetTimeline = firstPet
+    ? await prisma.timelineEntry.findMany({
+        where: { pet_id: firstPet.id },
+        select: { photo_urls: true },
+      })
+    : [];
+
   const firstPetCompletion = firstPet
     ? getMemorialCompletion({
         pet: firstPet,
@@ -52,7 +56,7 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-        {/* ?? Left column ?? */}
+        {/* Left column */}
         <div className="lg:col-span-8 space-y-16">
 
           {/* Quick Actions */}
@@ -104,7 +108,6 @@ export default async function DashboardPage() {
             )}
           </section>
 
-          {/* Recent Memories */}
           {pets.length > 0 && (
             <section>
               <h2 className="font-serif text-3xl mb-6">Memórias Recentes</h2>
@@ -130,10 +133,8 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* ?? Right sidebar ?? */}
+        {/* Right sidebar */}
         <aside className="lg:col-span-4 space-y-8">
-
-          {/* Upcoming Dates */}
           <section className="bg-surface-container-low p-8 rounded-3xl border border-outline-variant/20">
             <div className="flex items-center gap-2 mb-6">
               <span className="material-symbols-outlined text-primary">event</span>
@@ -166,7 +167,6 @@ export default async function DashboardPage() {
             </Link>
           </section>
 
-          {/* Progress */}
           {firstPet && firstPetCompletion && (
             <section className="bg-surface-container-low p-8 rounded-3xl border border-outline-variant/20">
               <h3 className="font-serif text-xl mb-4 text-on-surface">Memorial de {firstPet.name}</h3>
@@ -175,19 +175,14 @@ export default async function DashboardPage() {
                 <div className="bg-primary h-full rounded-full" style={{ width: `${firstPetCompletion.percent}%` }} />
               </div>
               <div className="flex items-center justify-between gap-3">
-                <p className="text-xs text-on-surface-variant">
-                  {firstPetCompletion.percent}% completo
-                </p>
+                <p className="text-xs text-on-surface-variant">{firstPetCompletion.percent}% completo</p>
                 {firstPetCompletion.nextAction && (
-                  <p className="text-right text-xs font-semibold text-primary">
-                    {firstPetCompletion.nextAction}
-                  </p>
+                  <p className="text-right text-xs font-semibold text-primary">{firstPetCompletion.nextAction}</p>
                 )}
               </div>
             </section>
           )}
 
-          {/* Support */}
           <section className="p-4">
             <div className="rounded-2xl border border-dashed border-outline-variant p-6 flex flex-col items-center text-center">
               <span className="material-symbols-outlined text-outline text-4xl mb-3">psychology_alt</span>

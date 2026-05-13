@@ -4,7 +4,29 @@
       "Bash(node -e \"require\\('dotenv'\\).config\\({path:'c:/Users/vitor/Documents/github/ForFrids/.env.local'}\\); const k = process.env.SUPABASE_SERVICE_ROLE_KEY; console.log\\('length:', k?.length, 'prefix:', k?.slice\\(0,6\\)\\);\")",
       "Bash(node -e \"const fs=require\\('fs'\\); const line=fs.readFileSync\\('.env.local','utf8'\\).split\\('\\\\n'\\).find\\(l=>l.startsWith\\('SUPABASE_SERVICE_ROLE_KEY='\\)\\); const val=line?.split\\('='\\).slice\\(1\\).join\\('='\\).trim\\(\\); console.log\\('prefix:', val?.slice\\(0,6\\), 'length:', val?.length\\);\")",
       "Bash(find c:\\\\\\\\Users\\\\\\\\vitor\\\\\\\\Documents\\\\\\\\github\\\\\\\\ForFrids\\\\\\\\src\\\\\\\\app -name \"page.tsx\" -o -name \"layout.tsx\")",
-      "Bash(grep -r \"skeleton\\\\|Skeleton\" c:\\\\\\\\Users\\\\\\\\vitor\\\\\\\\Documents\\\\\\\\github\\\\\\\\ForFrids\\\\\\\\src --include=\"*.tsx\" --include=\"*.ts\")"
+      "Bash(grep -r \"skeleton\\\\|Skeleton\" c:\\\\\\\\Users\\\\\\\\vitor\\\\\\\\Documents\\\\\\\\github\\\\\\\\ForFrids\\\\\\\\src --include=\"*.tsx\" --include=\"*.ts\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://sozfyxnhzudreqxgcbvr.supabase.co/auth/v1/health\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\vitor\\\\Documents\\\\github\\\\ForFrids\" -Recurse -Directory)",
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\vitor\\\\Documents\\\\github\\\\ForFrids\\\\src\" -Recurse -File)",
+      "Bash(Select-Object -First 30)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\vitor\\\\Documents\\\\github\\\\ForFrids\\\\src\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)",
+      "Bash(npx prisma *)",
+      "Bash(DATABASE_URL=\"postgresql://placeholder:placeholder@localhost:5432/placeholder\" npx prisma generate)",
+      "PowerShell($env:DATABASE_URL = \"postgresql://placeholder:placeholder@localhost:5432/placeholder\"; npx prisma generate 2>&1 | Select-Object -Last 15)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\vitor\\\\Documents\\\\github\\\\ForFrids\\\\src\\\\lib\\\\supabase\\\\client.ts\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\vitor\\\\Documents\\\\github\\\\ForFrids\\\\src\\\\lib\\\\supabase\\\\server.ts\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\vitor\\\\Documents\\\\github\\\\ForFrids\\\\src\\\\lib\\\\supabase\\\\admin.ts\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\vitor\\\\Documents\\\\github\\\\ForFrids\\\\src\\\\app\\\\auth\\\\callback\\\\route.ts\" -ErrorAction SilentlyContinue)",
+      "Bash(Write-Host \"Done\")",
+      "Bash(npm uninstall *)",
+      "Bash(podman --version)",
+      "Bash(podman-compose --version)",
+      "PowerShell(podman --version)",
+      "PowerShell(podman-compose --version 2>&1)",
+      "PowerShell(Remove-Item \"c:\\\\Users\\\\vitor\\\\Documents\\\\github\\\\ForFrids\\\\docker-compose.postgres.yml\" -Force -ErrorAction SilentlyContinue ; $bytes = New-Object byte[] 32 ; [System.Security.Cryptography.RandomNumberGenerator]::Create\\(\\).GetBytes\\($bytes\\) ; $secret = [Convert]::ToBase64String\\($bytes\\) -replace '[+/=]', '' ; Write-Output $secret)"
     ]
   }
 }

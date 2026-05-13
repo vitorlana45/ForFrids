@@ -1,6 +1,20 @@
+import { withSentryConfig } from '@sentry/nextjs';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  serverExternalPackages: ['@prisma/client', '@prisma/instrumentation'],
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Silencia "Critical dependency" do OpenTelemetry usado pelo @sentry/node
+      config.ignoreWarnings = [
+        ...(config.ignoreWarnings ?? []),
+        { module: /@opentelemetry\/instrumentation/ },
+        { module: /require-in-the-middle/ },
+      ];
+    }
+    return config;
+  },
   images: {
     remotePatterns: [
       // MinIO (dev e staging — Coolify)
@@ -29,14 +43,20 @@ const nextConfig = {
         hostname: '*.r2.dev',
         pathname: '/**',
       },
-      // Supabase Storage (legado — para imagens antigas ainda em migração)
-      {
-        protocol: 'https',
-        hostname: 'sozfyxnhzudreqxgcbvr.supabase.co',
-        pathname: '/storage/v1/object/public/**',
-      },
     ],
   },
 };
 
-export default nextConfig;
+const sentryEnabled = Boolean(process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT);
+
+export default sentryEnabled
+  ? withSentryConfig(nextConfig, {
+      silent: true,
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      widenClientFileUpload: true,
+      hideSourceMaps: true,
+      disableLogger: true,
+    })
+  : nextConfig;

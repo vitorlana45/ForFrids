@@ -1,19 +1,19 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 import DashboardNav from '@/components/dashboard/DashboardNav';
 import { getDashboardAlerts } from '@/lib/dashboard/alerts';
 import type { Profile } from '@/types/database';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/entrar');
+  const session = await getServerSession();
+  if (!session) redirect('/entrar');
+  const userId = session.user.id;
 
-  const { data: profileData } = await supabase
-    .from('profiles').select('*').eq('id', user.id).single();
-  const profile = profileData as Profile | null;
+  const profileData = await prisma.profile.findUnique({ where: { id: userId } });
+  const profile = profileData as unknown as Profile | null;
 
-  const alerts = await getDashboardAlerts(supabase, user.id);
+  const alerts = await getDashboardAlerts(userId);
 
   return (
     <div className="min-h-screen bg-surface">

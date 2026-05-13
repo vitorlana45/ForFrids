@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import CapsuleCountdown from '@/components/capsules/CapsuleCountdown';
 import CapsuleForm from '@/components/capsules/CapsuleForm';
 import OperationLoader from '@/components/ui/OperationLoader';
@@ -13,7 +12,6 @@ import { formatDate } from '@/lib/utils';
 import { Trash2 } from 'lucide-react';
 
 export default function CapsulaClient() {
-  const supabase = createClient();
   const confirm = useConfirm();
   const toast = useToast();
   const [capsules, setCapsules] = useState<(TimeCapsule & { pet: Pick<Pet, 'name' | 'species' | 'avatar_url'> })[]>([]);
@@ -26,21 +24,13 @@ export default function CapsulaClient() {
   async function load() {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: petsData } = await supabase
-        .from('pets').select('id, name, species, avatar_url').eq('owner_id', user.id);
-      const petsList = (petsData ?? []) as Pick<Pet, 'id' | 'name' | 'species' | 'avatar_url'>[];
+      const res = await fetch('/api/capsulas');
+      if (!res.ok) return;
+      const { capsules: raw, pets: petsList } = await res.json() as {
+        capsules: TimeCapsule[];
+        pets: Pick<Pet, 'id' | 'name' | 'species' | 'avatar_url'>[];
+      };
       setPets(petsList);
-
-      if (petsList.length === 0) { setCapsules([]); return; }
-
-      const petIds = petsList.map(p => p.id);
-      const { data: capData } = await supabase
-        .from('time_capsules').select('*').in('pet_id', petIds).order('open_at', { ascending: true });
-
-      const raw = (capData ?? []) as TimeCapsule[];
       const petMap = Object.fromEntries(petsList.map(p => [p.id, p]));
       setCapsules(raw.map(c => ({ ...c, pet: petMap[c.pet_id] })));
     } finally {

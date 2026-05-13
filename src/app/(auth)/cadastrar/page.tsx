@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/client';
+import { authClient } from '@/lib/auth-client';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import OperationLoader from '@/components/ui/OperationLoader';
@@ -27,19 +27,21 @@ export default function CadastrarPage() {
   const router = useRouter();
   const [serverError, setServerError] = useState('');
   const [success, setSuccess] = useState(false);
-  const supabase = createClient();
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } =
     useForm<FormData>({ resolver: zodResolver(schema) });
 
   async function onSubmit(data: FormData) {
     setServerError('');
-    const { error } = await supabase.auth.signUp({
+    const { error } = await authClient.signUp.email({
       email: data.email,
       password: data.password,
-      options: { data: { full_name: data.full_name }, emailRedirectTo: `${location.origin}/auth/callback` },
+      name: data.full_name,
+      // @ts-expect-error — additional fields passed through to Better Auth
+      full_name: data.full_name,
+      callbackURL: '/onboarding',
     });
-    if (error) { setServerError(error.message); return; }
+    if (error) { setServerError(error.message ?? 'Erro ao criar conta'); return; }
     setSuccess(true);
   }
 

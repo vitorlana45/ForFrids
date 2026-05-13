@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { requestPasswordReset } from '@/lib/auth-client';
 import { compress } from '@/lib/storage/compress';
 import { deleteUploadedMedia } from '@/lib/storage/rollback';
 import { Camera, CreditCard, Loader2, Mail, Pencil, Save, X } from 'lucide-react';
@@ -16,9 +16,31 @@ interface Props {
   effectivePlanId: PlanId;
 }
 
+function maskEmail(email: string) {
+  const [localPart = '', domainPart = ''] = email.split('@');
+  if (!localPart || !domainPart) return email;
+
+  const safeLocal = (() => {
+    if (localPart.length <= 2) return `${localPart[0] ?? ''}*`;
+    if (localPart.length <= 4) return `${localPart.slice(0, 1)}${'*'.repeat(localPart.length - 2)}${localPart.slice(-1)}`;
+    return `${localPart.slice(0, 2)}${'*'.repeat(Math.max(3, localPart.length - 4))}${localPart.slice(-2)}`;
+  })();
+
+  const domainSegments = domainPart.split('.').filter(Boolean);
+  if (domainSegments.length < 2) {
+    return `${safeLocal}@${domainPart.slice(0, 2)}***`;
+  }
+
+  const tld = domainSegments.pop() as string;
+  const domainName = domainSegments.join('.');
+  const safeDomain = `${domainName.slice(0, 2)}***`;
+
+  return `${safeLocal}@${safeDomain}.${tld}`;
+}
+
 export default function SettingsForm({ profile, effectivePlanId }: Props) {
   const router = useRouter();
-  const supabase = createClient();
+  const maskedEmail = maskEmail(profile.email);
 
   const [fullName, setFullName] = useState(profile.full_name ?? '');
   const [guardianTitle, setGuardianTitle] = useState(profile.guardian_title ?? 'Tutor e guardiao de memorias');
@@ -122,19 +144,14 @@ export default function SettingsForm({ profile, effectivePlanId }: Props) {
     }
 
     setSavingPassword(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(profile.email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/redefinir-senha`,
+    const { error } = await requestPasswordReset({
+      email: profile.email,
+      redirectTo: `${window.location.origin}/redefinir-senha`,
     });
-
-    if (false) {
-      setSavingPassword(false);
-      setPasswordError('Senha atual incorreta.');
-      return;
-    }
 
     setSavingPassword(false);
 
-    if (error) { setPasswordError(error.message); return; }
+    if (error) { setPasswordError(error.message ?? 'Erro ao enviar link.'); return; }
     setPasswordSuccess(true);
   }
 
@@ -294,7 +311,7 @@ export default function SettingsForm({ profile, effectivePlanId }: Props) {
           <div className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest px-5 py-4">
             <p className="text-sm font-semibold text-on-surface">Redefinicao por e-mail</p>
             <p className="mt-1 text-sm text-on-surface-variant">
-              Enviaremos um link seguro para <span className="font-semibold text-on-surface">{profile.email}</span>.
+              Enviaremos um link seguro para <span className="font-semibold text-on-surface">{maskedEmail}</span>.
               A senha so sera alterada depois que voce acessar o link recebido.
             </p>
           </div>

@@ -1,8 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
 import { canUse, getEffectivePlanServer } from '@/lib/plans';
+import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 const createSchema = z.object({
@@ -15,30 +16,28 @@ const createSchema = z.object({
 export async function createCapsule(
   input: z.infer<typeof createSchema>,
 ): Promise<{ error?: string; success?: boolean }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: 'Não autenticado' };
+  const session = await getServerSession();
+  if (!session) return { error: 'Não autenticado' };
+  const userId = session.user.id;
 
   const parsed = createSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
-  const planId = await getEffectivePlanServer(user.id);
+  const planId = await getEffectivePlanServer(userId);
   if (!canUse(planId, 'capsules')) return { error: 'UPGRADE_REQUIRED' };
 
-  // Verify pet ownership
-  const { data: pet } = await supabase
-    .from('pets')
-    .select('owner_id')
-    .eq('id', parsed.data.pet_id)
-    .single();
-  if (!(pet as { owner_id: string } | null)?.owner_id || (pet as { owner_id: string }).owner_id !== user.id) {
-    return { error: 'Não autorizado' };
-  }
+  const pet = await prisma.pet.findUnique({
+    where: { id: parsed.data.pet_id },
+    select: { owner_id: true },
+  });
+  if (pet?.owner_id !== userId) return { error: 'Não autorizado' };
 
-  const { error } = await supabase.from('time_capsules').insert(parsed.data);
-  if (error) return { error: error.message };
+  await prisma.timeCapsule.create({
+    data: {
+      ...parsed.data,
+      open_at: new Date(parsed.data.open_at),
+    },
+  });
 
   revalidatePath('/dashboard/capsulas');
   return { success: true };
@@ -47,37 +46,31 @@ export async function createCapsule(
 export async function openCapsule(
   capsuleId: string,
 ): Promise<{ error?: string; success?: boolean }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: 'Não autenticado' };
+  const session = await getServerSession();
+  if (!session) return { error: 'Não autenticado' };
+  const userId = session.user.id;
 
-  const planId = await getEffectivePlanServer(user.id);
+  const planId = await getEffectivePlanServer(userId);
   if (!canUse(planId, 'capsules')) return { error: 'UPGRADE_REQUIRED' };
 
-  const { data: capsuleData } = await supabase
-    .from('time_capsules')
-    .select('pet_id, open_at, opened')
-    .eq('id', capsuleId)
-    .single();
-  const capsule = capsuleData as { pet_id: string; open_at: string; opened: boolean } | null;
+  const capsule = await prisma.timeCapsule.findUnique({
+    where: { id: capsuleId },
+    select: { pet_id: true, open_at: true, opened: true },
+  });
   if (!capsule) return { error: 'Cápsula não encontrada' };
   if (capsule.opened) return { success: true };
-  if (new Date(capsule.open_at) > new Date()) return { error: 'Esta cápsula ainda não pode ser aberta' };
+  if (capsule.open_at > new Date()) return { error: 'Esta cápsula ainda não pode ser aberta' };
 
-  const { data: pet } = await supabase
-    .from('pets')
-    .select('owner_id')
-    .eq('id', capsule.pet_id)
-    .single();
-  if ((pet as { owner_id: string } | null)?.owner_id !== user.id) return { error: 'Não autorizado' };
+  const pet = await prisma.pet.findUnique({
+    where: { id: capsule.pet_id },
+    select: { owner_id: true },
+  });
+  if (pet?.owner_id !== userId) return { error: 'Não autorizado' };
 
-  const { error } = await supabase
-    .from('time_capsules')
-    .update({ opened: true })
-    .eq('id', capsuleId);
-  if (error) return { error: error.message };
+  await prisma.timeCapsule.update({
+    where: { id: capsuleId },
+    data: { opened: true },
+  });
 
   revalidatePath('/dashboard/capsulas');
   return { success: true };
@@ -86,29 +79,23 @@ export async function openCapsule(
 export async function deleteCapsule(
   capsuleId: string,
 ): Promise<{ error?: string; success?: boolean }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: 'Não autenticado' };
+  const session = await getServerSession();
+  if (!session) return { error: 'Não autenticado' };
+  const userId = session.user.id;
 
-  const { data: capsuleData } = await supabase
-    .from('time_capsules')
-    .select('pet_id')
-    .eq('id', capsuleId)
-    .single();
-  const capsule = capsuleData as { pet_id: string } | null;
+  const capsule = await prisma.timeCapsule.findUnique({
+    where: { id: capsuleId },
+    select: { pet_id: true },
+  });
   if (!capsule) return { error: 'Cápsula não encontrada' };
 
-  const { data: pet } = await supabase
-    .from('pets')
-    .select('owner_id')
-    .eq('id', capsule.pet_id)
-    .single();
-  if ((pet as { owner_id: string } | null)?.owner_id !== user.id) return { error: 'Não autorizado' };
+  const pet = await prisma.pet.findUnique({
+    where: { id: capsule.pet_id },
+    select: { owner_id: true },
+  });
+  if (pet?.owner_id !== userId) return { error: 'Não autorizado' };
 
-  const { error } = await supabase.from('time_capsules').delete().eq('id', capsuleId);
-  if (error) return { error: error.message };
+  await prisma.timeCapsule.delete({ where: { id: capsuleId } });
 
   revalidatePath('/dashboard/capsulas');
   return { success: true };

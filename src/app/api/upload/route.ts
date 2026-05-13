@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 import {
   deletePublicObject,
   getBucketName,
@@ -22,27 +23,16 @@ const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SAFE_FILE_RE = /^[a-zA-Z0-9._-]+$/;
 
-async function timelineEntryBelongsToPet(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  entryId: string | undefined,
-  petId: string,
-) {
+async function timelineEntryBelongsToPet(entryId: string | undefined, petId: string) {
   if (!entryId || !UUID_RE.test(entryId)) return false;
-
-  const { data } = await supabase
-    .from('timeline_entries')
-    .select('pet_id')
-    .eq('id', entryId)
-    .single();
-
-  return (data as { pet_id: string } | null)?.pet_id === petId;
+  const entry = await prisma.timelineEntry.findUnique({
+    where: { id: entryId },
+    select: { pet_id: true },
+  });
+  return entry?.pet_id === petId;
 }
 
-async function authorizePath(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  userId: string,
-  path: string,
-) {
+async function authorizePath(userId: string, path: string) {
   if (!isSafePath(path)) {
     return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
   }
@@ -63,14 +53,14 @@ async function authorizePath(
         return NextResponse.json({ error: 'Invalid pet id' }, { status: 400 });
       }
 
-      await assertOwnsPet(supabase, userId, resourceId);
+      await assertOwnsPet(userId, resourceId);
 
       const [, , petId, kind, entryId] = parts;
       const isAvatarUpload = parts.length === 4 && parts[3].startsWith('avatar-');
       const isTimelineUpload = parts.length === 6 && kind === 'timeline';
 
       if (isTimelineUpload) {
-        if (!(await timelineEntryBelongsToPet(supabase, entryId, petId))) {
+        if (!(await timelineEntryBelongsToPet(entryId, petId))) {
           return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
       } else if (!isAvatarUpload) {
@@ -82,7 +72,7 @@ async function authorizePath(
       }
 
       await assertFeatureAccess(userId, 'chronicles');
-      await assertOwnsPet(supabase, userId, resourceId);
+      await assertOwnsPet(userId, resourceId);
     } else {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
@@ -123,9 +113,9 @@ function getUploadScope(path: string): UploadScope | null {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const session = await getServerSession();
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const userId = session.user.id;
 
   const form = await req.formData();
   const file = form.get('file') as File | null;
@@ -143,7 +133,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'File too large' }, { status: 413 });
   }
 
-  const authError = await authorizePath(supabase, user.id, path);
+  const authError = await authorizePath(userId, path);
   if (authError) return authError;
 
   const uploadScope = getUploadScope(path);
@@ -152,7 +142,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await assertUploadAllowed(user.id, file.size);
+    await assertUploadAllowed(userId, file.size);
   } catch (err) {
     if (err instanceof UploadLimitExceededError) {
       return NextResponse.json({ error: err.message }, { status: 429 });
@@ -178,7 +168,7 @@ export async function POST(req: NextRequest) {
 
     try {
       await recordUploadEvent({
-        userId: user.id,
+        userId,
         scope: uploadScope,
         objectKey: path,
         bytes: file.size,
@@ -196,9 +186,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const session = await getServerSession();
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const userId = session.user.id;
 
   const { url } = await req.json().catch(() => ({ url: null }));
   if (typeof url !== 'string') {
@@ -210,7 +200,7 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid url' }, { status: 400 });
   }
 
-  const authError = await authorizePath(supabase, user.id, parsed.key);
+  const authError = await authorizePath(userId, parsed.key);
   if (authError) return authError;
 
   const result = await deletePublicObject(url);

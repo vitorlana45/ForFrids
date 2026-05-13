@@ -1,61 +1,52 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { BookOpen, ExternalLink, Heart, MessageSquare } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
-import type { MemorialReaction, Pet } from '@/types/database';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 
-type PetSummary = Pick<Pet, 'id' | 'name' | 'memorial_slug' | 'avatar_url'>;
+type PetSummary = { id: string; name: string; memorial_slug: string; avatar_url: string | null };
 
 export default async function EngagementPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await getServerSession();
+  if (!session) redirect('/entrar');
+  const userId = session.user.id;
 
-  if (!user) redirect('/entrar');
+  const pets: PetSummary[] = await prisma.pet.findMany({
+    where: { owner_id: userId },
+    select: { id: true, name: true, memorial_slug: true, avatar_url: true },
+    orderBy: { created_at: 'desc' },
+  });
 
-  const { data: petsData } = await supabase
-    .from('pets')
-    .select('id, name, memorial_slug, avatar_url')
-    .eq('owner_id', user.id)
-    .order('created_at', { ascending: false });
+  const petIds = pets.map(p => p.id);
 
-  const pets = (petsData as PetSummary[] | null) ?? [];
-  const petIds = pets.map((pet) => pet.id);
-
-  let reactions: Pick<MemorialReaction, 'pet_id'>[] = [];
+  let reactions: { pet_id: string }[] = [];
   let tributeCounts = new Map<string, number>();
   let chronicleCounts = new Map<string, number>();
 
   if (petIds.length > 0) {
-    const [reactionsRes, tributesRes, chroniclesRes] = await Promise.all([
-      supabase
-        .from('memorial_reactions')
-        .select('pet_id')
-        .in('pet_id', petIds)
-        .eq('reaction_type', 'heart'),
-      supabase
-        .from('tributes')
-        .select('pet_id')
-        .in('pet_id', petIds)
-        .eq('status', 'approved'),
-      supabase
-        .from('chronicles')
-        .select('pet_id')
-        .in('pet_id', petIds)
-        .eq('is_published', true),
+    const [reactionsData, tributesData, chroniclesData] = await Promise.all([
+      prisma.memorialReaction.findMany({
+        where: { pet_id: { in: petIds }, reaction_type: 'heart' },
+        select: { pet_id: true },
+      }),
+      prisma.tribute.findMany({
+        where: { pet_id: { in: petIds }, status: 'approved' },
+        select: { pet_id: true },
+      }),
+      prisma.chronicle.findMany({
+        where: { pet_id: { in: petIds }, is_published: true },
+        select: { pet_id: true },
+      }),
     ]);
 
-    reactions = (reactionsRes.data as Pick<MemorialReaction, 'pet_id'>[] | null) ?? [];
+    reactions = reactionsData;
 
-    const tributes = (tributesRes.data as { pet_id: string }[] | null) ?? [];
-    tributeCounts = tributes.reduce((acc, t) => {
+    tributeCounts = tributesData.reduce((acc, t) => {
       acc.set(t.pet_id, (acc.get(t.pet_id) ?? 0) + 1);
       return acc;
     }, new Map<string, number>());
 
-    const chronicles = (chroniclesRes.data as { pet_id: string }[] | null) ?? [];
-    chronicleCounts = chronicles.reduce((acc, c) => {
+    chronicleCounts = chroniclesData.reduce((acc, c) => {
       acc.set(c.pet_id, (acc.get(c.pet_id) ?? 0) + 1);
       return acc;
     }, new Map<string, number>());

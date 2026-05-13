@@ -3,7 +3,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, BookOpen } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
+import { prisma } from '@/lib/prisma';
 import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import { formatDate } from '@/lib/utils';
 import type { Chronicle, Pet } from '@/types/database';
@@ -15,31 +15,22 @@ interface Props {
 }
 
 async function getPublishedChronicle(slug: string, chronicleId: string) {
-  const supabase = await createClient();
+  const petData = await prisma.pet.findFirst({
+    where: { memorial_slug: slug, is_public: true, moderation_status: { not: 'blocked' } },
+  });
 
-  const { data: petData } = await supabase
-    .from('pets')
-    .select('*')
-    .eq('memorial_slug', slug)
-    .eq('is_public', true)
-    .single();
-
-  const pet = petData as Pet | null;
+  const pet = petData as unknown as Pet | null;
   if (!pet) return { pet: null, chronicle: null };
   const ownerPlanId = await getEffectivePlanServer(pet.owner_id);
   if (!canUse(ownerPlanId, 'chronicles')) return { pet: null, chronicle: null };
 
-  const { data: chronicleData } = await supabase
-    .from('chronicles')
-    .select('*')
-    .eq('id', chronicleId)
-    .eq('pet_id', pet.id)
-    .eq('is_published', true)
-    .single();
+  const chronicleData = await prisma.chronicle.findFirst({
+    where: { id: chronicleId, pet_id: pet.id, is_published: true },
+  });
 
   return {
     pet,
-    chronicle: chronicleData as Chronicle | null,
+    chronicle: chronicleData as unknown as Chronicle | null,
   };
 }
 

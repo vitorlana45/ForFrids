@@ -1,6 +1,6 @@
 import type { PlanId } from '@/types/database';
 import { getEffectivePlanServer } from '@/lib/plans';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { prisma } from '@/lib/prisma';
 
 const MB = 1024 * 1024;
 
@@ -53,8 +53,7 @@ export async function assertUploadAllowed(userId: string, bytes: number) {
       getUsageSince(userId, new Date(Date.now() - 24 * 60 * 60 * 1000)),
     ]);
   } catch (err) {
-    // upload_events table might not exist yet (migration pending) — allow upload
-    console.warn('[upload-limits] quota check skipped (migration pending?):', (err as Error).message);
+    console.warn('[upload-limits] quota check skipped:', (err as Error).message);
     return;
   }
 
@@ -62,11 +61,9 @@ export async function assertUploadAllowed(userId: string, bytes: number) {
   if (minuteUsage.uploads >= limits.maxUploadsPerMinute) {
     throw new UploadLimitExceededError('Muitas imagens enviadas em pouco tempo. Aguarde um minuto e tente novamente.');
   }
-
   if (dailyUsage.uploads >= limits.maxUploadsPerDay) {
     throw new UploadLimitExceededError('Limite diario de uploads atingido para o seu plano.');
   }
-
   if (dailyUsage.bytes + bytes > limits.maxBytesPerDay) {
     throw new UploadLimitExceededError('Limite diario de armazenamento atingido para o seu plano.');
   }
@@ -78,33 +75,29 @@ export async function recordUploadEvent(input: {
   objectKey: string;
   bytes: number;
 }) {
-  const admin = createAdminClient();
-  const { error } = await admin.from('upload_events').insert({
-    user_id: input.userId,
-    scope: input.scope,
-    object_key: input.objectKey,
-    bytes: input.bytes,
-  });
-
-  if (error) {
-    // Log but do not throw — upload already succeeded, quota tracking is best-effort
-    console.warn('[upload-limits] recordUploadEvent failed (migration pending?):', error.message);
+  try {
+    await prisma.uploadEvent.create({
+      data: {
+        user_id: input.userId,
+        scope: input.scope as import('@prisma/client').UploadScope,
+        object_key: input.objectKey,
+        bytes: input.bytes,
+      },
+    });
+  } catch (err) {
+    console.warn('[upload-limits] recordUploadEvent failed:', (err as Error).message);
   }
 }
 
 async function getUsageSince(userId: string, since: Date) {
-  const admin = createAdminClient();
-  const { data, error } = await admin
-    .from('upload_events')
-    .select('bytes')
-    .eq('user_id', userId)
-    .gte('created_at', since.toISOString());
+  const rows = await prisma.uploadEvent.findMany({
+    where: {
+      user_id: userId,
+      created_at: { gte: since },
+    },
+    select: { bytes: true },
+  });
 
-  if (error) {
-    throw error;
-  }
-
-  const rows = (data as { bytes: number | string | null }[] | null) ?? [];
   return {
     uploads: rows.length,
     bytes: rows.reduce((total, row) => total + toNumber(row.bytes), 0),

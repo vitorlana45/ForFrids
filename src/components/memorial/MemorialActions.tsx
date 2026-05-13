@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import AuthRequiredPrompt from '@/components/auth/AuthRequiredPrompt';
+import ReportDialog from '@/components/memorial/ReportDialog';
 import { toggleMemorialReaction } from '@/lib/actions/reactions';
 
 interface Props {
@@ -27,6 +28,7 @@ export default function MemorialActions({
   const [likesCount, setLikesCount] = useState(initialLikesCount);
   const [copied, setCopied] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   function toggleLike() {
@@ -114,12 +116,28 @@ export default function MemorialActions({
       >
         Deixar Homenagem
       </button>
+      <button
+        onClick={() => setShowReport(true)}
+        title="Denunciar este memorial"
+        className="p-2 rounded-lg text-on-surface-variant transition-all hover:bg-surface-container hover:text-error"
+      >
+        <span className="material-symbols-outlined">flag</span>
+      </button>
 
       {showAuthPrompt && (
         <AuthRequiredPrompt
           title="Entre para favoritar"
           description="Crie uma conta ou entre para salvar este memorial e registrar sua curtida."
           onClose={() => setShowAuthPrompt(false)}
+        />
+      )}
+
+      {showReport && (
+        <ReportDialog
+          memorialSlug={memorialSlug}
+          petName={petName}
+          isAuthenticated={isAuthenticated}
+          onClose={() => setShowReport(false)}
         />
       )}
     </div>

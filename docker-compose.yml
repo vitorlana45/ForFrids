@@ -1,34 +1,31 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
-        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
-        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
-        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+  postgres:
+    image: docker.io/postgres:16-alpine
+    restart: unless-stopped
     ports:
-      - "3000:3000"
-    env_file:
-      - .env.local
+      - "5432:5432"
     environment:
-      # Sobrescreve o endpoint do MinIO para o endereço interno do Docker
-      MINIO_ENDPOINT: http://minio:9000
-    depends_on:
-      minio-init:
-        condition: service_completed_successfully
+      POSTGRES_USER: eterno
+      POSTGRES_PASSWORD: eternopass
+      POSTGRES_DB: eternopet
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eterno -d eternopet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   minio:
-    image: minio/minio
+    image: docker.io/minio/minio
+    restart: unless-stopped
     command: server /data --console-address ":9001"
     ports:
-      - "9000:9000"   # API S3
-      - "9001:9001"   # Console web
+      - "9000:9000"
+      - "9001:9001"
     environment:
-      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY_ID:-minioadmin}
-      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
     volumes:
       - minio_data:/data
     healthcheck:
@@ -38,19 +35,18 @@ services:
       retries: 10
 
   minio-init:
-    image: minio/mc
+    image: docker.io/minio/mc
     depends_on:
       minio:
         condition: service_healthy
-    env_file:
-      - .env.local
     entrypoint: >
       /bin/sh -c "
-        mc alias set local http://minio:9000 $${MINIO_ACCESS_KEY_ID:-minioadmin} $${MINIO_SECRET_ACCESS_KEY:-minioadmin} &&
+        mc alias set local http://minio:9000 minioadmin minioadmin &&
         mc mb --ignore-existing local/eterno-pet-dev &&
         mc anonymous set download local/eterno-pet-dev &&
-        echo 'Bucket eterno-pet-dev criado e configurado como publico.'
+        echo 'Bucket eterno-pet-dev criado.'
       "
 
 volumes:
+  postgres_data:
   minio_data:

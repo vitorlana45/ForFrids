@@ -2,8 +2,9 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
 import { deletePublicObject, publicUrlMatchesKeyPrefix } from '@/lib/storage/client';
+import { prisma } from '@/lib/prisma';
 import { log } from '@/lib/logger';
 
 const profileSchema = z.object({
@@ -16,49 +17,40 @@ const profileSchema = z.object({
 type ProfileInput = z.infer<typeof profileSchema>;
 
 export async function updateProfile(input: ProfileInput): Promise<{ error?: string; success?: boolean }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: 'Nao autenticado' };
+  const session = await getServerSession();
+  if (!session) return { error: 'Nao autenticado' };
+  const userId = session.user.id;
 
   const parsed = profileSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
-  const { data: existing, error: fetchError } = await supabase
-    .from('profiles')
-    .select('avatar_url')
-    .eq('id', user.id)
-    .single();
-
-  if (fetchError) return { error: fetchError.message };
-
-  const profile = existing as { avatar_url: string | null } | null;
-  if (!profile) return { error: 'Perfil nao encontrado' };
+  const existing = await prisma.profile.findUnique({
+    where: { id: userId },
+    select: { avatar_url: true },
+  });
+  if (!existing) return { error: 'Perfil nao encontrado' };
 
   const nextAvatarUrl = parsed.data.avatar_url ?? null;
   if (
     nextAvatarUrl &&
-    nextAvatarUrl !== profile.avatar_url &&
-    !publicUrlMatchesKeyPrefix(nextAvatarUrl, `profiles/${user.id}/avatar-`)
+    nextAvatarUrl !== existing.avatar_url &&
+    !publicUrlMatchesKeyPrefix(nextAvatarUrl, `profiles/${userId}/avatar-`)
   ) {
     return { error: 'Foto do tutor invalida' };
   }
 
-  const { error } = await supabase
-    .from('profiles')
-    .update({
+  await prisma.profile.update({
+    where: { id: userId },
+    data: {
       full_name: parsed.data.full_name,
       guardian_title: parsed.data.guardian_title || null,
       bio: parsed.data.bio || null,
       avatar_url: nextAvatarUrl,
-    })
-    .eq('id', user.id);
+    },
+  });
 
-  if (error) return { error: error.message };
-
-  if (profile.avatar_url && profile.avatar_url !== nextAvatarUrl) {
-    const deleteResult = await deletePublicObject(profile.avatar_url);
+  if (existing.avatar_url && existing.avatar_url !== nextAvatarUrl) {
+    const deleteResult = await deletePublicObject(existing.avatar_url);
     if (deleteResult.error) {
       log.warn('[profile:updateProfile] storage delete failed (non-blocking):', deleteResult.error);
     }

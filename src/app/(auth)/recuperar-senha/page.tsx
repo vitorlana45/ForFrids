@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
+import { requestPasswordReset } from '@/lib/auth-client';
 import { Loader2 } from 'lucide-react';
 
 export default function RecuperarSenhaPage() {
@@ -10,15 +10,15 @@ export default function RecuperarSenhaPage() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
-  const supabase = createClient();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/redefinir-senha`,
+    const { error } = await requestPasswordReset({
+      email,
+      redirectTo: '/redefinir-senha',
     });
 
     setLoading(false);

@@ -8,6 +8,7 @@ import { Loader2, X, Send, CheckCircle } from 'lucide-react';
 import { createTribute } from '@/lib/actions/tributes';
 import OperationLoader from '@/components/ui/OperationLoader';
 import AuthRequiredPrompt from '@/components/auth/AuthRequiredPrompt';
+import TurnstileWidget from '@/components/security/TurnstileWidget';
 import type { Tribute } from '@/types/database';
 
 const schema = z.object({
@@ -31,6 +32,8 @@ interface Props {
 export default function TributeForm({ petId, petName, memorialSlug, isAuthenticated, onClose, onCreated }: Props) {
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRequired = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
 
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } =
     useForm<FormData>({ resolver: zodResolver(schema) });
@@ -39,8 +42,12 @@ export default function TributeForm({ petId, petName, memorialSlug, isAuthentica
 
   async function onSubmit(data: FormData) {
     setServerError('');
+    if (turnstileRequired && !turnstileToken) {
+      setServerError('Confirme o desafio anti-spam antes de enviar.');
+      return;
+    }
     const result = await createTribute(
-      { pet_id: petId, ...data },
+      { pet_id: petId, ...data, turnstile_token: turnstileToken ?? undefined },
       memorialSlug,
     );
     if (result.error) { setServerError(result.error); return; }
@@ -143,6 +150,13 @@ export default function TributeForm({ petId, petName, memorialSlug, isAuthentica
           {errors.message && <p className="text-xs text-error">{errors.message.message}</p>}
         </div>
 
+        {turnstileRequired && (
+          <TurnstileWidget
+            onVerify={setTurnstileToken}
+            onExpire={() => setTurnstileToken(null)}
+          />
+        )}
+
         {serverError && (
           <p className="rounded-lg bg-error-container px-4 py-2 text-sm text-on-error-container">
             {serverError}
@@ -151,7 +165,7 @@ export default function TributeForm({ petId, petName, memorialSlug, isAuthentica
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || (turnstileRequired && !turnstileToken)}
           className="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-4 rounded-full font-serif font-semibold hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim transition-all disabled:opacity-60"
         >
           {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}

@@ -1,16 +1,15 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import QRGenerator from '@/components/qrcode/QRGenerator';
 import LockedFeaturePreview from '@/components/ui/LockedFeaturePreview';
 import type { Pet } from '@/types/database';
 
 export default async function QRCodePage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect('/entrar');
+  const session = await getServerSession();
+  if (!session) redirect('/entrar');
+  const user = session.user;
 
   const planId = await getEffectivePlanServer(user.id);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://eternopet.com.br';
@@ -47,14 +46,11 @@ export default async function QRCodePage() {
     );
   }
 
-  const { data } = await supabase
-    .from('pets')
-    .select('id, name, species, memorial_slug')
-    .eq('owner_id', user.id)
-    .eq('is_public', true)
-    .order('created_at', { ascending: false });
-
-  const pets = (data as Pick<Pet, 'id' | 'name' | 'species' | 'memorial_slug'>[] | null) ?? [];
+  const pets = await prisma.pet.findMany({
+    where: { owner_id: user.id, is_public: true },
+    select: { id: true, name: true, species: true, memorial_slug: true },
+    orderBy: { created_at: 'desc' },
+  });
 
   return (
     <div className="max-w-[1200px] mx-auto px-6 pt-32 pb-24 md:pb-12">

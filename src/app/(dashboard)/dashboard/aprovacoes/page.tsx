@@ -1,42 +1,55 @@
 import { redirect } from 'next/navigation';
-import ApprovalsBoard, { type PendingTribute } from '@/components/tributes/ApprovalsBoard';
-import { createClient } from '@/lib/supabase/server';
-import type { Pet, Tribute } from '@/types/database';
+import ApprovalsBoard, {
+  type PendingTribute,
+  type ReviewedTribute,
+} from '@/components/tributes/ApprovalsBoard';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 
 export default async function ApprovalsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect('/entrar');
+  const session = await getServerSession();
+  if (!session) redirect('/entrar');
+  const userId = session.user.id;
 
-  const { data: petsData } = await supabase
-    .from('pets')
-    .select('id, name, memorial_slug')
-    .eq('owner_id', user.id)
-    .order('created_at', { ascending: false });
+  const pets = await prisma.pet.findMany({
+    where: { owner_id: userId },
+    select: { id: true, name: true, memorial_slug: true },
+    orderBy: { created_at: 'desc' },
+  });
 
-  const pets = (petsData as Pick<Pet, 'id' | 'name' | 'memorial_slug'>[] | null) ?? [];
   const petIds = pets.map(pet => pet.id);
-
   let pendingTributes: PendingTribute[] = [];
+  let approvedHistory: ReviewedTribute[] = [];
 
   if (petIds.length > 0) {
-    const { data: tributesData } = await supabase
-      .from('tributes')
-      .select('*')
-      .in('pet_id', petIds)
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false });
+    const tributesData = await prisma.tribute.findMany({
+      where: { pet_id: { in: petIds }, status: 'pending' },
+      orderBy: { created_at: 'desc' },
+    });
 
     const petMap = new Map(pets.map(pet => [pet.id, pet]));
-    pendingTributes = ((tributesData as Tribute[] | null) ?? [])
+
+    pendingTributes = tributesData
       .map((tribute) => {
         const pet = petMap.get(tribute.pet_id);
         if (!pet) return null;
-        return { ...tribute, pet };
+        return { ...tribute, pet } as unknown as PendingTribute;
       })
       .filter(Boolean) as PendingTribute[];
+
+    const approvedData = await prisma.tribute.findMany({
+      where: { pet_id: { in: petIds }, status: 'approved' },
+      orderBy: { reviewed_at: 'desc' },
+      take: 40,
+    });
+
+    approvedHistory = approvedData
+      .map((tribute) => {
+        const pet = petMap.get(tribute.pet_id);
+        if (!pet) return null;
+        return { ...tribute, pet } as unknown as ReviewedTribute;
+      })
+      .filter(Boolean) as ReviewedTribute[];
   }
 
   return (
@@ -51,7 +64,7 @@ export default async function ApprovalsPage() {
         </p>
       </header>
 
-      <ApprovalsBoard initialTributes={pendingTributes} />
+      <ApprovalsBoard initialTributes={pendingTributes} initialApprovedHistory={approvedHistory} />
     </div>
   );
 }

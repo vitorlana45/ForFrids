@@ -1,6 +1,6 @@
 import type { Feature } from '@/lib/plans';
 import { canUse, getEffectivePlanServer } from '@/lib/plans';
-import { createClient } from '@/lib/supabase/server';
+import { prisma } from '@/lib/prisma';
 
 export class AccessDeniedError extends Error {
   constructor(
@@ -19,22 +19,42 @@ export async function assertFeatureAccess(userId: string, feature: Feature) {
   return planId;
 }
 
-export async function assertOwnsPet(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  userId: string,
-  petId: string | undefined,
-) {
+export async function assertOwnsPet(userId: string, petId: string | undefined) {
   if (!petId) {
     throw new AccessDeniedError('FORBIDDEN', 'Forbidden');
   }
 
-  const { data } = await supabase
-    .from('pets')
-    .select('owner_id')
-    .eq('id', petId)
-    .single();
+  const pet = await prisma.pet.findUnique({
+    where: { id: petId },
+    select: {
+      owner_id: true,
+      collaborators: {
+        where: { profile_id: userId, role: 'editor' },
+        select: { id: true },
+      },
+    },
+  });
 
-  if ((data as { owner_id: string } | null)?.owner_id !== userId) {
+  if (!pet) {
+    throw new AccessDeniedError('FORBIDDEN', 'Forbidden');
+  }
+
+  const isOwner = pet.owner_id === userId;
+  const isEditor = pet.collaborators.length > 0;
+  if (!isOwner && !isEditor) {
+    throw new AccessDeniedError('FORBIDDEN', 'Forbidden');
+  }
+}
+
+export async function assertPetOwnerOnly(userId: string, petId: string | undefined) {
+  if (!petId) {
+    throw new AccessDeniedError('FORBIDDEN', 'Forbidden');
+  }
+  const pet = await prisma.pet.findUnique({
+    where: { id: petId },
+    select: { owner_id: true },
+  });
+  if (pet?.owner_id !== userId) {
     throw new AccessDeniedError('FORBIDDEN', 'Forbidden');
   }
 }

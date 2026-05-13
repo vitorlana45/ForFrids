@@ -1,7 +1,8 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 
 interface ToggleResult {
   liked?: boolean;
@@ -9,80 +10,43 @@ interface ToggleResult {
   error?: string;
 }
 
-async function countPetReactions(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  petId: string,
-) {
-  const { count } = await supabase
-    .from('memorial_reactions')
-    .select('id', { count: 'exact', head: true })
-    .eq('pet_id', petId)
-    .eq('reaction_type', 'heart');
-
-  return count ?? 0;
-}
-
 export async function toggleMemorialReaction(
   petId: string,
   memorialSlug: string,
 ): Promise<ToggleResult> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
+  const session = await getServerSession();
+  if (!session) {
     return { error: 'Entre para favoritar este memorial.' };
   }
+  const userId = session.user.id;
 
-  const { data: petData } = await supabase
-    .from('pets')
-    .select('id, is_public')
-    .eq('id', petId)
-    .eq('memorial_slug', memorialSlug)
-    .single();
+  const pet = await prisma.pet.findFirst({
+    where: { id: petId, memorial_slug: memorialSlug },
+    select: { id: true, is_public: true },
+  });
+  if (!pet?.is_public) return { error: 'Memorial nao encontrado.' };
 
-  const pet = petData as { id: string; is_public: boolean } | null;
-  if (!pet?.is_public) {
-    return { error: 'Memorial nao encontrado.' };
-  }
-
-  const { data: existingData } = await supabase
-    .from('memorial_reactions')
-    .select('id')
-    .eq('pet_id', petId)
-    .eq('user_id', user.id)
-    .eq('reaction_type', 'heart')
-    .maybeSingle();
-
-  const existing = existingData as { id: string } | null;
+  const existing = await prisma.memorialReaction.findFirst({
+    where: { pet_id: petId, user_id: userId, reaction_type: 'heart' },
+    select: { id: true },
+  });
 
   if (existing) {
-    const { error } = await supabase
-      .from('memorial_reactions')
-      .delete()
-      .eq('id', existing.id)
-      .eq('user_id', user.id);
-
-    if (error) return { error: error.message };
-
-    const count = await countPetReactions(supabase, petId);
+    await prisma.memorialReaction.delete({ where: { id: existing.id } });
+    const count = await prisma.memorialReaction.count({
+      where: { pet_id: petId, reaction_type: 'heart' },
+    });
     revalidatePath(`/memorial/${memorialSlug}`);
     revalidatePath('/dashboard');
     return { liked: false, count };
   }
 
-  const { error } = await supabase
-    .from('memorial_reactions')
-    .insert({
-      pet_id: petId,
-      user_id: user.id,
-      reaction_type: 'heart',
-    });
-
-  if (error) return { error: error.message };
-
-  const count = await countPetReactions(supabase, petId);
+  await prisma.memorialReaction.create({
+    data: { pet_id: petId, user_id: userId, reaction_type: 'heart' },
+  });
+  const count = await prisma.memorialReaction.count({
+    where: { pet_id: petId, reaction_type: 'heart' },
+  });
   revalidatePath(`/memorial/${memorialSlug}`);
   revalidatePath('/dashboard');
   return { liked: true, count };

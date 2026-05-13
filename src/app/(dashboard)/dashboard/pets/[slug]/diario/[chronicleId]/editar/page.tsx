@@ -3,7 +3,8 @@ import { notFound, redirect } from 'next/navigation';
 import ChronicleEditor from '@/components/chronicles/ChronicleEditor';
 import LockedFeaturePreview from '@/components/ui/LockedFeaturePreview';
 import { canUse, getEffectivePlanServer } from '@/lib/plans';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 import type { Chronicle, Pet } from '@/types/database';
 
 interface Props {
@@ -12,33 +13,25 @@ interface Props {
 
 export default async function EditChroniclePage({ params }: Props) {
   const { slug, chronicleId } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect('/entrar');
+  const session = await getServerSession();
+  if (!session) redirect('/entrar');
+  const userId = session.user.id;
 
-  const { data: petData } = await supabase
-    .from('pets')
-    .select('*')
-    .eq('memorial_slug', slug)
-    .eq('owner_id', user.id)
-    .single();
+  const petData = await prisma.pet.findFirst({
+    where: { memorial_slug: slug, owner_id: userId },
+  });
 
-  const pet = petData as Pet | null;
+  const pet = petData as unknown as Pet | null;
   if (!pet) notFound();
 
-  const { data: chronicleData } = await supabase
-    .from('chronicles')
-    .select('*')
-    .eq('id', chronicleId)
-    .eq('pet_id', pet.id)
-    .single();
+  const chronicleData = await prisma.chronicle.findFirst({
+    where: { id: chronicleId, pet_id: pet.id },
+  });
 
-  const chronicle = chronicleData as Chronicle | null;
+  const chronicle = chronicleData as unknown as Chronicle | null;
   if (!chronicle) notFound();
 
-  const planId = await getEffectivePlanServer(user.id);
+  const planId = await getEffectivePlanServer(userId);
   const canUseChronicles = canUse(planId, 'chronicles');
 
   return (
@@ -55,14 +48,14 @@ export default async function EditChroniclePage({ params }: Props) {
       </header>
 
       {canUseChronicles ? (
-        <ChronicleEditor pet={pet} userId={user.id} chronicle={chronicle} />
+        <ChronicleEditor pet={pet} userId={userId} chronicle={chronicle} />
       ) : (
         <LockedFeaturePreview
           feature="Diario de Cronicas"
           description="A edicao de cronicas esta disponivel nos planos Premium e Eterno. Voce ainda pode remover cronicas antigas pelo diario."
           minHeight="min-h-[760px]"
         >
-          <ChronicleEditor pet={pet} userId={user.id} chronicle={chronicle} />
+          <ChronicleEditor pet={pet} userId={userId} chronicle={chronicle} />
         </LockedFeaturePreview>
       )}
     </div>

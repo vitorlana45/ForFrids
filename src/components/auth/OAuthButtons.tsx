@@ -2,33 +2,27 @@
 
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-
-type Provider = 'google' | 'apple';
+import { authClient } from '@/lib/auth-client';
 
 export default function OAuthButtons() {
-  const [loading, setLoading] = useState<Provider | null>(null);
-  const supabase = createClient();
+  const [loading, setLoading] = useState<'google' | null>(null);
 
-  async function signInWith(provider: Provider) {
-    setLoading(provider);
-    await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: provider === 'google' ? { access_type: 'offline', prompt: 'consent' } : undefined,
-      },
+  async function signInWithGoogle() {
+    setLoading('google');
+    await authClient.signIn.social({
+      provider: 'google',
+      callbackURL: '/onboarding',
     });
     // browser navigates away — no cleanup needed
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="flex">
       <button
         type="button"
-        onClick={() => signInWith('google')}
+        onClick={signInWithGoogle}
         disabled={!!loading}
-        className="flex items-center justify-center gap-3 px-4 py-3 border border-outline-variant rounded-full text-sm text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-3 px-4 py-3 border border-outline-variant rounded-full text-sm text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-50"
       >
         {loading === 'google' ? (
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -40,23 +34,7 @@ export default function OAuthButtons() {
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
           </svg>
         )}
-        Google
-      </button>
-
-      <button
-        type="button"
-        onClick={() => signInWith('apple')}
-        disabled={!!loading}
-        className="flex items-center justify-center gap-3 px-4 py-3 border border-outline-variant rounded-full text-sm text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-50"
-      >
-        {loading === 'apple' ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <svg className="w-5 h-5 shrink-0 fill-current" viewBox="0 0 24 24" aria-hidden>
-            <path d="M17.05 20.28c-.98.95-2.05 1.61-3.23 1.61-1.11 0-1.63-.68-2.91-.68-1.3 0-1.89.65-2.91.68-1.18 0-2.29-.71-3.32-1.72C2.63 18.15 1 14.88 1 11.83c0-2.83 1.48-4.54 3.16-4.54 1.16 0 1.95.69 2.87.69.87 0 1.83-.71 3.16-.71 1.34 0 2.29.62 3.15 1.76-2.58 1.48-2.14 5.17.45 6.43-.69 1.88-1.55 3.66-2.74 4.82zM12.03 7.25c-.09-2.03 1.63-3.84 3.42-4.08.28 2.33-2.16 4.19-3.42 4.08z"/>
-          </svg>
-        )}
-        Apple
+        Continuar com Google
       </button>
     </div>
   );

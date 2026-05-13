@@ -1,10 +1,13 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { getResend, FROM_EMAIL } from '@/lib/resend';
 import { tributeNotificationEmail } from '@/lib/emails/tribute-notification';
+import { rateLimit } from '@/lib/security/rate-limit';
+import { verifyTurnstileToken } from '@/lib/security/turnstile';
 import type { Tribute } from '@/types/database';
 
 const schema = z.object({
@@ -12,6 +15,7 @@ const schema = z.object({
   author_name: z.string().min(1, 'Seu nome é obrigatório'),
   author_relation: z.string().optional(),
   message: z.string().min(3, 'Mensagem muito curta').max(600, 'Máximo 600 caracteres'),
+  turnstile_token: z.string().optional(),
 });
 
 type TributeInput = z.infer<typeof schema>;
@@ -20,118 +24,103 @@ export async function createTribute(
   input: TributeInput,
   memorialSlug: string,
 ): Promise<{ data?: Tribute; error?: string; success?: boolean }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
+  const session = await getServerSession();
+  if (!session) {
     return { error: 'Entre na sua conta para enviar uma homenagem.' };
   }
+  const userId = session.user.id;
 
   const parsed = schema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
-  // Verify the pet is public
-  const { data: pet } = await supabase
-    .from('pets')
-    .select('is_public')
-    .eq('id', input.pet_id)
-    .single();
-  if (!pet || !(pet as { is_public: boolean }).is_public) {
-    return { error: 'Memorial não encontrado' };
+  const limit = rateLimit({ key: `tribute:${userId}`, windowSec: 3600, max: 5 });
+  if (!limit.allowed) {
+    return { error: `Muitas homenagens em pouco tempo. Tente novamente em ${Math.ceil((limit.retryAfterSec ?? 60) / 60)} min.` };
   }
 
-  const { data, error } = await supabase
-    .from('tributes')
-    .insert({
-      ...parsed.data,
-      author_user_id: user.id,
+  if (process.env.TURNSTILE_SECRET_KEY) {
+    const captchaOk = await verifyTurnstileToken(parsed.data.turnstile_token);
+    if (!captchaOk) {
+      return { error: 'Não foi possível validar o desafio anti-spam. Recarregue e tente de novo.' };
+    }
+  }
+
+  const pet = await prisma.pet.findUnique({
+    where: { id: input.pet_id },
+    select: { is_public: true },
+  });
+  if (!pet?.is_public) return { error: 'Memorial não encontrado' };
+
+  const { turnstile_token: _ignored, ...createData } = parsed.data;
+  void _ignored;
+
+  const data = await prisma.tribute.create({
+    data: {
+      ...createData,
+      author_user_id: userId,
       status: 'pending',
-    })
-    .select('*')
-    .single();
-  if (error) return { error: error.message };
+    },
+  });
 
   revalidatePath(`/memorial/${memorialSlug}`);
 
-  // Notify pet owner
   try {
-    const { data: petData } = await supabase
-      .from('pets')
-      .select('name, owner_id')
-      .eq('id', input.pet_id)
-      .single();
+    const petWithOwner = await prisma.pet.findUnique({
+      where: { id: input.pet_id },
+      select: {
+        name: true,
+        owner: { select: { full_name: true, email: true } },
+      },
+    });
 
-    if (petData) {
-      const { data: ownerProfile } = await supabase
-        .from('profiles')
-        .select('full_name, email')
-        .eq('id', (petData as { name: string; owner_id: string }).owner_id)
-        .single();
-
-      const owner = ownerProfile as { full_name: string | null; email: string } | null;
-      const pet = petData as { name: string; owner_id: string };
-
-      if (owner?.email) {
-        const { subject, html } = tributeNotificationEmail({
-          ownerName: owner.full_name ?? 'Tutor',
-          petName: pet.name,
-          petSlug: memorialSlug,
-          authorName: parsed.data.author_name,
-          authorRelation: parsed.data.author_relation ?? null,
-          message: parsed.data.message,
-        });
-        const resend = getResend();
-        await resend.emails.send({
-          from: FROM_EMAIL,
-          to: owner.email,
-          subject,
-          html,
-        });
-      }
+    if (petWithOwner?.owner?.email) {
+      const { subject, html } = tributeNotificationEmail({
+        ownerName: petWithOwner.owner.full_name ?? 'Tutor',
+        petName: petWithOwner.name,
+        petSlug: memorialSlug,
+        authorName: parsed.data.author_name,
+        authorRelation: parsed.data.author_relation ?? null,
+        message: parsed.data.message,
+      });
+      const resend = getResend();
+      await resend.emails.send({
+        from: FROM_EMAIL,
+        to: petWithOwner.owner.email,
+        subject,
+        html,
+      });
     }
   } catch {
-    // Email failure must never break the tribute submission
+    // email failure must never break tribute submission
   }
 
-  return { data: data as Tribute, success: true };
+  return { data: data as unknown as Tribute, success: true };
 }
 
 async function reviewTribute(
   tributeId: string,
   status: 'approved' | 'rejected',
 ): Promise<{ error?: string; success?: boolean }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: 'Não autenticado' };
+  const session = await getServerSession();
+  if (!session) return { error: 'Não autenticado' };
+  const userId = session.user.id;
 
-  const { data: tributeData } = await supabase
-    .from('tributes')
-    .select('pet_id')
-    .eq('id', tributeId)
-    .single();
-
-  const tribute = tributeData as { pet_id: string } | null;
+  const tribute = await prisma.tribute.findUnique({
+    where: { id: tributeId },
+    select: { pet_id: true },
+  });
   if (!tribute) return { error: 'Homenagem não encontrada' };
 
-  const { data: petData } = await supabase
-    .from('pets')
-    .select('owner_id, memorial_slug')
-    .eq('id', tribute.pet_id)
-    .single();
+  const pet = await prisma.pet.findUnique({
+    where: { id: tribute.pet_id },
+    select: { owner_id: true, memorial_slug: true },
+  });
+  if (!pet || pet.owner_id !== userId) return { error: 'Não autorizado' };
 
-  const pet = petData as { owner_id: string; memorial_slug: string } | null;
-  if (!pet || pet.owner_id !== user.id) return { error: 'Não autorizado' };
-
-  const { error } = await supabase
-    .from('tributes')
-    .update({ status, reviewed_at: new Date().toISOString() })
-    .eq('id', tributeId);
-
-  if (error) return { error: error.message };
+  await prisma.tribute.update({
+    where: { id: tributeId },
+    data: { status, reviewed_at: new Date() },
+  });
 
   revalidatePath(`/dashboard/pets/${pet.memorial_slug}/editar`);
   revalidatePath(`/memorial/${pet.memorial_slug}`);
