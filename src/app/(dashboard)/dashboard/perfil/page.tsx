@@ -57,7 +57,7 @@ interface StatCardProps {
 function StatCard({ icon, value, label }: StatCardProps) {
   return (
     <article className="rounded-2xl border border-outline-variant/20 bg-surface-container-low px-8 py-10 text-center transition-transform hover:-translate-y-1">
-      <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-secondary-fixed text-on-secondary-fixed-variant">
+      <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-secondary-container text-on-secondary-container">
         {icon}
       </div>
       <p className="font-serif text-4xl text-on-surface">{value}</p>
@@ -162,7 +162,7 @@ export default async function TutorProfilePage() {
   const displayName = profile.full_name ?? session.user.email?.split('@')[0] ?? 'Tutor';
   const guardianTitle = profile.guardian_title ?? 'Tutor e guardiao de memorias';
   const bio = profile.bio ??
-    'Cada memoria guardada aqui celebra os encontros, os cuidados e o amor que continuam fazendo parte da minha historia.';
+    'Cada memória guardada aqui celebra os encontros, os cuidados e o amor que continuam fazendo parte da minha história.';
 
   return (
     <main className="mx-auto max-w-[1200px] px-6 pb-28 animate-fade-in">
@@ -202,7 +202,7 @@ export default async function TutorProfilePage() {
             </p>
           </div>
           <p className="max-w-2xl break-words font-serif text-xl italic leading-relaxed text-on-surface-variant" style={{ overflowWrap: 'anywhere' }}>
-            "{bio}"
+            “{bio}”
           </p>
           <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row md:items-start">
             <Link
@@ -228,7 +228,7 @@ export default async function TutorProfilePage() {
         <div className="grid gap-6 md:grid-cols-3">
           <StatCard icon={<Heart className="h-6 w-6 fill-current" />} value={legacyDays} label="Dias de memorias" />
           <StatCard icon={<Mail className="h-6 w-6" />} value={capsuleCount} label="Cartas escritas" />
-          <StatCard icon={<BookOpen className="h-6 w-6" />} value={totalStories} label="Historias compartilhadas" />
+          <StatCard icon={<BookOpen className="h-6 w-6" />} value={totalStories} label="Histórias compartilhadas" />
         </div>
       </section>
 

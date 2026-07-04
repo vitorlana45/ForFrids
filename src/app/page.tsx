@@ -4,7 +4,7 @@ import ThemeToggle from '@/components/ui/ThemeToggle';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-surface text-on-surface selection:bg-primary-fixed selection:text-primary">
+    <div className="min-h-screen bg-surface text-on-surface selection:bg-primary selection:text-on-primary">
 
       {/* ?? Header ?? */}
       <header className="bg-surface/90 backdrop-blur-md border-b border-secondary/20 fixed top-0 w-full z-50 transition-all">
@@ -14,6 +14,7 @@ export default function HomePage() {
             <a href="#proposito" className="font-serif text-lg tracking-tight text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Memórias</a>
             <a href="#tributos" className="font-serif text-lg tracking-tight text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Tributos</a>
             <a href="#planos" className="font-serif text-lg tracking-tight text-on-surface-variant hover:text-primary transition-colors cursor-pointer">Planos</a>
+            <Link href="/sobre" className="font-serif text-lg tracking-tight text-on-surface-variant hover:text-primary transition-colors">Sobre</Link>
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />
@@ -67,11 +68,11 @@ export default function HomePage() {
             </div>
             <div className="absolute -bottom-10 -left-10 bg-surface-container-lowest/95 backdrop-blur-md p-8 rounded-3xl shadow-2xl z-20 max-w-[280px] border border-secondary/10">
               <div className="flex items-center gap-3 mb-3">
-                <span className="material-symbols-outlined text-secondary">auto_awesome</span>
-                <span className="text-[10px] font-bold tracking-[0.2em] text-secondary uppercase">IA de Conforto</span>
+                <span className="material-symbols-outlined text-secondary">pets</span>
+                <span className="text-[10px] font-bold tracking-[0.2em] text-secondary uppercase">Memória Eterna</span>
               </div>
-              <p className="font-serif italic text-on-surface-variant leading-relaxed text-sm">
-                "Sua lealdade era um presente diário que o tempo nunca apagará."
+            <p className="font-serif italic text-on-surface-variant leading-relaxed text-sm">
+                “Sua lealdade era um presente diário que o tempo nunca apagará.”
               </p>
             </div>
           </div>
@@ -87,8 +88,8 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {[
                 { icon: 'timeline', bg: 'bg-primary/5', color: 'text-primary', title: 'Timeline da Vida', desc: 'Documente cada marco, desde a primeira patinha em casa até os momentos mais serenos da maturidade.' },
-                { icon: 'lock_clock', bg: 'bg-secondary/10', color: 'text-secondary', title: 'Cápsula do Tempo', desc: 'Guarde cartas, áudios e vídeos para serem revelados em datas especiais, mantendo a conexão sempre viva.' },
-                { icon: 'auto_awesome', bg: 'bg-primary-fixed/30', color: 'text-primary', title: 'IA de Tributos', desc: 'Nossa inteligência sensível ajuda a transformar sentimentos em palavras, criando homenagens poéticas e únicas.' },
+                { icon: 'lock_clock', bg: 'bg-secondary/10', color: 'text-secondary', title: 'Cápsula do Tempo', desc: 'Guarde fotos e mensagens para serem revelados em datas especiais, mantendo a conexão sempre viva.' },
+                { icon: 'volunteer_activism', bg: 'bg-primary-fixed/30', color: 'text-primary', title: 'Tributos da Família', desc: 'Um espaço acolhedor onde amigos e familiares deixam suas mensagens e homenagens, com moderação para preservar cada carinho.' },
               ].map((f) => (
                 <div key={f.title} className="bg-surface-container-lowest p-12 rounded-[2.5rem] soft-elevation border border-secondary/5 flex flex-col gap-8 hover:-translate-y-2 transition-all duration-700">
                   <div className={`w-16 h-16 ${f.bg} rounded-2xl flex items-center justify-center ${f.color}`}>
@@ -111,11 +112,11 @@ export default function HomePage() {
                 Um refúgio visualmente poético para suas lembranças
               </h2>
               <p className="text-xl text-on-surface-variant font-serif italic leading-relaxed">
-                "Cada memorial é desenhado para ser tão único quanto o laço que vocês
-                compartilharam. Cores suaves e foco total na beleza da vida vivida."
+                “Cada memorial é desenhado para ser tão único quanto o laço que vocês
+                compartilharam. Cores suaves e foco total na beleza da vida vivida.”
               </p>
               <ul className="space-y-6">
-                {['Layouts editoriais de alta qualidade', 'Galeria imersiva de fotos e vídeos', 'Espaço acolhedor para mensagens'].map((item) => (
+                {['Layouts editoriais de alta qualidade', 'Galeria imersiva de fotos', 'Espaço acolhedor para mensagens'].map((item) => (
                   <li key={item} className="flex items-center gap-4 text-on-surface-variant">
                     <span className="material-symbols-outlined text-primary text-2xl">check_circle</span>
                     {item}
@@ -136,8 +137,8 @@ export default function HomePage() {
                   </div>
                   <div className="h-px w-16 bg-secondary/30 mx-auto" />
                   <p className="font-serif text-xl leading-relaxed text-on-surface-variant italic px-6">
-                    "O melhor companheiro de trilhas e o dono do latido mais alegre do bairro.
-                    Você nos ensinou o significado de amor incondicional."
+                    “O melhor companheiro de trilhas e o dono do latido mais alegre do bairro.
+                    Você nos ensinou o significado de amor incondicional.”
                   </p>
                 </div>
                 <div className="mt-16 grid grid-cols-2 gap-6">
@@ -151,25 +152,25 @@ export default function HomePage() {
         </section>
 
         {/* ?? How it Works ?? */}
-        <section className="bg-on-background text-surface py-40 px-10 relative overflow-hidden">
+        <section className="bg-inverse-surface text-inverse-on-surface py-40 px-10 relative overflow-hidden">
           <div className="max-w-[1200px] mx-auto relative z-10">
             <div className="flex flex-col md:flex-row justify-between items-end mb-28 gap-10">
               <div className="space-y-6">
                 <span className="text-[11px] font-bold tracking-[0.3em] text-secondary uppercase">PROCESSO</span>
-                <h2 className="font-serif text-5xl text-surface tracking-tight">Como criamos o eterno</h2>
+                <h2 className="font-serif text-5xl text-inverse-on-surface tracking-tight">Como você eterniza</h2>
               </div>
-              <p className="text-on-surface-variant max-w-sm text-lg">Um caminho suave, respeitoso e acolhedor para preservar o que realmente importa.</p>
+              <p className="text-inverse-on-surface/70 max-w-sm text-lg">Um caminho simples e acolhedor: em três passos, suas memórias se tornam um memorial para sempre.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
               {[
-                { n: '01', title: 'Registre Momentos', desc: 'Suba fotos, vídeos e pequenos causos que definem a personalidade única do seu pet.' },
+                { n: '01', title: 'Registre Momentos', desc: 'Suba fotos e pequenos causos que definem a personalidade única do seu pet.' },
                 { n: '02', title: 'Convide a Família', desc: 'Crie um círculo de amor onde todos podem deixar mensagens e compartilhar suas próprias fotos.' },
                 { n: '03', title: 'Gere o Memorial', desc: 'Transforme tudo em uma página eterna ou em um livro impresso de luxo para sua estante.' },
               ].map((s) => (
                 <div key={s.n} className="space-y-8 group">
-                  <div className="text-9xl font-serif text-primary/20 group-hover:text-primary/40 transition-colors duration-700">{s.n}</div>
-                  <h4 className="text-2xl font-serif text-surface">{s.title}</h4>
-                  <p className="text-on-surface-variant leading-relaxed">{s.desc}</p>
+                  <div className="text-9xl font-serif text-inverse-on-surface/20 group-hover:text-inverse-on-surface/40 transition-colors duration-700">{s.n}</div>
+                  <h4 className="text-2xl font-serif text-inverse-on-surface">{s.title}</h4>
+                  <p className="text-inverse-on-surface/70 leading-relaxed">{s.desc}</p>
                 </div>
               ))}
             </div>
@@ -193,7 +194,7 @@ export default function HomePage() {
                 <h4 className="font-serif text-2xl mb-2 text-primary">Santuário Grátis</h4>
                 <div className="text-4xl font-serif mb-8">R$ 0</div>
                 <ul className="space-y-5 mb-12 flex-grow">
-                  {['Memorial público simples', 'Até 50 fotos', 'Mural de condolências'].map(f => (
+                  {['1 memorial público', 'Linha do tempo com até 5 momentos', 'Mural de homenagens com moderação'].map(f => (
                     <li key={f} className="flex items-center gap-4 text-on-surface-variant">
                       <span className="material-symbols-outlined text-secondary text-sm">done</span> {f}
                     </li>
@@ -208,9 +209,9 @@ export default function HomePage() {
               <div className="p-14 rounded-[3rem] bg-primary text-on-primary shadow-premium scale-105 z-10 flex flex-col relative overflow-hidden">
                 <div className="absolute top-8 right-10 bg-secondary px-4 py-1.5 rounded-full text-[9px] font-bold tracking-[0.2em] uppercase text-white">RECOMENDADO</div>
                 <h4 className="font-serif text-2xl mb-2">Memorial Premium</h4>
-                <div className="text-4xl font-serif mb-8">R$ 19<span className="text-xl opacity-70">/mês</span></div>
+                <div className="text-4xl font-serif mb-8">R$ 7,99<span className="text-xl opacity-70">/mês</span></div>
                 <ul className="space-y-6 mb-14 flex-grow">
-                  {['Timeline ilimitada', 'Assistente de Escrita IA', 'Cápsula do Tempo', 'Fotos em HD ilimitadas'].map(f => (
+                  {['Até 5 memoriais', 'Linha do tempo com até 50 momentos', 'Diário de Crônicas e Cápsula do Tempo', 'QR Code do memorial'].map(f => (
                     <li key={f} className="flex items-center gap-4">
                       <span className="material-symbols-outlined text-secondary text-sm">done</span> {f}
                     </li>
@@ -221,20 +222,20 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              {/* Lifetime */}
+              {/* Anual */}
               <div className="p-12 rounded-[2.5rem] border border-secondary/10 bg-surface-container flex flex-col">
-                <h4 className="font-serif text-2xl mb-2 text-primary">Legado Eterno</h4>
-                <div className="text-4xl font-serif mb-2">R$ 490</div>
-                <span className="text-base opacity-60 font-sans mb-8 block">pagamento único</span>
+                <h4 className="font-serif text-2xl mb-2 text-primary">Premium Anual</h4>
+                <div className="text-4xl font-serif mb-2">R$ 79,90<span className="text-xl opacity-70">/ano</span></div>
+                <span className="text-base opacity-60 font-sans mb-8 block">equivale a R$ 6,66/mês</span>
                 <ul className="space-y-5 mb-12 flex-grow">
-                  {['Tudo do plano Premium', 'Domínio personalizado', 'Memorial Book impresso'].map(f => (
+                  {['Tudo do plano Premium', '2 meses grátis', 'Economize R$ 15,98 no ano'].map(f => (
                     <li key={f} className="flex items-center gap-4 text-on-surface-variant">
                       <span className="material-symbols-outlined text-secondary text-sm">done</span> {f}
                     </li>
                   ))}
                 </ul>
-                <Link href="/cadastrar?plano=eterno" className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-surface-container-low transition-all block">
-                  Garantir Legado
+                <Link href="/cadastrar?plano=anual" className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-surface-container-low transition-all block">
+                  Assinar Anual
                 </Link>
               </div>
 
@@ -248,6 +249,7 @@ export default function HomePage() {
         <div className="flex flex-col items-center gap-8 px-10 max-w-4xl mx-auto">
           <div className="font-serif text-lg text-primary">Eterno Pet</div>
           <div className="flex flex-wrap justify-center gap-10">
+            <Link href="/sobre" className="font-serif italic text-sm text-on-surface-variant hover:text-primary underline decoration-secondary/50 transition-all">Sobre</Link>
             <Link href="/privacidade" className="font-serif italic text-sm text-on-surface-variant hover:text-primary underline decoration-secondary/50 transition-all">Privacidade</Link>
             <Link href="/termos" className="font-serif italic text-sm text-on-surface-variant hover:text-primary underline decoration-secondary/50 transition-all">Termos</Link>
             {['Guia do Luto', 'Apoio Psicológico', 'Cerimônias'].map(l => (
