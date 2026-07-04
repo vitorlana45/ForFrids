@@ -26,7 +26,15 @@
       "Bash(podman-compose --version)",
       "PowerShell(podman --version)",
       "PowerShell(podman-compose --version 2>&1)",
-      "PowerShell(Remove-Item \"c:\\\\Users\\\\vitor\\\\Documents\\\\github\\\\ForFrids\\\\docker-compose.postgres.yml\" -Force -ErrorAction SilentlyContinue ; $bytes = New-Object byte[] 32 ; [System.Security.Cryptography.RandomNumberGenerator]::Create\\(\\).GetBytes\\($bytes\\) ; $secret = [Convert]::ToBase64String\\($bytes\\) -replace '[+/=]', '' ; Write-Output $secret)"
+      "PowerShell(Remove-Item \"c:\\\\Users\\\\vitor\\\\Documents\\\\github\\\\ForFrids\\\\docker-compose.postgres.yml\" -Force -ErrorAction SilentlyContinue ; $bytes = New-Object byte[] 32 ; [System.Security.Cryptography.RandomNumberGenerator]::Create\\(\\).GetBytes\\($bytes\\) ; $secret = [Convert]::ToBase64String\\($bytes\\) -replace '[+/=]', '' ; Write-Output $secret)",
+      "Bash(podman-compose up *)",
+      "Bash(command -v nvm)",
+      "Bash(npm audit *)",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{const j=JSON.parse\\(d\\);const v=j.vulnerabilities||{};for\\(const k in v\\){const x=v[k];console.log\\(x.severity.padEnd\\(9\\),k,'via:',\\(x.via||[]\\).map\\(z=>typeof z==='string'?z:z.title\\).join\\(', '\\).slice\\(0,80\\)\\);}console.log\\('---meta---',JSON.stringify\\(j.metadata.vulnerabilities\\)\\);}\\)\")",
+      "Bash(npm.cmd install *)",
+      "Bash(/c/nvm4w/nodejs/npm.cmd install *)",
+      "PowerShell(Get-ExecutionPolicy *)",
+      "Bash(npx next *)"
     ]
   }
 }

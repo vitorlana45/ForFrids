@@ -1,4 +1,4 @@
-# Eterno Pet — Backoffice Desktop
+m  ;# Eterno Pet — Backoffice Desktop
 
 Documento de referência para construir a aplicação **desktop** que consome a API admin do Eterno Pet. Cobre escopo funcional, schema, endpoints, dados de conectividade local para testes, fluxos de UX e considerações de segurança.
 
