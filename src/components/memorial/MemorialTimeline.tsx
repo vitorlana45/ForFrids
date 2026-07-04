@@ -2,7 +2,19 @@
 
 import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import Image from 'next/image';
-import { CalendarDays, Heart, PawPrint, X } from 'lucide-react';
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Gift,
+  Heart,
+  Home,
+  Map,
+  PawPrint,
+  Sparkles,
+  X,
+  type LucideIcon,
+} from 'lucide-react';
 import { formatDayMonth } from '@/lib/utils';
 import type { TimelineEntry } from '@/types/database';
 
@@ -27,6 +39,45 @@ const CONSTELLATION_POSITIONS = [
 ];
 
 type ConstellationPosition = (typeof CONSTELLATION_POSITIONS)[number];
+type MomentKind = 'arrival' | 'celebration' | 'adventure' | 'farewell' | 'memory';
+
+const MOMENT_KIND_META: Record<MomentKind, {
+  label: string;
+  Icon: LucideIcon;
+  badgeClass: string;
+  accentClass: string;
+}> = {
+  arrival: {
+    label: 'Chegada',
+    Icon: Home,
+    badgeClass: 'bg-primary/10 text-primary',
+    accentClass: 'border-primary/25',
+  },
+  celebration: {
+    label: 'Celebração',
+    Icon: Gift,
+    badgeClass: 'bg-secondary/15 text-secondary',
+    accentClass: 'border-secondary/30',
+  },
+  adventure: {
+    label: 'Aventura',
+    Icon: Map,
+    badgeClass: 'bg-tertiary/10 text-tertiary',
+    accentClass: 'border-tertiary/25',
+  },
+  farewell: {
+    label: 'Saudade',
+    Icon: Heart,
+    badgeClass: 'bg-error/10 text-error',
+    accentClass: 'border-error/20',
+  },
+  memory: {
+    label: 'Memória',
+    Icon: Sparkles,
+    badgeClass: 'bg-primary-fixed/40 text-primary',
+    accentClass: 'border-outline-variant/15',
+  },
+};
 
 function getConstellationPosition(index: number): ConstellationPosition {
   return CONSTELLATION_POSITIONS[index % CONSTELLATION_POSITIONS.length];
@@ -34,6 +85,39 @@ function getConstellationPosition(index: number): ConstellationPosition {
 
 function centerX(position: ConstellationPosition) {
   return position.x + CARD_WIDTH_PERCENT / 2;
+}
+
+function normalizeText(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
+function getMomentKind(entry: TimelineEntry): MomentKind {
+  const text = normalizeText(`${entry.title} ${entry.description ?? ''}`);
+
+  if (/(despedida|saudade|partida|adeus|faleceu|morreu|luto)/.test(text)) {
+    return 'farewell';
+  }
+  if (/(aniversario|parabens|festa|celebracao|natal|presente)/.test(text)) {
+    return 'celebration';
+  }
+  if (/(chegada|chegou|nasceu|nascimento|adocao|adotad|primeiro dia|casa)/.test(text)) {
+    return 'arrival';
+  }
+  if (/(viagem|praia|passeio|trilha|parque|aventura|corrida|rua)/.test(text)) {
+    return 'adventure';
+  }
+
+  return 'memory';
+}
+
+function validYear(date: string | Date | null | undefined) {
+  if (!date) return null;
+  const year = new Date(date).getUTCFullYear();
+  const nextYear = new Date().getUTCFullYear() + 1;
+  return year >= 1900 && year <= nextYear ? String(year) : null;
 }
 
 function YearPill({ year }: { year: string }) {
@@ -129,11 +213,21 @@ export default function MemorialTimeline({ entries, isAlive }: Props) {
   );
 
   const close = useCallback(() => setOpenEntry(null), []);
+  const moveOpenEntry = useCallback((direction: -1 | 1) => {
+    setOpenEntry(current => {
+      if (!current) return current;
+      const currentIndex = entries.findIndex(entry => entry.id === current.id);
+      if (currentIndex < 0) return current;
+      return entries[currentIndex + direction] ?? current;
+    });
+  }, [entries]);
 
   useEffect(() => {
     if (!openEntry) return;
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') moveOpenEntry(-1);
+      if (e.key === 'ArrowRight') moveOpenEntry(1);
     }
     document.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
@@ -141,15 +235,21 @@ export default function MemorialTimeline({ entries, isAlive }: Props) {
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
     };
-  }, [openEntry, close]);
+  }, [openEntry, close, moveOpenEntry]);
 
   const items = entries.map((entry, index) => {
-    const year = String(new Date(entry.date).getUTCFullYear());
-    const prevYear = index > 0 ? String(new Date(entries[index - 1].date).getUTCFullYear()) : null;
-    return { entry, index, year, isNewYear: year !== prevYear };
+    const year = validYear(entry.date);
+    const prevYear = index > 0 ? validYear(entries[index - 1].date) : null;
+    return { entry, index, year, isNewYear: year !== null && year !== prevYear };
   });
   const visibleItems = items.slice(0, visibleCount);
   const hiddenCount = entries.length - visibleCount;
+  const openIndex = openEntry ? entries.findIndex(entry => entry.id === openEntry.id) : -1;
+  const previousEntry = openIndex > 0 ? entries[openIndex - 1] : null;
+  const nextEntry = openIndex >= 0 && openIndex < entries.length - 1 ? entries[openIndex + 1] : null;
+  const openMomentMeta = openEntry ? MOMENT_KIND_META[getMomentKind(openEntry)] : null;
+  const OpenMomentIcon = openMomentMeta?.Icon ?? Sparkles;
+  const openYear = openEntry ? validYear(openEntry.date) : null;
 
   return (
     <>
@@ -160,11 +260,13 @@ export default function MemorialTimeline({ entries, isAlive }: Props) {
           const cover = entry.photo_urls[0];
           const extraPhotos = entry.photo_urls.length - 1;
           const stageHeightClass = cover ? 'md:min-h-[430px]' : 'md:min-h-[220px]';
+          const momentMeta = MOMENT_KIND_META[getMomentKind(entry)];
+          const MomentIcon = momentMeta.Icon;
 
           return (
             <div key={entry.id}>
               {/* Primeiro marco de ano, antes da primeira lembranca */}
-              {index === 0 && (
+              {index === 0 && year && (
                 <div className="mb-8 flex justify-center">
                   <YearPill year={year} />
                 </div>
@@ -176,7 +278,7 @@ export default function MemorialTimeline({ entries, isAlive }: Props) {
                   type="button"
                   onClick={() => setOpenEntry(entry)}
                   style={entryStyle(position)}
-                  className="group relative z-10 w-full min-w-0 overflow-hidden rounded-2xl border border-outline-variant/15 bg-surface-container-lowest text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-md sm:max-w-[420px] md:absolute md:left-[var(--node-left)] md:top-[var(--node-top)] md:w-[42%] md:rotate-[var(--node-tilt)] md:hover:rotate-0"
+                  className={`group relative z-10 w-full min-w-0 overflow-hidden rounded-2xl border bg-surface-container-lowest text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-md sm:max-w-[420px] md:absolute md:left-[var(--node-left)] md:top-[var(--node-top)] md:w-[42%] md:rotate-[var(--node-tilt)] md:hover:rotate-0 ${momentMeta.accentClass}`}
                 >
                   {cover && (
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface-container">
@@ -196,17 +298,23 @@ export default function MemorialTimeline({ entries, isAlive }: Props) {
                     </div>
                   )}
                   <div className="p-4">
-                    <span className="mb-1.5 inline-flex items-center gap-1.5 text-primary/80">
-                      <CalendarDays className="h-3.5 w-3.5" />
-                      <span className="font-serif text-sm italic first-letter:uppercase">{formatDayMonth(entry.date)}</span>
-                    </span>
+                    <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-widest ${momentMeta.badgeClass}`}>
+                        <MomentIcon className="h-3.5 w-3.5" />
+                        {momentMeta.label}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 text-primary/80">
+                        <CalendarDays className="h-3.5 w-3.5" />
+                        <span className="font-serif text-sm italic first-letter:uppercase">{formatDayMonth(entry.date)}</span>
+                      </span>
+                    </div>
                     <h3 className="mb-0.5 break-words font-serif text-lg text-on-surface">{entry.title}</h3>
                     {entry.description && (
                       <p className="break-words text-sm leading-5 text-on-surface-variant line-clamp-2" style={{ overflowWrap: 'anywhere' }}>
                         {entry.description}
                       </p>
                     )}
-                    <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-widest text-primary/60 transition-colors group-hover:text-primary">
+                    <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-widest text-primary/60 transition-colors group-hover:text-primary">
                       Ver lembrança
                     </span>
                   </div>
@@ -217,7 +325,7 @@ export default function MemorialTimeline({ entries, isAlive }: Props) {
                 <PawBridge
                   from={position}
                   to={getConstellationPosition(nextItem.index)}
-                  year={nextItem.isNewYear ? nextItem.year : undefined}
+                  year={nextItem.isNewYear ? nextItem.year ?? undefined : undefined}
                 />
               )}
             </div>
@@ -274,6 +382,28 @@ export default function MemorialTimeline({ entries, isAlive }: Props) {
               <X className="h-5 w-5" />
             </button>
 
+            {previousEntry && (
+              <button
+                type="button"
+                onClick={() => moveOpenEntry(-1)}
+                className="absolute left-4 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-surface/80 text-on-surface shadow-sm backdrop-blur transition-colors hover:bg-surface-container md:flex"
+                aria-label="Lembranca anterior"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+            )}
+
+            {nextEntry && (
+              <button
+                type="button"
+                onClick={() => moveOpenEntry(1)}
+                className="absolute right-4 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-surface/80 text-on-surface shadow-sm backdrop-blur transition-colors hover:bg-surface-container md:flex"
+                aria-label="Proxima lembranca"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            )}
+
             {openEntry.photo_urls.length > 0 && (
               <div className={`grid gap-1.5 ${openEntry.photo_urls.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
                 {openEntry.photo_urls.map((url, j) => (
@@ -301,12 +431,21 @@ export default function MemorialTimeline({ entries, isAlive }: Props) {
             )}
 
             <div className="p-8 md:p-10">
-              <span className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-primary">
-                <CalendarDays className="h-3.5 w-3.5" />
-                <span className="font-serif text-sm italic first-letter:uppercase">
-                  {formatDayMonth(openEntry.date)} de {new Date(openEntry.date).getUTCFullYear()}
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                {openMomentMeta && (
+                  <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-widest ${openMomentMeta.badgeClass}`}>
+                    <OpenMomentIcon className="h-3.5 w-3.5" />
+                    {openMomentMeta.label}
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-primary">
+                  <CalendarDays className="h-3.5 w-3.5" />
+                  <span className="font-serif text-sm italic first-letter:uppercase">
+                    {formatDayMonth(openEntry.date)}
+                    {openYear ? ` de ${openYear}` : ''}
+                  </span>
                 </span>
-              </span>
+              </div>
               <h3 className="mb-4 break-words font-serif text-3xl text-on-surface" style={{ overflowWrap: 'anywhere' }}>
                 {openEntry.title}
               </h3>
@@ -314,6 +453,29 @@ export default function MemorialTimeline({ entries, isAlive }: Props) {
                 <p className="whitespace-pre-line break-words text-base leading-relaxed text-on-surface-variant" style={{ overflowWrap: 'anywhere' }}>
                   {openEntry.description}
                 </p>
+              )}
+
+              {(previousEntry || nextEntry) && (
+                <div className="mt-8 flex flex-col gap-3 border-t border-outline-variant/20 pt-5 sm:flex-row sm:items-center sm:justify-between">
+                  <button
+                    type="button"
+                    onClick={() => moveOpenEntry(-1)}
+                    disabled={!previousEntry}
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-outline-variant/30 px-4 py-2 text-sm font-semibold text-on-surface-variant transition-colors hover:border-primary/40 hover:text-primary disabled:pointer-events-none disabled:opacity-30"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Anterior
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveOpenEntry(1)}
+                    disabled={!nextEntry}
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-outline-variant/30 px-4 py-2 text-sm font-semibold text-on-surface-variant transition-colors hover:border-primary/40 hover:text-primary disabled:pointer-events-none disabled:opacity-30"
+                  >
+                    Proxima
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
               )}
             </div>
           </div>
