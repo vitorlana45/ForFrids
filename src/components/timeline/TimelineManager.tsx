@@ -31,6 +31,11 @@ interface Props {
 const MAX_PHOTOS = 4;
 const MAX_PHOTO_SIZE = 5 * 1024 * 1024;
 
+// entry.date pode chegar como Date (Prisma) ou string (form) — new Date() cobre os dois
+function byDate(a: TimelineEntry, b: TimelineEntry) {
+  return new Date(a.date).getTime() - new Date(b.date).getTime();
+}
+
 export default function TimelineManager({ petId, initialEntries, userId }: Props) {
   const confirm = useConfirm();
   const toast = useToast();
@@ -162,7 +167,11 @@ export default function TimelineManager({ petId, initialEntries, userId }: Props
         setFormError(result.error);
         return;
       }
-      setEntries(prev => prev.map(e => e.id === editingId ? { ...e, ...data, photo_urls } : e));
+      setEntries(prev =>
+        prev
+          .map(e => e.id === editingId ? { ...e, ...data, photo_urls } : e)
+          .sort(byDate)
+      );
     } else {
       const result = await createTimelineEntry({ pet_id: petId, ...data, photo_urls: [] });
       if (result.error === 'LIMIT_REACHED') { setFormError('Você atingiu o limite de momentos do seu plano. Faça upgrade para adicionar mais.'); return; }
@@ -181,12 +190,12 @@ export default function TimelineManager({ petId, initialEntries, userId }: Props
           newEntry = { ...newEntry, photo_urls };
         } catch (error) {
           setFormError(error instanceof Error ? error.message : 'Momento criado, mas nao foi possivel enviar as imagens.');
-          setEntries(prev => [...prev, newEntry].sort((a, b) => a.date.localeCompare(b.date)));
+          setEntries(prev => [...prev, newEntry].sort(byDate));
           return;
         }
       }
 
-      setEntries(prev => [...prev, newEntry].sort((a, b) => a.date.localeCompare(b.date)));
+      setEntries(prev => [...prev, newEntry].sort(byDate));
     }
 
     closeForm();

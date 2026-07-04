@@ -4,7 +4,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { canUse, getEffectivePlanServer } from '@/lib/plans';
-import { formatDate } from '@/lib/utils';
 import type { Chronicle, Pet, TimelineEntry } from '@/types/database';
 import MemorialActions from '@/components/memorial/MemorialActions';
 import MemorialNav, { type MemorialNavItem } from '@/components/memorial/MemorialNav';
@@ -12,6 +11,7 @@ import ThemeToggle from '@/components/ui/ThemeToggle';
 import TributesSection from '@/components/memorial/TributesSection';
 import GalleryLightbox from '@/components/memorial/GalleryLightbox';
 import MemorialLogoLink from '@/components/memorial/MemorialLogoLink';
+import MemorialTimeline from '@/components/memorial/MemorialTimeline';
 import ChroniclesSection from '@/components/memorial/ChroniclesSection';
 import TutorSection from '@/components/memorial/TutorSection';
 import type { Tribute } from '@/types/database';
@@ -149,43 +149,12 @@ export default async function MemorialPage({ params }: Props) {
         {/* Timeline */}
         {entries.length > 0 && (
           <section className="py-16 border-t border-primary/10" id="timeline">
-            <div className="max-w-3xl mx-auto">
-              <h2 className="font-serif text-4xl text-center text-primary mb-16">Nossa Caminhada</h2>
-              <div className="relative pl-8 md:pl-0">
-                <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-primary/20 -translate-x-1/2" />
-
-                {entries.map((entry, i) => {
-                  const isLeft = i % 2 === 0;
-                  return (
-                    <div key={entry.id} className="relative mb-8 flex w-full flex-col items-start md:flex-row md:items-center">
-                      <div className={`hidden min-w-0 md:flex md:w-1/2 ${isLeft ? 'justify-end pr-12 text-right' : 'order-3 pl-12'}`}>
-                        <span className="text-[11px] font-bold tracking-widest text-primary uppercase">{formatDate(entry.date)}</span>
-                      </div>
-                      <div className="absolute left-0 md:left-1/2 w-4 h-4 rounded-full bg-primary-container border-4 border-surface -translate-x-1/2 z-10" />
-                      <div className={`w-full min-w-0 pl-8 md:w-1/2 md:pl-0 ${isLeft ? 'md:pl-12' : 'md:pr-12 md:text-right order-2 md:order-1'}`}>
-                        <div className="w-full min-w-0 overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-sm">
-                          <h3 className="break-words font-serif text-xl text-on-surface mb-1">{entry.title}</h3>
-                          {entry.description && (
-                            <p className="break-words text-sm text-on-surface-variant line-clamp-4" style={{ overflowWrap: 'anywhere' }}>
-                              {entry.description}
-                            </p>
-                          )}
-                          <span className="md:hidden text-[11px] font-bold tracking-widest text-primary uppercase mt-2 block">{formatDate(entry.date)}</span>
-                          {entry.photo_urls.length > 0 && (
-                            <div className="mt-4 grid max-w-full grid-cols-2 gap-2 sm:grid-cols-3">
-                              {entry.photo_urls.slice(0, 3).map((url, j) => (
-                                <div key={`${entry.id}-photo-${j}`} className="relative h-24 min-h-0 w-full overflow-hidden rounded-lg bg-surface-container sm:h-28">
-                                  <Image src={url} alt="" fill sizes="(max-width: 768px) 40vw, 120px" unoptimized className="object-cover" />
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+            <div className="max-w-4xl mx-auto">
+              <h2 className="font-serif text-4xl text-center text-primary mb-4">Trilha de Memórias</h2>
+              <p className="text-center font-serif italic text-on-surface-variant mb-16">
+                Cada pegada leva a uma lembrança, na ordem em que foi vivida
+              </p>
+              <MemorialTimeline entries={entries} isAlive={isAlive} />
             </div>
           </section>
         )}
