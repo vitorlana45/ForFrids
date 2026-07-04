@@ -38,7 +38,7 @@ function centerX(position: ConstellationPosition) {
 
 function YearPill({ year }: { year: string }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-primary/20 bg-surface px-5 py-1.5 font-serif italic text-lg text-primary shadow-sm">
+    <span className="relative z-10 inline-flex items-center rounded-full border border-primary/20 bg-surface px-5 py-1.5 font-serif italic text-lg text-primary shadow-sm">
       {year}
     </span>
   );
@@ -66,18 +66,18 @@ function PawBridge({
   return (
     <>
       {/* Desktop: pegadas em diagonal entre pontos livres */}
-      <div className={`relative hidden md:block ${year ? 'h-36' : 'h-28'}`}>
+      <div className={`pointer-events-none relative z-0 hidden md:block ${year ? 'h-32' : 'h-24'}`}>
         {desktopSteps.map(i => {
           const t = i / (desktopSteps.length - 1);
           const left = fromX + (toX - fromX) * t;
-          const top = 10 + t * 70;
+          const top = 16 + t * 68;
           const angle = (goesRight ? 145 : 215) + (i % 2 === 0 ? -10 : 12);
           return (
             <PawPrint
               key={i}
               strokeWidth={1}
-              className="absolute h-5 w-5 fill-current text-primary/40"
-              style={{ left: `${left}%`, top: `${top}%`, transform: `rotate(${angle}deg)` }}
+              className="absolute h-4 w-4 fill-current text-primary/30"
+              style={{ left: `${left}%`, top: `${top}%`, transform: `translate(-50%, -50%) rotate(${angle}deg)` }}
             />
           );
         })}
@@ -89,7 +89,7 @@ function PawBridge({
       </div>
 
       {/* Mobile: pegadas descendo em coluna */}
-      <div className={`relative md:hidden ${year ? 'h-24' : 'h-14'}`}>
+      <div className={`pointer-events-none relative z-0 md:hidden ${year ? 'h-24' : 'h-14'}`}>
         {mobileSteps.map(i => {
           const t = i / (mobileSteps.length - 1);
           const offset = i % 2 === 0 ? -14 : 6;
@@ -98,8 +98,8 @@ function PawBridge({
             <PawPrint
               key={i}
               strokeWidth={1}
-              className="absolute h-5 w-5 fill-current text-primary/40"
-              style={{ left: `calc(50% + ${offset}px)`, top: `${10 + t * 62}%`, transform: `rotate(${angle}deg)` }}
+              className="absolute h-4 w-4 fill-current text-primary/30"
+              style={{ left: `calc(50% + ${offset}px)`, top: `${12 + t * 64}%`, transform: `translate(-50%, -50%) rotate(${angle}deg)` }}
             />
           );
         })}
@@ -159,6 +159,7 @@ export default function MemorialTimeline({ entries, isAlive }: Props) {
           const nextItem = visibleItems[index + 1];
           const cover = entry.photo_urls[0];
           const extraPhotos = entry.photo_urls.length - 1;
+          const stageHeightClass = cover ? 'md:min-h-[430px]' : 'md:min-h-[220px]';
 
           return (
             <div key={entry.id}>
@@ -170,12 +171,12 @@ export default function MemorialTimeline({ entries, isAlive }: Props) {
               )}
 
               {/* Lembranca em modo constelacao */}
-              <div className="relative md:min-h-[310px]">
+              <div className={`relative z-10 ${stageHeightClass}`}>
                 <button
                   type="button"
                   onClick={() => setOpenEntry(entry)}
                   style={entryStyle(position)}
-                  className="group w-full min-w-0 overflow-hidden rounded-2xl border border-outline-variant/15 bg-surface-container-lowest text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-md sm:max-w-[420px] md:absolute md:left-[var(--node-left)] md:top-[var(--node-top)] md:w-[42%] md:rotate-[var(--node-tilt)] md:hover:rotate-0"
+                  className="group relative z-10 w-full min-w-0 overflow-hidden rounded-2xl border border-outline-variant/15 bg-surface-container-lowest text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-md sm:max-w-[420px] md:absolute md:left-[var(--node-left)] md:top-[var(--node-top)] md:w-[42%] md:rotate-[var(--node-tilt)] md:hover:rotate-0"
                 >
                   {cover && (
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface-container">
