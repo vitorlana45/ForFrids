@@ -21,6 +21,7 @@ import type { TimelineEntry } from '@/types/database';
 interface Props {
   entries: TimelineEntry[];
   isAlive: boolean;
+  layoutMode?: TimelineLayoutMode;
 }
 
 // Quantas lembrancas aparecem antes do "continuar a trilha" para manter a pagina
@@ -28,8 +29,21 @@ interface Props {
 const INITIAL_VISIBLE = 6;
 const LOAD_STEP = 10;
 const CARD_WIDTH_PERCENT = 42;
+const DEFAULT_TIMELINE_LAYOUT: TimelineLayoutMode = 'waves';
 
-const CONSTELLATION_POSITIONS = [
+type TrailPosition = { x: number; y: number; tilt: number };
+type TimelineLayoutMode = 'waves' | 'constellation';
+
+const WAVE_POSITIONS: TrailPosition[] = [
+  { x: 4, y: 4, tilt: -1.2 },
+  { x: 30, y: 24, tilt: 0.7 },
+  { x: 54, y: 44, tilt: -0.6 },
+  { x: 54, y: 4, tilt: 1.0 },
+  { x: 30, y: 24, tilt: -0.7 },
+  { x: 4, y: 44, tilt: 0.8 },
+];
+
+const CONSTELLATION_POSITIONS: TrailPosition[] = [
   { x: 5, y: 6, tilt: -1.8 },
   { x: 53, y: 34, tilt: 1.4 },
   { x: 20, y: 14, tilt: 0.8 },
@@ -38,7 +52,6 @@ const CONSTELLATION_POSITIONS = [
   { x: 45, y: 18, tilt: -0.7 },
 ];
 
-type ConstellationPosition = (typeof CONSTELLATION_POSITIONS)[number];
 type MomentKind = 'arrival' | 'celebration' | 'adventure' | 'farewell' | 'memory';
 
 const MOMENT_KIND_META: Record<MomentKind, {
@@ -79,11 +92,12 @@ const MOMENT_KIND_META: Record<MomentKind, {
   },
 };
 
-function getConstellationPosition(index: number): ConstellationPosition {
-  return CONSTELLATION_POSITIONS[index % CONSTELLATION_POSITIONS.length];
+function getTrailPosition(index: number, mode: TimelineLayoutMode): TrailPosition {
+  const positions = mode === 'waves' ? WAVE_POSITIONS : CONSTELLATION_POSITIONS;
+  return positions[index % positions.length];
 }
 
-function centerX(position: ConstellationPosition) {
+function centerX(position: TrailPosition) {
   return position.x + CARD_WIDTH_PERCENT / 2;
 }
 
@@ -137,8 +151,8 @@ function PawBridge({
   to,
   year,
 }: {
-  from: ConstellationPosition;
-  to: ConstellationPosition;
+  from: TrailPosition;
+  to: TrailPosition;
   year?: string;
 }) {
   const desktopSteps = [0, 1, 2, 3, 4];
@@ -197,7 +211,7 @@ function PawBridge({
   );
 }
 
-function entryStyle(position: ConstellationPosition): CSSProperties {
+function entryStyle(position: TrailPosition): CSSProperties {
   return {
     '--node-left': `${position.x}%`,
     '--node-top': `${position.y}px`,
@@ -205,7 +219,11 @@ function entryStyle(position: ConstellationPosition): CSSProperties {
   } as CSSProperties;
 }
 
-export default function MemorialTimeline({ entries, isAlive }: Props) {
+export default function MemorialTimeline({
+  entries,
+  isAlive,
+  layoutMode = DEFAULT_TIMELINE_LAYOUT,
+}: Props) {
   const [openEntry, setOpenEntry] = useState<TimelineEntry | null>(null);
   // Se a trilha e curta, mostra tudo de uma vez; um botao sozinho para 1-2 itens seria ruido.
   const [visibleCount, setVisibleCount] = useState(
@@ -255,11 +273,11 @@ export default function MemorialTimeline({ entries, isAlive }: Props) {
     <>
       <div className="relative">
         {visibleItems.map(({ entry, index, year }) => {
-          const position = getConstellationPosition(index);
+          const position = getTrailPosition(index, layoutMode);
           const nextItem = visibleItems[index + 1];
           const cover = entry.photo_urls[0];
           const extraPhotos = entry.photo_urls.length - 1;
-          const stageHeightClass = cover ? 'md:min-h-[430px]' : 'md:min-h-[220px]';
+          const stageHeightClass = cover ? 'md:min-h-[470px]' : 'md:min-h-[260px]';
           const momentMeta = MOMENT_KIND_META[getMomentKind(entry)];
           const MomentIcon = momentMeta.Icon;
 
@@ -324,7 +342,7 @@ export default function MemorialTimeline({ entries, isAlive }: Props) {
               {nextItem && (
                 <PawBridge
                   from={position}
-                  to={getConstellationPosition(nextItem.index)}
+                  to={getTrailPosition(nextItem.index, layoutMode)}
                   year={nextItem.isNewYear ? nextItem.year ?? undefined : undefined}
                 />
               )}
