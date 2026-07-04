@@ -17,7 +17,7 @@ const SECTIONS = [
   },
   {
     title: 'Compartilhamento',
-    body: 'Não vendemos nem alugamos seus dados. Compartilhamos informações apenas com provedores essenciais (Supabase para banco de dados, Stripe para pagamentos) sob contratos de confidencialidade.',
+    body: 'Não vendemos nem alugamos seus dados. Compartilhamos informações apenas com provedores essenciais (Stripe para pagamentos, Resend para e-mails transacionais e armazenamento de mídia compatível com S3) sob contratos de confidencialidade.',
   },
   {
     title: 'Seus direitos',

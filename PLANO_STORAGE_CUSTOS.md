@@ -1,5 +1,10 @@
 # Eterno Pet - Funcionalidades, imagens e estrategia de storage
 
+> ⚠️ **Documento historico (desatualizado).** A decisao registrada aqui era manter
+> Supabase Storage; o projeto migrou para storage S3-compatible (MinIO no dev, Cloudflare
+> R2 em producao) e o auth tambem saiu do Supabase (agora better-auth + Prisma). Ver
+> `CLAUDE.md` para o estado atual.
+
 Ultima analise: 25 de abril de 2026.
 
 ## Objetivo
