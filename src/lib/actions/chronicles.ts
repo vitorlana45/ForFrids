@@ -18,7 +18,7 @@ const optionalText = z
 const chronicleSchema = z.object({
   pet_id: z.string().uuid(),
   title: z.string().min(3, 'Titulo muito curto').max(120, 'Titulo muito longo'),
-  content: z.string().min(20, 'Conte um pouco mais sobre essa memoria'),
+  content: z.string().min(20, 'Conte um pouco mais sobre essa memória'),
   excerpt: optionalText,
   cover_url: optionalText,
   event_date: optionalText,

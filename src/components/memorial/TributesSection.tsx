@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { Tribute } from '@/types/database';
+import { useSession } from '@/lib/auth-client';
 import TributeCard from './TributeCard';
 import TributeForm from './TributeForm';
 
@@ -12,7 +13,6 @@ interface Props {
   petName: string;
   memorialSlug: string;
   initialTributes: Tribute[];
-  isAuthenticated: boolean;
 }
 
 export default function TributesSection({
@@ -20,8 +20,9 @@ export default function TributesSection({
   petName,
   memorialSlug,
   initialTributes,
-  isAuthenticated,
 }: Props) {
+  const { data: session } = useSession();
+  const isAuthenticated = !!session;
   const [tributes, setTributes] = useState<Tribute[]>(initialTributes);
   const [showForm, setShowForm] = useState(false);
   const [pendingSubmitted, setPendingSubmitted] = useState(false);

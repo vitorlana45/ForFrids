@@ -13,7 +13,7 @@ function emailShell(title: string, bodyHtml: string): string {
         </td></tr>
         <tr><td style="padding:48px 48px 32px;">${bodyHtml}</td></tr>
         <tr><td style="padding:24px 48px 40px;text-align:center;border-top:1px solid #f0ebe4;">
-          <p style="margin:0;font-family:Georgia,serif;font-style:italic;font-size:14px;color:#9ca3af;">"Cada memoria guardada e uma forma de amor que nunca termina."</p>
+          <p style="margin:0;font-family:Georgia,serif;font-style:italic;font-size:14px;color:#9ca3af;">"Cada memória guardada é uma forma de amor que nunca termina."</p>
           <p style="margin:16px 0 0;font-size:12px;color:#9ca3af;">Eterno Pet · <a href="${SITE_URL}" style="color:#7a9c7e;text-decoration:none;">${SITE_URL}</a></p>
         </td></tr>
       </table>
@@ -36,7 +36,7 @@ export function verificationEmail(url: string): { subject: string; html: string 
         </td>
       </tr></table>
       <p style="margin:0;font-size:14px;color:#9ca3af;line-height:1.6;">
-        Se voce nao criou uma conta no Eterno Pet, pode ignorar este e-mail com seguranca.
+        Se você não criou uma conta no Eterno Pet, pode ignorar este e-mail com segurança.
       </p>`),
   };
 }
@@ -55,7 +55,7 @@ export function passwordResetEmail(url: string): { subject: string; html: string
         </td>
       </tr></table>
       <p style="margin:0;font-size:14px;color:#9ca3af;line-height:1.6;">
-        Se voce nao pediu para redefinir sua senha, pode ignorar este e-mail com seguranca. Sua senha atual continua valida.
+        Se você não pediu para redefinir sua senha, pode ignorar este e-mail com segurança. Sua senha atual continua válida.
       </p>`),
   };
 }

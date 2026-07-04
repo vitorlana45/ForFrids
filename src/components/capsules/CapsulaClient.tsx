@@ -209,7 +209,7 @@ export default function CapsulaClient() {
                 {cap.opened && cap.id === openedId && (
                   <div className="absolute inset-0 bg-surface-container-lowest/95 rounded-2xl p-6 flex flex-col">
                     <p className="font-serif italic text-on-surface text-sm leading-relaxed line-clamp-4">
-                      "{cap.message}"
+                      “{cap.message}”
                     </p>
                   </div>
                 )}

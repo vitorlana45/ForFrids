@@ -18,7 +18,7 @@ import type { Chronicle, Pet } from '@/types/database';
 
 const schema = z.object({
   title: z.string().min(3, 'Titulo muito curto').max(120, 'Titulo muito longo'),
-  content: z.string().min(20, 'Conte um pouco mais sobre essa memoria'),
+  content: z.string().min(20, 'Conte um pouco mais sobre essa memória'),
   excerpt: z.string().optional(),
   event_date: z.string().optional(),
   life_phase: z.string().optional(),
@@ -152,7 +152,7 @@ export default function ChronicleEditor({ pet, userId, chronicle }: Props) {
             <div className="flex-1 space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="title">Titulo da cronica</Label>
-                <Input id="title" placeholder={`Uma memoria com ${pet.name}`} {...register('title')} />
+                <Input id="title" placeholder={`Uma memória com ${pet.name}`} {...register('title')} />
                 {errors.title && <p className="text-xs text-error">{errors.title.message}</p>}
               </div>
 

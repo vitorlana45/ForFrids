@@ -312,7 +312,7 @@ export default function SettingsForm({ profile, effectivePlanId }: Props) {
             <p className="text-sm font-semibold text-on-surface">Redefinicao por e-mail</p>
             <p className="mt-1 text-sm text-on-surface-variant">
               Enviaremos um link seguro para <span className="font-semibold text-on-surface">{maskedEmail}</span>.
-              A senha so sera alterada depois que voce acessar o link recebido.
+              A senha só será alterada depois que você acessar o link recebido.
             </p>
           </div>
 

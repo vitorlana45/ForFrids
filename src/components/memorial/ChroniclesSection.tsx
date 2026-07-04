@@ -18,7 +18,7 @@ export default function ChroniclesSection({ petName, memorialSlug, chronicles }:
       <div className="mb-12 flex flex-col gap-3 text-center">
         <h2 className="font-serif text-4xl text-primary">Cronicas de {petName}</h2>
         <p className="mx-auto max-w-2xl text-on-surface-variant">
-          Historias escritas para guardar o que o tempo nao deveria apagar.
+          Histórias escritas para guardar o que o tempo não deveria apagar.
         </p>
       </div>
 

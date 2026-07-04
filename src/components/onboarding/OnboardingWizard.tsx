@@ -173,7 +173,7 @@ export default function OnboardingWizard({ firstName, userId }: Props) {
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
-              placeholder="Fridis, Max, Luna…"
+              placeholder="Frids, Max, Luna…"
               autoFocus
               className="w-full rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-4 py-3 text-on-surface outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
             />

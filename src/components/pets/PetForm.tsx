@@ -85,7 +85,7 @@ export default function PetForm({ userId, pet, onAvatarChange }: Props) {
   async function handleRemoveAvatar() {
     const confirmed = await confirm({
       title: 'Remover foto',
-      message: 'A foto atual do pet sera removida do memorial e do bucket quando voce salvar as alteracoes.',
+      message: 'A foto atual do pet será removida do memorial e do bucket quando você salvar as alterações.',
       confirmLabel: 'Remover',
       variant: 'danger',
     });
@@ -266,7 +266,7 @@ export default function PetForm({ userId, pet, onAvatarChange }: Props) {
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="name">Nome do pet *</Label>
-              <Input id="name" placeholder="Fridis" disabled={locked} {...register('name')} />
+              <Input id="name" placeholder="Frids" disabled={locked} {...register('name')} />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
 

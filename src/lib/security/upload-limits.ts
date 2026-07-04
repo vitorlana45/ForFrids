@@ -21,11 +21,6 @@ const LIMITS: Record<PlanId, {
     maxUploadsPerDay: 150,
     maxBytesPerDay: 250 * MB,
   },
-  lifetime: {
-    maxUploadsPerMinute: 30,
-    maxUploadsPerDay: 300,
-    maxBytesPerDay: 1024 * MB,
-  },
 };
 
 export class UploadLimitExceededError extends Error {

@@ -7,16 +7,32 @@ export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 function yearOf(date: Date | null) {
   return date ? new Date(date).getFullYear() : null;
 }
 
+// Satori (next/og) não suporta webp — busca o avatar e converte para PNG.
+// Qualquer falha (storage fora, timeout, formato) cai no fallback sem quebrar a imagem.
+async function loadAvatarAsPng(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(4000) });
+    if (!res.ok) return null;
+    const input = Buffer.from(await res.arrayBuffer());
+    const sharp = (await import('sharp')).default;
+    const png = await sharp(input).resize(420, 420, { fit: 'cover' }).png().toBuffer();
+    return `data:image/png;base64,${png.toString('base64')}`;
+  } catch {
+    return null;
+  }
+}
+
 export default async function OpenGraphImage({ params }: Props) {
+  const { slug } = await params;
   const pet = await prisma.pet.findFirst({
-    where: { memorial_slug: params.slug, is_public: true, moderation_status: { not: 'blocked' } },
+    where: { memorial_slug: slug, is_public: true, moderation_status: { not: 'blocked' } },
     select: {
       name: true,
       species: true,
@@ -49,6 +65,8 @@ export default async function OpenGraphImage({ params }: Props) {
       size,
     );
   }
+
+  const avatarSrc = pet.avatar_url ? await loadAvatarAsPng(pet.avatar_url) : null;
 
   const birthYear = yearOf(pet.birth_date);
   const deathYear = yearOf(pet.death_date);
@@ -99,7 +117,7 @@ export default async function OpenGraphImage({ params }: Props) {
                 marginBottom: 30,
               }}
             >
-              Em memória de
+              {pet.death_date ? 'Em memória de' : 'Memorial de'}
             </div>
             <div
               style={{
@@ -131,13 +149,10 @@ export default async function OpenGraphImage({ params }: Props) {
                 fontStyle: 'italic',
                 lineHeight: 1.4,
                 maxWidth: 600,
-                display: '-webkit-box',
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
+                display: 'flex',
               }}
             >
-              "{pet.tribute_text}"
+              {`"${pet.tribute_text.length > 140 ? `${pet.tribute_text.slice(0, 140).trimEnd()}…` : pet.tribute_text}"`}
             </div>
           )}
         </div>
@@ -157,10 +172,10 @@ export default async function OpenGraphImage({ params }: Props) {
             overflow: 'hidden',
           }}
         >
-          {pet.avatar_url ? (
+          {avatarSrc ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={pet.avatar_url}
+              src={avatarSrc}
               alt={pet.name}
               width={420}
               height={420}

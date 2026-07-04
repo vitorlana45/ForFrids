@@ -10,6 +10,18 @@ interface ToggleResult {
   error?: string;
 }
 
+// Consultado pelo client no mount — permite que a página do memorial seja estática (ISR)
+export async function getMemorialReactionState(petId: string): Promise<{ liked: boolean }> {
+  const session = await getServerSession();
+  if (!session) return { liked: false };
+
+  const existing = await prisma.memorialReaction.findFirst({
+    where: { pet_id: petId, user_id: session.user.id, reaction_type: 'heart' },
+    select: { id: true },
+  });
+  return { liked: !!existing };
+}
+
 export async function toggleMemorialReaction(
   petId: string,
   memorialSlug: string,
@@ -24,7 +36,7 @@ export async function toggleMemorialReaction(
     where: { id: petId, memorial_slug: memorialSlug },
     select: { id: true, is_public: true },
   });
-  if (!pet?.is_public) return { error: 'Memorial nao encontrado.' };
+  if (!pet?.is_public) return { error: 'Memorial não encontrado.' };
 
   const existing = await prisma.memorialReaction.findFirst({
     where: { pet_id: petId, user_id: userId, reaction_type: 'heart' },

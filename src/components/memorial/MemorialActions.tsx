@@ -1,17 +1,16 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import AuthRequiredPrompt from '@/components/auth/AuthRequiredPrompt';
 import ReportDialog from '@/components/memorial/ReportDialog';
-import { toggleMemorialReaction } from '@/lib/actions/reactions';
+import { getMemorialReactionState, toggleMemorialReaction } from '@/lib/actions/reactions';
+import { useSession } from '@/lib/auth-client';
 
 interface Props {
   petId: string;
   petName: string;
   memorialSlug: string;
   memorialUrl: string;
-  isAuthenticated: boolean;
-  initialLiked: boolean;
   initialLikesCount: number;
 }
 
@@ -20,18 +19,33 @@ export default function MemorialActions({
   petName,
   memorialSlug,
   memorialUrl,
-  isAuthenticated,
-  initialLiked,
   initialLikesCount,
 }: Props) {
-  const [liked, setLiked] = useState(initialLiked);
+  const { data: session, isPending: sessionPending } = useSession();
+  const isAuthenticated = !!session;
+
+  const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(initialLikesCount);
   const [copied, setCopied] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const [isPending, startTransition] = useTransition();
 
+  // A página do memorial é estática (ISR); o estado "curtido" é por usuário e chega aqui
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setLiked(false);
+      return;
+    }
+    let cancelled = false;
+    getMemorialReactionState(petId).then(({ liked }) => {
+      if (!cancelled) setLiked(liked);
+    });
+    return () => { cancelled = true; };
+  }, [isAuthenticated, petId]);
+
   function toggleLike() {
+    if (sessionPending) return;
     if (!isAuthenticated) {
       setShowAuthPrompt(true);
       return;

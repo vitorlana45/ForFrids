@@ -52,7 +52,7 @@ export default async function EditChroniclePage({ params }: Props) {
       ) : (
         <LockedFeaturePreview
           feature="Diario de Cronicas"
-          description="A edicao de cronicas esta disponivel nos planos Premium e Eterno. Voce ainda pode remover cronicas antigas pelo diario."
+          description="A edicao de cronicas esta disponivel no plano Premium. Voce ainda pode remover cronicas antigas pelo diario."
           minHeight="min-h-[760px]"
         >
           <ChronicleEditor pet={pet} userId={userId} chronicle={chronicle} />

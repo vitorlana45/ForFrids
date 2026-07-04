@@ -57,7 +57,7 @@ export default function CapsuleForm({ pets, onClose, onCreated }: Props) {
 
   return (
     <div className="space-y-6">
-      <OperationLoader active={isSubmitting} label="Selando capsula" />
+      <OperationLoader active={isSubmitting} label="Selando cápsula" />
 
       <div className="flex items-start justify-between">
         <div>

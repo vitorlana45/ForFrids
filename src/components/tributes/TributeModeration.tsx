@@ -81,7 +81,7 @@ export default function TributeModeration({ initialTributes }: Props) {
             className="break-words font-serif italic leading-7 text-on-surface"
             style={{ overflowWrap: 'anywhere' }}
           >
-            "{tribute.message}"
+            “{tribute.message}”
           </p>
 
           <div className="mt-5 flex gap-3">

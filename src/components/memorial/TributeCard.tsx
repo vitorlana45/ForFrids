@@ -25,7 +25,7 @@ export default function TributeCard({ tribute, index }: Props) {
         className="font-serif italic text-on-surface mb-6 flex-grow leading-relaxed break-words"
         style={{ overflowWrap: 'anywhere' }}
       >
-        "{tribute.message}"
+        “{tribute.message}”
       </p>
       <div className="flex items-center gap-3">
         <div className={`w-10 h-10 ${colorClass} rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0`}>

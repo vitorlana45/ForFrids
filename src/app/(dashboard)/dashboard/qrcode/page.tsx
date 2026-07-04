@@ -18,7 +18,7 @@ export default async function QRCodePage() {
     const previewPets: Pick<Pet, 'id' | 'name' | 'species' | 'memorial_slug'>[] = [
       {
         id: 'preview-pet',
-        name: 'Fridis',
+        name: 'Frids',
         species: 'Cachorro',
         memorial_slug: 'fridis-memorial',
       },
@@ -32,12 +32,12 @@ export default async function QRCodePage() {
           </span>
           <h1 className="font-serif text-5xl text-on-surface">QR do Memorial</h1>
           <p className="mt-3 max-w-lg text-on-surface-variant">
-            Gere o QR Code do memorial do seu pet para compartilhar ou imprimir em objetos fisicos.
+            Gere o QR Code do memorial do seu pet para compartilhar ou imprimir em objetos físicos.
           </p>
         </div>
         <LockedFeaturePreview
           feature="QR Code do Memorial"
-          description="Gere QR codes para imprimir em objetos fisicos com os planos Premium e Eterno."
+          description="Gere QR codes para imprimir em objetos físicos com o plano Premium."
           minHeight="min-h-[680px]"
         >
           <QRGenerator pets={previewPets} siteUrl={siteUrl} />
@@ -60,7 +60,7 @@ export default async function QRCodePage() {
         </span>
         <h1 className="font-serif text-5xl text-on-surface">QR do Memorial</h1>
         <p className="text-on-surface-variant mt-3 max-w-lg">
-          Gere o QR Code do memorial do seu pet para compartilhar ou imprimir em objetos fisicos.
+          Gere o QR Code do memorial do seu pet para compartilhar ou imprimir em objetos físicos.
         </p>
       </div>
 

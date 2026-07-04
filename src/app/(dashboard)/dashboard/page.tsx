@@ -41,6 +41,16 @@ export default async function DashboardPage() {
       })
     : null;
 
+  const recentEntries = pets.length > 0
+    ? await prisma.timelineEntry.findMany({
+        where: { pet_id: { in: pets.map(p => p.id) } },
+        orderBy: { created_at: 'desc' },
+        take: 3,
+        select: { id: true, pet_id: true, title: true, description: true, date: true, photo_urls: true },
+      })
+    : [];
+  const petById = new Map(pets.map(p => [p.id, p]));
+
   const firstName = profile?.full_name?.split(' ')[0] ?? 'Tutor';
 
   return (
@@ -63,9 +73,12 @@ export default async function DashboardPage() {
           <section>
             <h2 className="font-serif text-3xl mb-6">Ações Rápidas</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Link href="/dashboard/pets/novo" className="flex flex-col items-start p-6 bg-primary text-on-primary rounded-xl shadow-sm hover:opacity-90 transition-all text-left">
+              <Link
+                href={firstPet ? `/dashboard/pets/${firstPet.memorial_slug}/editar?tab=timeline` : '/dashboard/pets/novo'}
+                className="flex flex-col items-start p-6 bg-primary text-on-primary rounded-xl shadow-sm hover:opacity-90 transition-all text-left"
+              >
                 <span className="material-symbols-outlined text-3xl mb-4 text-on-primary">add_a_photo</span>
-                <span className="font-semibold text-on-primary">Novo Momento</span>
+                <span className="font-semibold text-on-primary">{firstPet ? 'Novo Momento' : 'Criar Memorial'}</span>
               </Link>
               <Link
                 href={pets[0] ? `/dashboard/pets/${pets[0].memorial_slug}/diario/novo` : '/dashboard/pets/novo'}
@@ -112,22 +125,58 @@ export default async function DashboardPage() {
             <section>
               <h2 className="font-serif text-3xl mb-6">Memórias Recentes</h2>
               <div className="space-y-6">
-                <div className="flex gap-6 items-start relative pb-8">
-                  <div className="absolute left-4 top-8 bottom-0 w-px bg-outline-variant" />
-                  <div className="w-8 h-8 rounded-full bg-primary-fixed flex-shrink-0 flex items-center justify-center z-10 border-4 border-surface">
-                    <span className="material-symbols-outlined text-sm text-primary">auto_stories</span>
-                  </div>
-                  <div className="flex-1 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/20 shadow-sm">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[11px] font-bold tracking-widest text-on-surface-variant uppercase">Adicione sua primeira memória</span>
+                {recentEntries.length === 0 ? (
+                  <div className="flex gap-6 items-start relative pb-8">
+                    <div className="w-8 h-8 rounded-full bg-primary-fixed flex-shrink-0 flex items-center justify-center z-10 border-4 border-surface">
+                      <span className="material-symbols-outlined text-sm text-primary">auto_stories</span>
                     </div>
-                    <h4 className="font-serif text-xl mb-2">Registre um momento especial</h4>
-                    <p className="text-on-surface-variant mb-4">Use o botão "Novo Momento" para registrar fotos e histórias.</p>
-                    <Link href="/dashboard/pets/novo" className="text-primary font-semibold text-sm flex items-center gap-1">
-                      Começar agora <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                    </Link>
+                    <div className="flex-1 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/20 shadow-sm">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-[11px] font-bold tracking-widest text-on-surface-variant uppercase">Adicione sua primeira memória</span>
+                      </div>
+                      <h4 className="font-serif text-xl mb-2">Registre um momento especial</h4>
+                      <p className="text-on-surface-variant mb-4">Use o botão “Novo Momento” para registrar fotos e histórias.</p>
+                      {firstPet && (
+                        <Link href={`/dashboard/pets/${firstPet.memorial_slug}/editar?tab=timeline`} className="text-primary font-semibold text-sm flex items-center gap-1">
+                          Começar agora <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  recentEntries.map((entry, i) => {
+                    const entryPet = petById.get(entry.pet_id);
+                    return (
+                      <div key={entry.id} className="flex gap-6 items-start relative pb-2">
+                        {i < recentEntries.length - 1 && (
+                          <div className="absolute left-4 top-8 bottom-0 w-px bg-outline-variant" />
+                        )}
+                        <div className="w-8 h-8 rounded-full bg-primary-fixed flex-shrink-0 flex items-center justify-center z-10 border-4 border-surface">
+                          <span className="material-symbols-outlined text-sm text-primary">auto_stories</span>
+                        </div>
+                        <div className="flex-1 min-w-0 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/20 shadow-sm">
+                          <div className="flex items-center justify-between gap-3 mb-2">
+                            <span className="text-[11px] font-bold tracking-widest text-on-surface-variant uppercase truncate">
+                              {entryPet?.name ?? 'Memória'}
+                            </span>
+                            <span className="text-xs text-on-surface-variant shrink-0">
+                              {new Date(entry.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                            </span>
+                          </div>
+                          <h4 className="font-serif text-xl mb-1 break-words">{entry.title}</h4>
+                          {entry.description && (
+                            <p className="text-on-surface-variant text-sm line-clamp-2 break-words mb-3">{entry.description}</p>
+                          )}
+                          {entryPet && (
+                            <Link href={`/dashboard/pets/${entryPet.memorial_slug}/editar?tab=timeline`} className="text-primary font-semibold text-sm flex items-center gap-1">
+                              Ver linha do tempo <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </section>
           )}
@@ -155,7 +204,9 @@ export default async function DashboardPage() {
                       </span>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-on-surface">Aniversário de {pet.name}</h4>
+                      <h4 className="font-semibold text-on-surface">
+                        {pet.death_date ? `Data de memória de ${pet.name}` : `Aniversário de ${pet.name}`}
+                      </h4>
                       <p className="text-sm text-on-surface-variant capitalize">{pet.species}</p>
                     </div>
                   </div>
@@ -185,10 +236,10 @@ export default async function DashboardPage() {
 
           <section className="p-4">
             <div className="rounded-2xl border border-dashed border-outline-variant p-6 flex flex-col items-center text-center">
-              <span className="material-symbols-outlined text-outline text-4xl mb-3">psychology_alt</span>
-              <h4 className="font-serif text-lg text-on-surface mb-2">Espaço de Apoio</h4>
-              <p className="text-sm text-on-surface-variant mb-4">Leia artigos sobre como lidar com o luto e encontrar paz.</p>
-              <button className="text-secondary font-semibold text-sm hover:underline">Acessar conteúdo</button>
+              <span className="material-symbols-outlined text-outline text-4xl mb-3">pets</span>
+              <h4 className="font-serif text-lg text-on-surface mb-2">A nossa história</h4>
+              <p className="text-sm text-on-surface-variant mb-4">O Eterno Pet nasceu de uma despedida. Conheça a Frids, a cachorrinha que inspirou tudo isso.</p>
+              <Link href="/sobre" className="text-secondary font-semibold text-sm hover:underline">Ler a história</Link>
             </div>
           </section>
         </aside>
@@ -198,9 +249,9 @@ export default async function DashboardPage() {
       <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-2 h-16 bg-surface/80 backdrop-blur-md border-t border-outline-variant/20">
         {[
           { icon: 'home', label: 'Início', active: true, href: '/dashboard' },
-          { icon: 'auto_stories', label: 'Memórias', active: false, href: '#' },
-          { icon: 'event', label: 'Lembretes', active: false, href: '#' },
-          { icon: 'person', label: 'Perfil', active: false, href: '#' },
+          { icon: 'lock_clock', label: 'Cápsulas', active: false, href: '/dashboard/capsulas' },
+          { icon: 'monitoring', label: 'Engajamento', active: false, href: '/dashboard/engajamento' },
+          { icon: 'person', label: 'Perfil', active: false, href: '/dashboard/perfil' },
         ].map(item => (
           <Link key={item.label} href={item.href} className={`flex flex-col items-center justify-center scale-95 active:scale-90 transition-transform duration-200 ${item.active ? 'text-primary' : 'text-on-surface-variant'}`}>
             <span className="material-symbols-outlined">{item.icon}</span>

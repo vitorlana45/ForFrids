@@ -94,7 +94,7 @@ export default async function ChronicleReadingPage({ params }: Props) {
               {chronicle.title}
             </h1>
             <p className="mt-5 text-lg leading-8 text-on-surface-variant">
-              Uma memoria de {pet.name}
+              Uma memória de {pet.name}
             </p>
           </header>
 

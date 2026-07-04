@@ -4,8 +4,15 @@ import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 
-export default function OAuthButtons() {
+// Espelha o gate do servidor em src/lib/auth.ts (google so e registrado com
+// GOOGLE_CLIENT_ID/SECRET). Sem esta flag publica, o botao chamaria um provider
+// inexistente e o Better Auth responderia 404 ("Provider not found").
+const googleEnabled = process.env.NEXT_PUBLIC_GOOGLE_ENABLED === 'true';
+
+export default function OAuthButtons({ dividerLabel = 'ou continue com' }: { dividerLabel?: string }) {
   const [loading, setLoading] = useState<'google' | null>(null);
+
+  if (!googleEnabled) return null;
 
   async function signInWithGoogle() {
     setLoading('google');
@@ -17,7 +24,16 @@ export default function OAuthButtons() {
   }
 
   return (
-    <div className="flex">
+    <>
+      <div className="relative py-4">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-outline-variant" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="bg-surface px-4 text-on-surface-variant">{dividerLabel}</span>
+        </div>
+      </div>
+      <div className="flex">
       <button
         type="button"
         onClick={signInWithGoogle}
@@ -36,6 +52,7 @@ export default function OAuthButtons() {
         )}
         Continuar com Google
       </button>
-    </div>
+      </div>
+    </>
   );
 }

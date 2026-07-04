@@ -17,15 +17,15 @@ function CapsulePreview() {
               F
             </div>
             <div>
-              <p className="font-semibold text-on-surface">Fridis</p>
+              <p className="font-semibold text-on-surface">Frids</p>
               <p className="text-xs capitalize text-on-surface-variant">Cachorro</p>
             </div>
           </div>
           <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.25em] text-secondary">
-            CAPSULA SELADA
+            CÁPSULA SELADA
           </p>
           <h2 className="mb-8 font-serif text-3xl text-on-surface">
-            Abrir no proximo aniversario
+            Abrir no próximo aniversário
           </h2>
           <div className="grid grid-cols-3 gap-3">
             {[
@@ -47,7 +47,7 @@ function CapsulePreview() {
         {[
           ['Primeira carta guardada', 'Selada'],
           ['Mensagem de saudade', 'Pronta para abrir'],
-          ['Lembranca especial', 'Aberta'],
+          ['Lembrança especial', 'Aberta'],
         ].map(([title, status]) => (
           <div key={title} className="flex items-start gap-4 rounded-2xl border border-outline-variant/10 bg-surface-container-lowest p-6">
             <span className="material-symbols-outlined mt-0.5 shrink-0 text-2xl text-secondary">lock</span>
@@ -55,7 +55,7 @@ function CapsulePreview() {
               <p className="truncate font-serif text-base text-on-surface">{title}</p>
               <p className="mt-0.5 text-xs text-on-surface-variant">{status}</p>
               <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60">
-                Fridis
+                Frids
               </p>
             </div>
           </div>
@@ -84,12 +84,12 @@ export default async function CapsulaPage() {
           </span>
           <h1 className="font-serif text-5xl text-on-surface">Mensagens para o Futuro</h1>
           <p className="mt-3 max-w-lg text-on-surface-variant">
-            Escreva cartas seladas que so poderao ser lidas na data que voce escolher.
+            Escreva cartas seladas que só poderão ser lidas na data que você escolher.
           </p>
         </div>
         <LockedFeaturePreview
-          feature="Capsula do Tempo"
-          description="Escreva cartas seladas para o futuro com os planos Premium e Eterno."
+          feature="Cápsula do Tempo"
+          description="Escreva cartas seladas para o futuro com o plano Premium."
           minHeight="min-h-[620px]"
         >
           <CapsulePreview />

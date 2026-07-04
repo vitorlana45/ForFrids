@@ -41,6 +41,12 @@ export default function PetEditTabs({
   const [active, setActive] = useState<Tab>('dados');
   const [sidebarAvatar, setSidebarAvatar] = useState<string | null>(pet.avatar_url ?? null);
 
+  // Permite deep-link para uma aba via ?tab= (ex.: quick action do dashboard)
+  useEffect(() => {
+    const tab = new URLSearchParams(window.location.search).get('tab') as Tab | null;
+    if (tab && TABS.some(t => t.id === tab)) setActive(tab);
+  }, []);
+
   useEffect(() => {
     setSidebarAvatar(pet.avatar_url ?? null);
   }, [pet.avatar_url]);

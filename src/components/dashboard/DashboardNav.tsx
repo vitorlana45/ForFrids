@@ -19,7 +19,6 @@ import {
   ShieldCheck,
   Sparkles,
   Sun,
-  UserRound,
   X,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -36,7 +35,6 @@ interface Props {
 }
 
 const NAV_LINKS = [
-  { href: '/dashboard/perfil',      label: 'Perfil',      Icon: UserRound   },
   { href: '/dashboard',             label: 'Início',      Icon: Home        },
   { href: '/dashboard/capsulas',    label: 'Cápsulas',    Icon: LockKeyhole },
   { href: '/dashboard/qrcode',      label: 'QR Code',     Icon: QrCode      },

@@ -36,7 +36,7 @@ export default function TutorSection({ fullName, avatarUrl, guardianTitle, bio }
           <>
             <div className="h-px w-12 bg-secondary/30" />
             <p className="font-serif text-lg italic text-on-surface-variant leading-relaxed break-words" style={{ overflowWrap: 'anywhere' }}>
-              "{bio}"
+              “{bio}”
             </p>
           </>
         )}

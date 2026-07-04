@@ -111,7 +111,7 @@ export default function TimelineManager({ petId, initialEntries, userId }: Props
   async function removeExistingPhoto(url: string) {
     const confirmed = await confirm({
       title: 'Remover imagem',
-      message: 'Esta imagem sera removida do momento e do bucket quando voce salvar.',
+      message: 'Esta imagem será removida do momento e do bucket quando você salvar.',
       confirmLabel: 'Remover',
       variant: 'danger',
     });

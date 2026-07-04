@@ -36,7 +36,7 @@ export default async function NewChroniclePage({ params }: Props) {
         </Link>
         <h1 className="font-serif text-5xl text-on-surface">Nova cronica</h1>
         <p className="mt-3 max-w-2xl text-lg text-on-surface-variant">
-          Escreva uma memoria de {pet.name} com calma. Ela pode nascer como rascunho e ser publicada depois.
+          Escreva uma memória de {pet.name} com calma. Ela pode nascer como rascunho e ser publicada depois.
         </p>
       </header>
 
@@ -45,7 +45,7 @@ export default async function NewChroniclePage({ params }: Props) {
       ) : (
         <LockedFeaturePreview
           feature="Diario de Cronicas"
-          description="Crie textos mais longos, com capa, fase da vida e publicacao no memorial nos planos Premium e Eterno."
+          description="Crie textos mais longos, com capa, fase da vida e publicação no memorial no plano Premium."
           minHeight="min-h-[760px]"
         >
           <ChronicleEditor pet={pet} userId={userId} />

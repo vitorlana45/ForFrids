@@ -32,7 +32,7 @@ export default function UpgradePrompt({ feature, description, variant = 'standal
         {feature}
       </h2>
       <p className="mx-auto mt-3 max-w-sm text-on-surface-variant">
-        {description ?? `${feature} está disponível nos planos Premium e Eterno.`}
+        {description ?? `${feature} está disponível no plano Premium.`}
       </p>
       <Link
         href="/dashboard/planos"

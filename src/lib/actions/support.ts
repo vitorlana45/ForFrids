@@ -109,7 +109,7 @@ export async function createDonationCheckoutSession(
             unit_amount: amount,
             product_data: {
               name: 'Doação Eterno Pet',
-              description: 'Apoio voluntário para manutenção da plataforma.',
+              description: 'Apoio voluntário para manutenção da plataforma. Ficamos felizes e agradeçemos a sua Doação!!',
             },
           },
         },

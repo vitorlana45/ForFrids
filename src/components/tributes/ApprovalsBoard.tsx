@@ -194,7 +194,7 @@ export default function ApprovalsBoard({ initialTributes, initialApprovedHistory
                     className="break-words font-serif italic leading-7 text-on-surface"
                     style={{ overflowWrap: 'anywhere' }}
                   >
-                    "{tribute.message}"
+                    “{tribute.message}”
                   </p>
 
                   <div className="mt-5 flex flex-wrap gap-3">
@@ -338,7 +338,7 @@ export default function ApprovalsBoard({ initialTributes, initialApprovedHistory
                   </p>
                 </div>
                 <p className="mt-2 text-sm italic text-on-surface-variant" style={{ overflowWrap: 'anywhere' }}>
-                  "{tribute.message}"
+                  “{tribute.message}”
                 </p>
                 <div className="mt-3">
                   <button

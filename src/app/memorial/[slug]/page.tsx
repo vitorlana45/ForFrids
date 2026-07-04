@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getServerSession } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import { canUse, getEffectivePlanServer } from '@/lib/plans';
 import { formatDate } from '@/lib/utils';
@@ -11,6 +10,8 @@ import MemorialActions from '@/components/memorial/MemorialActions';
 import MemorialNav, { type MemorialNavItem } from '@/components/memorial/MemorialNav';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import TributesSection from '@/components/memorial/TributesSection';
+import GalleryLightbox from '@/components/memorial/GalleryLightbox';
+import MemorialLogoLink from '@/components/memorial/MemorialLogoLink';
 import ChroniclesSection from '@/components/memorial/ChroniclesSection';
 import TutorSection from '@/components/memorial/TutorSection';
 import type { Tribute } from '@/types/database';
@@ -34,9 +35,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MemorialPage({ params }: Props) {
   const { slug } = await params;
-
-  const session = await getServerSession();
-  const userId = session?.user.id ?? null;
 
   const petData = await prisma.pet.findFirst({
     where: { memorial_slug: slug, is_public: true },
@@ -80,19 +78,8 @@ export default async function MemorialPage({ params }: Props) {
       })) as unknown as Chronicle[]
     : [];
 
-  let initialLiked = false;
-  if (userId) {
-    const reaction = await prisma.memorialReaction.findFirst({
-      where: { pet_id: pet.id, user_id: userId, reaction_type: 'heart' },
-      select: { id: true },
-    });
-    initialLiked = !!reaction;
-  }
-
   const isAlive = !pet.death_date;
   const allPhotos = entries.flatMap(e => e.photo_urls).filter(Boolean);
-  const columns: string[][] = [[], [], [], []];
-  allPhotos.forEach((url, i) => columns[i % 4].push(url));
 
   const memorialUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://eternopet.com.br'}/memorial/${slug}`;
 
@@ -111,7 +98,7 @@ export default async function MemorialPage({ params }: Props) {
       {/* Header */}
       <header className="bg-surface/85 backdrop-blur-md border-b border-outline-variant/20 sticky top-0 z-50">
         <div className="flex justify-between items-center w-full px-6 py-4 max-w-[1200px] mx-auto">
-          <Link href={userId ? '/dashboard' : '/'} className="text-2xl font-serif italic text-primary-container">Eterno Pet</Link>
+          <MemorialLogoLink />
           <MemorialNav items={navItems} variant="desktop" />
           <div className="flex items-center gap-1">
             <ThemeToggle />
@@ -120,8 +107,6 @@ export default async function MemorialPage({ params }: Props) {
               petName={pet.name}
               memorialSlug={slug}
               memorialUrl={memorialUrl}
-              isAuthenticated={!!userId}
-              initialLiked={initialLiked}
               initialLikesCount={reactionsCount}
             />
           </div>
@@ -155,7 +140,7 @@ export default async function MemorialPage({ params }: Props) {
 
             {pet.tribute_text && (
               <p className="font-serif text-2xl text-on-surface-variant max-w-2xl mx-auto font-light italic break-words" style={{ overflowWrap: 'anywhere' }}>
-                "{pet.tribute_text}"
+                “{pet.tribute_text}”
               </p>
             )}
           </div>
@@ -217,33 +202,7 @@ export default async function MemorialPage({ params }: Props) {
           <h2 className="font-serif text-4xl text-center text-primary mb-16">Álbum Afetivo</h2>
 
           {allPhotos.length > 0 ? (
-            allPhotos.length < 4 ? (
-              <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-                {allPhotos.map((url, idx) => (
-                  <div
-                    key={url + idx}
-                    className="rounded-xl overflow-hidden relative aspect-[3/4] w-48 md:w-64 shrink-0"
-                  >
-                    <Image src={url} alt="" fill unoptimized className="object-cover hover:scale-105 transition-transform duration-700" />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 items-start">
-                {columns.map((colPhotos, col) => (
-                  <div key={col} className={`grid gap-4 md:gap-6 ${col % 2 !== 0 ? 'pt-8 md:pt-12' : ''}`}>
-                    {colPhotos.map((url, idx) => (
-                      <div
-                        key={url + idx}
-                        className={`rounded-xl overflow-hidden relative ${idx % 2 === 0 ? 'aspect-[3/4]' : 'aspect-square'}`}
-                      >
-                        <Image src={url} alt="" fill unoptimized className="object-cover hover:scale-105 transition-transform duration-700" />
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            )
+            <GalleryLightbox photos={allPhotos} />
           ) : (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <span className="material-symbols-outlined text-[64px] text-outline mb-4">photo_library</span>
@@ -269,7 +228,6 @@ export default async function MemorialPage({ params }: Props) {
           petName={pet.name}
           memorialSlug={slug}
           initialTributes={tributes}
-          isAuthenticated={!!userId}
         />
       </main>
 

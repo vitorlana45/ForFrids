@@ -124,16 +124,7 @@ export default function CadastrarPage() {
             </button>
           </form>
 
-          <div className="relative py-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-outline-variant" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-surface px-4 text-on-surface-variant">ou cadastre com</span>
-            </div>
-          </div>
-
-          <OAuthButtons />
+          <OAuthButtons dividerLabel="ou cadastre com" />
 
           <p className="text-center text-sm text-on-surface-variant">
             Já tem uma conta?{' '}

@@ -34,7 +34,7 @@ export default async function DiaryPage({ params }: Props) {
         pet_id: pet.id,
         title: `O dia em que ${pet.name} chegou`,
         content: 'Uma lembranca longa, com detalhes do primeiro encontro, dos pequenos gestos e de tudo que fez esse momento ficar guardado.',
-        excerpt: 'Uma memoria com capa, data, fase da vida e um texto cuidado para guardar no memorial.',
+        excerpt: 'Uma memória com capa, data, fase da vida e um texto cuidado para guardar no memorial.',
         cover_url: pet.avatar_url,
         event_date: pet.birth_date ?? pet.created_at,
         life_phase: 'Infancia',
@@ -48,8 +48,8 @@ export default async function DiaryPage({ params }: Props) {
         id: 'preview-2',
         pet_id: pet.id,
         title: 'Pequenas manias inesqueciveis',
-        content: 'Um registro de habitos, brincadeiras e sinais de carinho que transformam uma historia comum em memoria viva.',
-        excerpt: 'Organize historias por tom, fase da vida e publicacao no memorial.',
+        content: 'Um registro de hábitos, brincadeiras e sinais de carinho que transformam uma história comum em memória viva.',
+        excerpt: 'Organize histórias por tom, fase da vida e publicação no memorial.',
         cover_url: null,
         event_date: null,
         life_phase: 'Maturidade',
@@ -78,7 +78,7 @@ export default async function DiaryPage({ params }: Props) {
         </header>
         <LockedFeaturePreview
           feature="Diario de Cronicas"
-          description="Transforme lembrancas em historias com os planos Premium e Eterno."
+          description="Transforme lembrancas em historias com o plano Premium."
         >
           <ChronicleList pet={pet} chronicles={previewChronicles} />
         </LockedFeaturePreview>
