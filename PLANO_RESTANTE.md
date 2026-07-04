@@ -1,5 +1,9 @@
 # Eterno Pet — Plano de Entregas Restantes
 
+> ⚠️ **Documento histórico (desatualizado).** O Stripe já está implementado e os preços
+> mudaram (Premium R$ 7,99/mês, Anual R$ 79,90/ano, sem lifetime). A referência atual do
+> projeto é o `CLAUDE.md` na raiz e `docs/stripe-producao.md`.
+
 ## Estado atual resumido
 
 | Área | Status |

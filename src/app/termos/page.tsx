@@ -21,7 +21,7 @@ const SECTIONS = [
   },
   {
     title: 'Planos e pagamentos',
-    body: 'Os planos pagos são cobrados conforme descrito na página de Planos. Assinaturas mensais podem ser canceladas a qualquer momento. O plano Eterno (vitalício) não é reembolsável após 7 dias da compra.',
+    body: 'Os planos pagos são cobrados conforme descrito na página de Planos. As assinaturas Premium (mensal ou anual) podem ser canceladas a qualquer momento e permanecem ativas até o fim do período já pago.',
   },
   {
     title: 'Suspensão e encerramento',

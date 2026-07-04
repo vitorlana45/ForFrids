@@ -11,10 +11,15 @@ const LIMITS: Record<PlanId, {
   chronicles: boolean;
   qrcode: boolean;
 }> = {
-  free:     { maxPets: 1,        maxTimelineEntries: 10,       maxChroniclesPerPet: 0,        capsules: false, chronicles: false, qrcode: false },
+  free:     { maxPets: 1,        maxTimelineEntries: 5,        maxChroniclesPerPet: 0,        capsules: false, chronicles: false, qrcode: false },
   premium:  { maxPets: 5,        maxTimelineEntries: 50,        maxChroniclesPerPet: 20,       capsules: true,  chronicles: true,  qrcode: true  },
-  lifetime: { maxPets: Infinity, maxTimelineEntries: Infinity,  maxChroniclesPerPet: Infinity, capsules: true,  chronicles: true,  qrcode: true  },
 };
+
+// Normaliza valores legados vindos do banco (ex.: 'lifetime') para o plano atual.
+export function normalizePlan(value?: string | null): PlanId {
+  if (value === 'premium' || value === 'lifetime') return 'premium';
+  return 'free';
+}
 
 export function canUse(planId: PlanId, feature: Feature): boolean {
   return LIMITS[planId][feature];
@@ -33,7 +38,7 @@ export function maxChroniclesPerPet(planId: PlanId): number {
 }
 
 export function planLabel(planId: PlanId): string {
-  const labels: Record<PlanId, string> = { free: 'Gratuito', premium: 'Premium', lifetime: 'Eterno' };
+  const labels: Record<PlanId, string> = { free: 'Gratuito', premium: 'Premium' };
   return labels[planId];
 }
 
@@ -43,8 +48,7 @@ export function strongestPaidPlan(
   const active = subscriptions.filter(s =>
     ['active', 'trialing', 'past_due', 'paid'].includes(s.status),
   );
-  if (active.some(s => s.plan_id === 'lifetime')) return 'lifetime';
-  if (active.some(s => s.plan_id === 'premium')) return 'premium';
+  if (active.some(s => normalizePlan(s.plan_id) === 'premium')) return 'premium';
   return null;
 }
 
@@ -62,11 +66,11 @@ export async function getEffectivePlan(userId: string): Promise<PlanId> {
   ]);
 
   const subscriptionPlan = strongestPaidPlan(
-    subscriptions.map(s => ({ plan_id: s.plan_id as PlanId, status: s.status })),
+    subscriptions.map(s => ({ plan_id: normalizePlan(s.plan_id), status: s.status })),
   );
   if (subscriptionPlan) return subscriptionPlan;
 
-  return (profile?.plan_id as PlanId | null) ?? 'free';
+  return normalizePlan(profile?.plan_id);
 }
 
 export const getEffectivePlanServer = getEffectivePlan;

@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getStripe } from '@/lib/stripe';
 import {
-  recordStripeLifetimeCheckout,
   syncStripeInvoice,
   upsertStripeSubscription,
 } from '@/lib/billing/stripe-sync';
@@ -58,10 +57,6 @@ export async function POST(request: Request) {
             profileId: session.metadata?.profile_id,
             planId: session.metadata?.plan_id,
           });
-        }
-
-        if (session.mode === 'payment') {
-          await recordStripeLifetimeCheckout(session);
         }
 
         break;

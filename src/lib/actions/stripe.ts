@@ -4,7 +4,7 @@ import { getServerSession } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import { getPaymentGateway } from '@/lib/payments';
 import { billingError, billingLog } from '@/lib/billing/debug';
-import type { PaidPlanId } from '@/lib/payments';
+import type { BillingInterval, PaidPlanId } from '@/lib/payments';
 
 function siteUrl() {
   return process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
@@ -23,6 +23,7 @@ async function getLatestCustomerId(profileId: string) {
 
 export async function createCheckoutSession(
   planId: PaidPlanId,
+  interval: BillingInterval = 'month',
 ): Promise<{ url?: string; error?: string }> {
   const session = await getServerSession();
   if (!session) return { error: 'Nao autenticado' };
@@ -35,12 +36,14 @@ export async function createCheckoutSession(
       profileId: user.id,
       email: user.email,
       planId,
+      interval,
       provider: gateway.id,
       customerId,
       siteUrl: siteUrl(),
     });
     const checkoutSession = await gateway.createCheckoutSession({
       planId,
+      interval,
       profileId: user.id,
       email: user.email,
       customerId,

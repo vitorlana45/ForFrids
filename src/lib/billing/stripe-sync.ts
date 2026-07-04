@@ -15,29 +15,18 @@ function stripeCustomerId(customer: StripeRef) {
   return typeof customer === 'string' ? customer : customer.id;
 }
 
-function paidPlan(planId?: string | null): Extract<PlanId, 'premium' | 'lifetime'> | null {
-  return planId === 'premium' || planId === 'lifetime' ? planId : null;
+function paidPlan(planId?: string | null): Extract<PlanId, 'premium'> | null {
+  // 'lifetime' e legado; normalizado para 'premium' (grandfathering).
+  return planId === 'premium' || planId === 'lifetime' ? 'premium' : null;
 }
 
 function activePlan(status: string, planId: PlanId): PlanId {
-  if (planId === 'lifetime') return 'lifetime';
   return ['active', 'trialing', 'past_due'].includes(status) ? planId : 'free';
 }
 
 export async function updateProfilePlan(profileId: string, planId: PlanId, status: string) {
   const nextPlan = activePlan(status, planId);
   billingLog('profile.plan.update.start', { profileId, planId, status, nextPlan });
-
-  if (nextPlan === 'free') {
-    const profile = await prisma.profile.findUnique({
-      where: { id: profileId },
-      select: { plan_id: true },
-    });
-    if (profile?.plan_id === 'lifetime') {
-      billingLog('profile.plan.update.skip_lifetime_downgrade', { profileId, planId, status });
-      return;
-    }
-  }
 
   await prisma.profile.update({
     where: { id: profileId },
@@ -131,52 +120,6 @@ export async function upsertStripeSubscription(
   return { planId, effectivePlanId: activePlan(subscription.status, planId), status: subscription.status };
 }
 
-export async function recordStripeLifetimeCheckout(session: Stripe.Checkout.Session) {
-  const profileId = session.metadata?.profile_id;
-  const planId = paidPlan(session.metadata?.plan_id);
-  billingLog('lifetime.checkout.start', {
-    sessionId: session.id,
-    profileId,
-    planId,
-    paymentStatus: session.payment_status,
-  });
-  if (!profileId || planId !== 'lifetime') {
-    billingLog('lifetime.checkout.skip', { sessionId: session.id, profileId, planId });
-    return;
-  }
-
-  const customerId = stripeCustomerId(session.customer);
-  const payload = {
-    profile_id: profileId,
-    provider: 'stripe',
-    provider_customer_id: customerId,
-    provider_subscription_id: null as string | null,
-    provider_checkout_id: session.id,
-    stripe_customer_id: customerId,
-    stripe_subscription_id: null as string | null,
-    plan_id: 'lifetime' as const,
-    status: session.payment_status === 'paid' ? 'paid' : session.payment_status,
-    current_period_end: null as Date | null,
-    canceled_at: null as Date | null,
-  };
-
-  const existing = await prisma.subscription.findFirst({
-    where: { provider: 'stripe', provider_checkout_id: session.id },
-    select: { id: true },
-  });
-
-  if (existing) {
-    await prisma.subscription.update({ where: { id: existing.id }, data: payload });
-  } else {
-    await prisma.subscription.create({ data: payload });
-  }
-  billingLog('lifetime.checkout.subscription_saved', { sessionId: session.id, profileId });
-
-  if (session.payment_status === 'paid') {
-    await updateProfilePlan(profileId, 'lifetime', 'paid');
-  }
-}
-
 export async function syncStripeInvoice(invoice: Stripe.Invoice) {
   billingLog('invoice.sync.start', { invoiceId: invoice.id, status: invoice.status });
   const invoiceWithSubscription = invoice as Stripe.Invoice & {
@@ -227,28 +170,11 @@ export async function syncStripeCheckoutSession(sessionId: string, expectedProfi
     }
   }
 
-  if (session.mode === 'payment') {
-    await recordStripeLifetimeCheckout(session);
-    const planId = paidPlan(session.metadata?.plan_id);
-    return { synced: !!planId, planId };
-  }
-
   return { synced: false, planId: null };
 }
 
 export async function syncLatestStripeSubscriptionForProfile(profileId: string) {
   billingLog('profile.reconcile.start', { profileId });
-
-  const lifetimeRow = await prisma.subscription.findFirst({
-    where: { profile_id: profileId, plan_id: 'lifetime', status: 'paid' },
-    select: { id: true },
-  });
-
-  if (lifetimeRow) {
-    billingLog('profile.reconcile.lifetime_restore', { profileId });
-    await updateProfilePlan(profileId, 'lifetime', 'paid');
-    return 'lifetime' as const;
-  }
 
   const sub = await prisma.subscription.findFirst({
     where: { profile_id: profileId },

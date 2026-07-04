@@ -9,4 +9,4 @@ export function getPaymentGateway(): PaymentGateway {
   throw new Error(`Payment provider not supported: ${provider}`);
 }
 
-export type { PaidPlanId, PaymentProviderId } from './types';
+export type { BillingInterval, PaidPlanId, PaymentProviderId } from './types';

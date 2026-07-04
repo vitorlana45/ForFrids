@@ -12,6 +12,7 @@ import type { PlanId } from '@/types/database';
 
 const PLANS = [
   {
+    cardId: 'free' as const,
     id: 'free' as const,
     name: 'Gratuito',
     price: null,
@@ -19,7 +20,7 @@ const PLANS = [
     description: 'Para começar a preservar memórias.',
     features: [
       '1 memorial ativo',
-      'Linha do tempo ilimitada',
+      'Linha do tempo com até 5 momentos',
       'Homenagens de visitantes',
       'Memorial público compartilhável',
     ],
@@ -27,34 +28,38 @@ const PLANS = [
     highlight: false,
   },
   {
+    cardId: 'premium_monthly' as const,
     id: 'premium' as const,
+    interval: 'month' as const,
     name: 'Premium',
-    price: 'R$ 19',
+    price: 'R$ 7,99',
     period: '/mês',
     description: 'Para quem quer expressar mais.',
     features: [
       'Até 5 memoriais ativos',
+      'Linha do tempo com até 50 momentos',
       'Diário de Crônicas',
       'Cápsula do Tempo',
       'QR Code do memorial',
-      'Tudo do Gratuito',
     ],
     cta: 'Assinar Premium',
     highlight: true,
   },
   {
-    id: 'lifetime' as const,
-    name: 'Eterno',
-    price: 'R$ 490',
-    period: ' pagamento único',
-    description: 'Pague uma vez, preserve para sempre.',
+    cardId: 'premium_annual' as const,
+    id: 'premium' as const,
+    interval: 'year' as const,
+    name: 'Premium Anual',
+    price: 'R$ 79,90',
+    period: '/ano',
+    description: 'O mesmo Premium, com 2 meses grátis.',
     features: [
-      'Memoriais ilimitados',
-      'Todas as features futuras',
-      'Prioridade no suporte',
-      'Tudo do Premium',
+      'Tudo do plano Premium',
+      '2 meses grátis (≈ R$ 6,66/mês)',
+      'Economize R$ 15,98 no ano',
+      'Renovação anual',
     ],
-    cta: 'Comprar Acesso Eterno',
+    cta: 'Assinar Anual',
     highlight: false,
   },
 ] as const;
@@ -156,11 +161,12 @@ export default async function PlanosPage({ searchParams }: Props) {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {PLANS.map((plan) => {
-          const isCurrent = plan.id === currentPlanId;
+          // Anual nao e detectavel como "atual" (intervalo nao fica no profile).
+          const isCurrent = plan.cardId === 'premium_annual' ? false : plan.id === currentPlanId;
 
           return (
             <article
-              key={plan.id}
+              key={plan.cardId}
               className={`relative flex flex-col rounded-3xl border p-8 transition-shadow ${
                 plan.highlight
                   ? 'border-primary/30 bg-surface-container shadow-memorial'
@@ -208,6 +214,7 @@ export default async function PlanosPage({ searchParams }: Props) {
               ) : plan.id !== 'free' ? (
                 <PlanCheckoutButton
                   planId={plan.id}
+                  interval={'interval' in plan ? plan.interval : 'month'}
                   label={plan.cta}
                   highlight={plan.highlight}
                 />
@@ -229,24 +236,21 @@ export default async function PlanosPage({ searchParams }: Props) {
                 <th className="px-6 py-4 text-left font-semibold text-on-surface">Recurso</th>
                 <th className="px-4 py-4 text-center font-semibold text-on-surface-variant">Grátis</th>
                 <th className="px-4 py-4 text-center font-semibold text-primary">Premium</th>
-                <th className="px-4 py-4 text-center font-semibold text-on-surface">Eterno</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/10 bg-surface-container-lowest">
               {[
-                { label: 'Memoriais ativos',        free: '1',    premium: '5',  lifetime: '∞' },
-                { label: 'Linha do tempo',           free: '✓',    premium: '✓',  lifetime: '✓' },
-                { label: 'Homenagens com moderação', free: '✓',    premium: '✓',  lifetime: '✓' },
-                { label: 'QR Code do memorial',      free: '—',    premium: '✓',  lifetime: '✓' },
-                { label: 'Cápsula do Tempo',         free: '—',    premium: '✓',  lifetime: '✓' },
-                { label: 'Diário de Crônicas',       free: '—',    premium: '✓',  lifetime: '✓' },
-                { label: 'Features futuras',         free: '—',    premium: '—',  lifetime: '✓' },
+                { label: 'Memoriais ativos',        free: '1',    premium: '5'  },
+                { label: 'Linha do tempo',           free: '✓',    premium: '✓'  },
+                { label: 'Homenagens com moderação', free: '✓',    premium: '✓'  },
+                { label: 'QR Code do memorial',      free: '—',    premium: '✓'  },
+                { label: 'Cápsula do Tempo',         free: '—',    premium: '✓'  },
+                { label: 'Diário de Crônicas',       free: '—',    premium: '✓'  },
               ].map((row) => (
                 <tr key={row.label}>
                   <td className="px-6 py-3.5 text-on-surface-variant">{row.label}</td>
                   <td className="px-4 py-3.5 text-center text-on-surface-variant/60">{row.free}</td>
                   <td className="px-4 py-3.5 text-center font-semibold text-primary">{row.premium}</td>
-                  <td className="px-4 py-3.5 text-center text-on-surface-variant">{row.lifetime}</td>
                 </tr>
               ))}
             </tbody>

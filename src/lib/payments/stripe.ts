@@ -1,8 +1,8 @@
 import { getStripe, stripePriceIds } from '@/lib/stripe';
 import type { CheckoutRequest, CheckoutResult, PaymentGateway, PortalRequest } from './types';
 
-function getPriceId(planId: CheckoutRequest['planId']) {
-  const priceId = stripePriceIds[planId];
+function getPriceId(interval: CheckoutRequest['interval']) {
+  const priceId = interval === 'year' ? stripePriceIds.premium_annual : stripePriceIds.premium_monthly;
   if (!priceId) {
     throw new Error('Plano ainda nao configurado no Stripe.');
   }
@@ -15,24 +15,23 @@ export const stripePaymentGateway: PaymentGateway = {
 
   async createCheckoutSession(input: CheckoutRequest): Promise<CheckoutResult> {
     const stripe = getStripe();
-    const price = getPriceId(input.planId);
-    const isSubscription = input.planId === 'premium';
+    const price = getPriceId(input.interval);
     const metadata = {
       provider: 'stripe',
       profile_id: input.profileId,
       plan_id: input.planId,
+      billing_interval: input.interval,
     };
 
     const session = await stripe.checkout.sessions.create({
-      mode: isSubscription ? 'subscription' : 'payment',
+      mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price, quantity: 1 }],
       customer: input.customerId ?? undefined,
       customer_email: input.customerId ? undefined : input.email ?? undefined,
       client_reference_id: input.profileId,
       metadata,
-      subscription_data: isSubscription ? { metadata } : undefined,
-      payment_intent_data: isSubscription ? undefined : { metadata },
+      subscription_data: { metadata },
       success_url: `${input.siteUrl}/dashboard/planos?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${input.siteUrl}/dashboard/planos?cancelled=true`,
       allow_promotion_codes: true,

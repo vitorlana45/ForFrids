@@ -3,21 +3,22 @@
 import { useTransition } from 'react';
 import { createCheckoutSession } from '@/lib/actions/stripe';
 import { useToast } from '@/components/ui/toast';
-import type { PaidPlanId } from '@/lib/payments';
+import type { BillingInterval, PaidPlanId } from '@/lib/payments';
 
 interface Props {
   planId: PaidPlanId;
+  interval?: BillingInterval;
   label: string;
   highlight?: boolean;
 }
 
-export default function PlanCheckoutButton({ planId, label, highlight }: Props) {
+export default function PlanCheckoutButton({ planId, interval = 'month', label, highlight }: Props) {
   const [isPending, startTransition] = useTransition();
   const toast = useToast();
 
   function handleClick() {
     startTransition(async () => {
-      const result = await createCheckoutSession(planId);
+      const result = await createCheckoutSession(planId, interval);
       if (result?.error) {
         toast.error(result.error);
         return;

@@ -1,4 +1,6 @@
-export type PlanId = 'free' | 'premium' | 'lifetime';
+// 'lifetime' descontinuado (2026-07): valor mantido dormante no enum do banco
+// para dados legados; nao e mais emitido nem oferecido. Normalizado -> 'premium'.
+export type PlanId = 'free' | 'premium';
 
 export interface Profile {
   id: string;

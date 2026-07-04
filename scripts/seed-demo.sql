@@ -57,7 +57,7 @@ INSERT INTO profiles (
   'Maria Clara Mendes',
   'Tutora e guardiã de memórias',
   'Passei 13 anos ao lado da Fridis. Cada foto, cada trilha, cada manhã com ela foi um presente. Este espaço é meu jeito de mantê-la viva para sempre.',
-  'lifetime',
+  'premium',
   now(),
   now()
 ) ON CONFLICT (id) DO NOTHING;
@@ -205,7 +205,7 @@ INSERT INTO timeline_entries (id, pet_id, title, description, date, photo_urls, 
 ON CONFLICT (id) DO NOTHING;
 
 -- -----------------------------------------------------------------------------
--- 4. Crônicas (3 publicadas — visíveis pois owner tem plan_id = 'lifetime')
+-- 4. Crônicas (3 publicadas — visíveis pois owner tem plan_id = 'premium')
 -- -----------------------------------------------------------------------------
 
 INSERT INTO chronicles (

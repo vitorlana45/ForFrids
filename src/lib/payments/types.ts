@@ -1,10 +1,14 @@
 import type { PlanId } from '@/types/database';
 
-export type PaidPlanId = Extract<PlanId, 'premium' | 'lifetime'>;
+export type PaidPlanId = Extract<PlanId, 'premium'>;
 export type PaymentProviderId = 'stripe';
+
+// Intervalo de cobranca do Premium: mensal ou anual (mesmo tier, precos diferentes).
+export type BillingInterval = 'month' | 'year';
 
 export interface CheckoutRequest {
   planId: PaidPlanId;
+  interval: BillingInterval;
   profileId: string;
   email?: string | null;
   customerId?: string | null;

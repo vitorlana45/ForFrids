@@ -320,7 +320,7 @@ model SupportTicket {
 enum PlanId {
   free
   premium
-  lifetime
+  lifetime // descontinuado (2026-07): mantido para dados legados; normalizado -> premium na aplicacao
 }
 
 enum TributeStatus {
