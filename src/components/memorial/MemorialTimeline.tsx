@@ -35,12 +35,12 @@ type TrailPosition = { x: number; y: number; tilt: number };
 type TimelineLayoutMode = 'waves' | 'constellation';
 
 const WAVE_POSITIONS: TrailPosition[] = [
-  { x: 4, y: 4, tilt: -1.2 },
-  { x: 30, y: 24, tilt: 0.7 },
-  { x: 54, y: 44, tilt: -0.6 },
-  { x: 54, y: 4, tilt: 1.0 },
-  { x: 30, y: 24, tilt: -0.7 },
-  { x: 4, y: 44, tilt: 0.8 },
+  { x: 4, y: 4, tilt: -0.45 },
+  { x: 29, y: 20, tilt: 0.35 },
+  { x: 53, y: 36, tilt: -0.35 },
+  { x: 47, y: 8, tilt: 0.35 },
+  { x: 24, y: 22, tilt: -0.35 },
+  { x: 4, y: 36, tilt: 0.45 },
 ];
 
 const CONSTELLATION_POSITIONS: TrailPosition[] = [
@@ -101,6 +101,10 @@ function centerX(position: TrailPosition) {
   return position.x + CARD_WIDTH_PERCENT / 2;
 }
 
+function clampPercent(value: number) {
+  return Math.min(92, Math.max(8, value));
+}
+
 function normalizeText(value: string) {
   return value
     .normalize('NFD')
@@ -155,11 +159,14 @@ function PawBridge({
   to: TrailPosition;
   year?: string;
 }) {
-  const desktopSteps = [0, 1, 2, 3, 4];
+  const desktopSteps = [0, 1, 2, 3];
   const mobileSteps = [0, 1, 2];
   const fromX = centerX(from);
   const toX = centerX(to);
+  const deltaX = toX - fromX;
   const goesRight = toX > fromX;
+  const isTightTurn = Math.abs(deltaX) < 10;
+  const turnDirection = fromX > 50 ? -1 : 1;
 
   return (
     <>
@@ -167,14 +174,17 @@ function PawBridge({
       <div className={`pointer-events-none relative z-0 hidden md:block ${year ? 'h-32' : 'h-24'}`}>
         {desktopSteps.map(i => {
           const t = i / (desktopSteps.length - 1);
-          const left = fromX + (toX - fromX) * t;
-          const top = 16 + t * 68;
-          const angle = (goesRight ? 145 : 215) + (i % 2 === 0 ? -10 : 12);
+          const curve = Math.sin(t * Math.PI) * (isTightTurn ? 9 * turnDirection : 3.5 * (goesRight ? 1 : -1));
+          const stride = i % 2 === 0 ? -1.5 : 1.5;
+          const left = clampPercent(fromX + deltaX * t + curve + stride);
+          const top = 18 + t * 60;
+          const baseAngle = isTightTurn ? (turnDirection > 0 ? 155 : 205) : goesRight ? 145 : 215;
+          const angle = baseAngle + (i % 2 === 0 ? -9 : 9);
           return (
             <PawPrint
               key={i}
               strokeWidth={1}
-              className="absolute h-4 w-4 fill-current text-primary/30"
+              className="absolute h-3.5 w-3.5 fill-current text-primary/25"
               style={{ left: `${left}%`, top: `${top}%`, transform: `translate(-50%, -50%) rotate(${angle}deg)` }}
             />
           );
@@ -196,7 +206,7 @@ function PawBridge({
             <PawPrint
               key={i}
               strokeWidth={1}
-              className="absolute h-4 w-4 fill-current text-primary/30"
+              className="absolute h-3.5 w-3.5 fill-current text-primary/25"
               style={{ left: `calc(50% + ${offset}px)`, top: `${12 + t * 64}%`, transform: `translate(-50%, -50%) rotate(${angle}deg)` }}
             />
           );
@@ -277,7 +287,7 @@ export default function MemorialTimeline({
           const nextItem = visibleItems[index + 1];
           const cover = entry.photo_urls[0];
           const extraPhotos = entry.photo_urls.length - 1;
-          const stageHeightClass = cover ? 'md:min-h-[470px]' : 'md:min-h-[260px]';
+          const stageHeightClass = cover ? 'md:min-h-[470px]' : 'md:min-h-[220px]';
           const momentMeta = MOMENT_KIND_META[getMomentKind(entry)];
           const MomentIcon = momentMeta.Icon;
 
