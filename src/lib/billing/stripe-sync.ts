@@ -2,6 +2,9 @@ import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
 import { getStripe } from '@/lib/stripe';
 import { billingError, billingLog } from '@/lib/billing/debug';
+import { detectTransition } from '@/lib/billing/lifecycle';
+import { sendBillingEmailOnce } from '@/lib/billing/emails';
+import { downgradeEmail, farewellEmail } from '@/lib/email/templates';
 import type { PlanId } from '@/types/database';
 
 type StripeRef = string | { id: string } | null | undefined;
@@ -78,6 +81,11 @@ export async function upsertStripeSubscription(
   };
   const customerId = stripeCustomerId(subscription.customer);
 
+  const prevRow = await prisma.subscription.findFirst({
+    where: { provider: 'stripe', provider_subscription_id: subscription.id },
+    select: { status: true, cancel_at_period_end: true },
+  });
+
   await prisma.subscription.upsert({
     where: {
       provider_provider_subscription_id: {
@@ -97,6 +105,7 @@ export async function upsertStripeSubscription(
       status: subscription.status,
       current_period_end: toIsoDate(row.current_period_end),
       canceled_at: toIsoDate(row.canceled_at),
+      cancel_at_period_end: subscription.cancel_at_period_end ?? false,
     },
     update: {
       provider_customer_id: customerId,
@@ -106,6 +115,7 @@ export async function upsertStripeSubscription(
       status: subscription.status,
       current_period_end: toIsoDate(row.current_period_end),
       canceled_at: toIsoDate(row.canceled_at),
+      cancel_at_period_end: subscription.cancel_at_period_end ?? false,
     },
   });
 
@@ -117,6 +127,53 @@ export async function upsertStripeSubscription(
   });
 
   await updateProfilePlan(profileId, planId, subscription.status);
+
+  try {
+    const transition = detectTransition(
+      prevRow ? { status: prevRow.status, cancelAtPeriodEnd: prevRow.cancel_at_period_end } : null,
+      { status: subscription.status, cancelAtPeriodEnd: subscription.cancel_at_period_end ?? false },
+    );
+
+    if (transition) {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+      const plansUrl = `${siteUrl}/dashboard/planos`;
+      const profile = await prisma.profile.findUnique({
+        where: { id: profileId },
+        select: { full_name: true, email: true },
+      });
+      const tutorName = profile?.full_name?.split(' ')[0] ?? 'Tutor';
+
+      if (transition === 'farewell') {
+        const periodEnd = toIsoDate(row.current_period_end);
+        const premiumUntil = periodEnd
+          ? periodEnd.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+          : null;
+        const template = farewellEmail({ tutorName, premiumUntil, plansUrl });
+        await sendBillingEmailOnce({
+          profileId,
+          type: 'farewell',
+          dedupeKey: `sub_${subscription.id}_${periodEnd?.toISOString() ?? 'x'}`,
+          subject: template.subject,
+          html: template.html,
+        });
+      } else {
+        const template = downgradeEmail({ tutorName, plansUrl });
+        await sendBillingEmailOnce({
+          profileId,
+          type: 'downgrade',
+          dedupeKey: `sub_${subscription.id}`,
+          subject: template.subject,
+          html: template.html,
+        });
+      }
+    }
+  } catch (error) {
+    billingError('subscription.transition_email_failed', error, {
+      profileId,
+      subscriptionId: subscription.id,
+    });
+  }
+
   return { planId, effectivePlanId: activePlan(subscription.status, planId), status: subscription.status };
 }
 
