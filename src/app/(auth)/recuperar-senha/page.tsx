@@ -24,7 +24,7 @@ export default function RecuperarSenhaPage() {
     setLoading(false);
 
     if (error) {
-      setError('Não foi possível enviar o e-mail. Verifique o endereço e tente novamente.');
+      setError('Não foi possível processar sua solicitação agora. Aguarde alguns minutos e tente novamente.');
       return;
     }
 
@@ -38,7 +38,8 @@ export default function RecuperarSenhaPage() {
           <span className="material-symbols-outlined text-[72px] text-primary mb-6 block">mark_email_read</span>
           <h1 className="font-serif text-3xl text-primary mb-3">Verifique seu e-mail</h1>
           <p className="text-on-surface-variant leading-relaxed mb-8">
-            Enviamos um link de redefinição para <strong>{email}</strong>. Clique no link para criar uma nova senha.
+            Se <strong>{email}</strong> estiver cadastrado, você receberá um link de
+            redefinição em instantes. Confira também a caixa de spam.
           </p>
           <Link
             href="/entrar"
