@@ -23,12 +23,12 @@ Os preços de test criados em 2026-07 **não** funcionam em produção — Live 
 
 **Preço 1 — mensal**
 - Modelo: Recorrente (Recurring)
-- Valor: `R$ 7,99` · Moeda: `BRL` · Período: `Mensal (month)`
+- Valor: `R$ 8,90` · Moeda: `BRL` · Período: `Mensal (month)`
 - → copiar o `price_...` para `STRIPE_PRICE_PREMIUM_MONTHLY`
 
 **Preço 2 — anual**
 - Modelo: Recorrente (Recurring)
-- Valor: `R$ 79,90` · Moeda: `BRL` · Período: `Anual (year)`
+- Valor: `R$ 89,90` · Moeda: `BRL` · Período: `Anual (year)`
 - → copiar o `price_...` para `STRIPE_PRICE_PREMIUM_ANNUAL`
 
 > Definir o preço mensal como **default price** do produto.
