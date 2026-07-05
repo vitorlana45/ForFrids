@@ -53,12 +53,16 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 
-# Prisma CLI + migrations para aplicar `migrate deploy` no boot do container
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
+# Prisma CLI isolado (com deps transitivas completas) para `migrate deploy` no boot.
+# Instalar via npm garante a arvore inteira (effect, c12, ...) que um COPY manual perderia.
+RUN mkdir -p /opt/prisma-cli && cd /opt/prisma-cli \
+  && npm init -y >/dev/null 2>&1 \
+  && npm install --no-audit --no-fund prisma@6.19.3
+
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && exec node server.js"]
+CMD ["sh", "-c", "node /opt/prisma-cli/node_modules/prisma/build/index.js migrate deploy && exec node server.js"]
