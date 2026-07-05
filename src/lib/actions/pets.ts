@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { getServerSession } from '@/lib/auth-server';
 import { getEffectivePlanServer, maxPets } from '@/lib/plans';
+import { isPetEditable } from '@/lib/security/access';
 import { deletePublicObject, publicUrlMatchesKeyPrefix } from '@/lib/storage/client';
 import { prisma } from '@/lib/prisma';
 import { log } from '@/lib/logger';
@@ -69,6 +70,7 @@ export async function updatePet(
     select: { owner_id: true, memorial_slug: true, avatar_url: true },
   });
   if (!existing || existing.owner_id !== userId) return { error: 'Não autorizado' };
+  if (!(await isPetEditable(petId))) return { error: 'UPGRADE_REQUIRED' };
 
   const parsed = petSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };

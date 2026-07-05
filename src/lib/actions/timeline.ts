@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { getServerSession } from '@/lib/auth-server';
 import { getEffectivePlanServer, maxTimelineEntries } from '@/lib/plans';
+import { isPetEditable } from '@/lib/security/access';
 import { deletePublicObject, publicUrlMatchesKeyPrefix } from '@/lib/storage/client';
 import { prisma } from '@/lib/prisma';
 import { log } from '@/lib/logger';
@@ -42,6 +43,7 @@ export async function createTimelineEntry(
 
   const pet = await getPetByEntry(input.pet_id, userId);
   if (!pet) return { error: 'Não autorizado' };
+  if (!(await isPetEditable(input.pet_id))) return { error: 'UPGRADE_REQUIRED' };
 
   const parsed = entrySchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
@@ -78,6 +80,7 @@ export async function updateTimelineEntry(
 
   const pet = await getPetByEntry(entry.pet_id, userId);
   if (!pet) return { error: 'Não autorizado' };
+  if (!(await isPetEditable(entry.pet_id))) return { error: 'UPGRADE_REQUIRED' };
 
   const parsed = updateEntrySchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
@@ -131,6 +134,7 @@ export async function deleteTimelineEntry(
 
   const pet = await getPetByEntry(entry.pet_id, userId);
   if (!pet) return { error: 'Não autorizado' };
+  if (!(await isPetEditable(entry.pet_id))) return { error: 'UPGRADE_REQUIRED' };
 
   await prisma.timelineEntry.delete({ where: { id: entryId } });
 

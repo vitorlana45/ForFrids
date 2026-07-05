@@ -58,3 +58,23 @@ export async function assertPetOwnerOnly(userId: string, petId: string | undefin
     throw new AccessDeniedError('FORBIDDEN', 'Forbidden');
   }
 }
+
+// Modo lembrança: com plano free, apenas o pet mais antigo do dono aceita edição.
+// O memorial público nunca é afetado — isto vale só para mutations do dashboard.
+export async function isPetEditable(petId: string): Promise<boolean> {
+  const pet = await prisma.pet.findUnique({
+    where: { id: petId },
+    select: { owner_id: true },
+  });
+  if (!pet) return false;
+
+  const ownerPlan = await getEffectivePlanServer(pet.owner_id);
+  if (ownerPlan !== 'free') return true;
+
+  const activePet = await prisma.pet.findFirst({
+    where: { owner_id: pet.owner_id },
+    orderBy: { created_at: 'asc' },
+    select: { id: true },
+  });
+  return activePet?.id === petId;
+}

@@ -9,7 +9,7 @@ import {
   getStorageClient,
   parsePublicUrl,
 } from '@/lib/storage/client';
-import { AccessDeniedError, assertFeatureAccess, assertOwnsPet } from '@/lib/security/access';
+import { AccessDeniedError, assertFeatureAccess, assertOwnsPet, isPetEditable } from '@/lib/security/access';
 import {
   assertUploadAllowed,
   recordUploadEvent,
@@ -54,6 +54,10 @@ async function authorizePath(userId: string, path: string) {
       }
 
       await assertOwnsPet(userId, resourceId);
+
+      if (!(await isPetEditable(resourceId))) {
+        throw new AccessDeniedError('UPGRADE_REQUIRED', 'UPGRADE_REQUIRED');
+      }
 
       const [, , petId, kind, entryId] = parts;
       const isAvatarUpload = parts.length === 4 && parts[3].startsWith('avatar-');
