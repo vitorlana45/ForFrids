@@ -51,4 +51,11 @@ describe('detectTransition', () => {
       { status: 'past_due', cancelAtPeriodEnd: false },
     )).toBeNull();
   });
+
+  it('nao dispara nada quando o usuario desfaz o cancelamento (un-cancel)', () => {
+    expect(detectTransition(
+      { status: 'active', cancelAtPeriodEnd: true },
+      { status: 'active', cancelAtPeriodEnd: false },
+    )).toBeNull();
+  });
 });
