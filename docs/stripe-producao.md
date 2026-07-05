@@ -28,8 +28,12 @@ Os preços de test criados em 2026-07 **não** funcionam em produção — Live 
 
 **Preço 2 — anual**
 - Modelo: Recorrente (Recurring)
-- Valor: `R$ 89,90` · Moeda: `BRL` · Período: `Anual (year)`
+- Valor: `R$ 89,00` · Moeda: `BRL` · Período: `Anual (year)`
+  (10 × R$ 8,90 — garante os "2 meses grátis" exatos prometidos na copy)
 - → copiar o `price_...` para `STRIPE_PRICE_PREMIUM_ANNUAL`
+- Se já existia o price de `R$ 89,90`: criar um price NOVO de `R$ 89,00`,
+  trocar a env e arquivar o antigo (assinantes existentes continuam
+  renovando no valor antigo, a menos que você os migre manualmente)
 
 > Definir o preço mensal como **default price** do produto.
 > NÃO criar plano vitalício/único — foi descontinuado.

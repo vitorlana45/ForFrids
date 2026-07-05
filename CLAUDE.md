@@ -55,7 +55,7 @@ Não adicionar features grandes antes de validar conversão.
 | Crônicas por pet | 0 | 20 |
 | Cápsulas, QR Code | ✗ | ✓ |
 
-Preços: Premium **R$ 8,90/mês** · Anual **R$ 89,90/ano** (ver `docs/stripe-producao.md`).
+Preços: Premium **R$ 8,90/mês** · Anual **R$ 89,00/ano** (ver `docs/stripe-producao.md`).
 Plano vitalício foi **descontinuado** — `normalizePlan()` mapeia `lifetime` legado para `premium`.
 Resolução do plano efetivo: `getEffectivePlanServer(userId)`. Qualquer copy de marketing
 (landing, /dashboard/planos) deve refletir exatamente estes limites.

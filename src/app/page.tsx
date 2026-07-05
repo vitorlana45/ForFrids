@@ -258,10 +258,10 @@ export default function HomePage() {
               {/* Anual */}
               <div className="p-12 rounded-[2.5rem] border border-secondary/10 bg-surface-container flex flex-col">
                 <h4 className="font-serif text-2xl mb-2 text-primary">Premium Anual</h4>
-                <div className="text-4xl font-serif mb-2">R$ 89,90<span className="text-xl opacity-70">/ano</span></div>
-                <span className="text-base opacity-60 font-sans mb-8 block">equivale a R$ 7,49/mês</span>
+                <div className="text-4xl font-serif mb-2">R$ 89,00<span className="text-xl opacity-70">/ano</span></div>
+                <span className="text-base opacity-60 font-sans mb-8 block">equivale a R$ 7,42/mês</span>
                 <ul className="space-y-5 mb-12 flex-grow">
-                  {['Tudo do plano Premium', '2 meses grátis', 'Economize R$ 16,90 no ano'].map(f => (
+                  {['Tudo do plano Premium', '2 meses grátis', 'Economize R$ 17,80 no ano'].map(f => (
                     <li key={f} className="flex items-center gap-4 text-on-surface-variant">
                       <span className="material-symbols-outlined text-secondary text-sm">done</span> {f}
                     </li>
