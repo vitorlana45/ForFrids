@@ -270,3 +270,71 @@ export function petAnniversaryEmail({ tutorName, petName, memorialUrl, yearsSinc
     subject: `🕊️ Lembrando ${petName} — Eterno Pet`,
   });
 }
+
+export function paymentFailedEmail({ tutorName, plansUrl }: { tutorName: string; plansUrl: string }): { subject: string; html: string } {
+  return {
+    subject: 'Não conseguimos renovar sua assinatura 🌿',
+    html: `
+      <p>Olá, ${tutorName},</p>
+      <p>Tentamos renovar sua assinatura Premium do Eterno Pet, mas o pagamento não foi aprovado.
+      Pode ter sido algo simples — um cartão vencido ou limite momentâneo.</p>
+      <p>Vamos tentar novamente nos próximos dias. Para garantir que nada seja pausado,
+      você pode atualizar sua forma de pagamento em um minuto:</p>
+      <p><a href="${plansUrl}">Atualizar forma de pagamento</a></p>
+      <p>Enquanto isso, tudo continua no ar — memoriais, momentos e lembranças.</p>
+      <p>Com carinho,<br/>Equipe Eterno Pet</p>
+    `,
+  };
+}
+
+export function farewellEmail({ tutorName, premiumUntil, plansUrl }: { tutorName: string; premiumUntil: string | null; plansUrl: string }): { subject: string; html: string } {
+  const untilLine = premiumUntil
+    ? `<p>Seu Premium continua ativo até <strong>${premiumUntil}</strong>. Até lá, nada muda.</p>`
+    : '';
+  return {
+    subject: 'Sentiremos sua falta 🕊️',
+    html: `
+      <p>Olá, ${tutorName},</p>
+      <p>Recebemos o seu pedido de cancelamento. Está tudo certo — e queremos que saiba
+      que os memoriais dos seus pets continuarão no ar, sempre.</p>
+      ${untilLine}
+      <p>Depois disso, sua conta entra no plano gratuito: os memoriais além do primeiro
+      ficam em <em>modo lembrança</em> (visíveis para todos, mas sem edição), e crônicas,
+      cápsulas e QR Code ficam pausados.</p>
+      <p>Se mudar de ideia, é só <a href="${plansUrl}">reativar quando quiser</a>.</p>
+      <p>Com carinho,<br/>Equipe Eterno Pet</p>
+    `,
+  };
+}
+
+export function downgradeEmail({ tutorName, plansUrl }: { tutorName: string; plansUrl: string }): { subject: string; html: string } {
+  return {
+    subject: 'Sua conta entrou em modo lembrança 🌿',
+    html: `
+      <p>Olá, ${tutorName},</p>
+      <p>Sua assinatura Premium chegou ao fim, e sua conta agora está no plano gratuito.</p>
+      <p>O mais importante: <strong>nenhum memorial saiu do ar</strong>. As páginas dos seus
+      pets continuam acessíveis para todos que os amam.</p>
+      <p>O que fica pausado: edição dos memoriais além do primeiro, crônicas, cápsulas
+      do tempo e QR Code. Tudo volta exatamente como estava se você reativar:</p>
+      <p><a href="${plansUrl}">Reativar o Premium</a></p>
+      <p>Com carinho,<br/>Equipe Eterno Pet</p>
+    `,
+  };
+}
+
+export function winBackEmail({ tutorName, plansUrl }: { tutorName: string; plansUrl: string }): { subject: string; html: string } {
+  return {
+    subject: 'A história continua aqui, quando você quiser 💛',
+    html: `
+      <p>Olá, ${tutorName},</p>
+      <p>Faz uma semana que sua conta entrou em modo lembrança. Os memoriais dos seus
+      pets seguem no ar — cada foto, cada momento, intactos.</p>
+      <p>Se sentir vontade de continuar escrevendo essa história — novos momentos,
+      crônicas, cápsulas para datas especiais — o Premium te espera do jeitinho
+      que você deixou:</p>
+      <p><a href="${plansUrl}">Voltar para o Premium</a></p>
+      <p>Com carinho,<br/>Equipe Eterno Pet</p>
+    `,
+  };
+}
