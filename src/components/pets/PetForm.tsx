@@ -136,7 +136,11 @@ export default function PetForm({ userId, pet, onAvatarChange }: Props) {
       const result = await updatePet(pet.id, { ...data, avatar_url });
       if (result.error) {
         if (avatarFile && avatar_url) await deleteUploadedMedia(avatar_url);
-        setServerError(result.error);
+        setServerError(
+          result.error === 'UPGRADE_REQUIRED'
+            ? 'Este memorial está em modo lembrança. Reative o Premium em Planos.'
+            : result.error
+        );
         return;
       }
       toast.success('Dados do pet salvos com sucesso.');

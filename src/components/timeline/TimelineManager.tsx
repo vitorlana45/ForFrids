@@ -164,7 +164,11 @@ export default function TimelineManager({ petId, initialEntries, userId }: Props
       const result = await updateTimelineEntry(editingId, { ...data, photo_urls });
       if (result.error) {
         await deleteUploadedMedia(uploadedUrls);
-        setFormError(result.error);
+        setFormError(
+          result.error === 'UPGRADE_REQUIRED'
+            ? 'Este memorial está em modo lembrança. Reative o Premium em Planos.'
+            : result.error
+        );
         return;
       }
       setEntries(prev =>
@@ -175,6 +179,7 @@ export default function TimelineManager({ petId, initialEntries, userId }: Props
     } else {
       const result = await createTimelineEntry({ pet_id: petId, ...data, photo_urls: [] });
       if (result.error === 'LIMIT_REACHED') { setFormError('Você atingiu o limite de momentos do seu plano. Faça upgrade para adicionar mais.'); return; }
+      if (result.error === 'UPGRADE_REQUIRED') { setFormError('Este memorial está em modo lembrança. Reative o Premium em Planos.'); return; }
       if (result.error) { setFormError(result.error); return; }
       let newEntry = result.data as TimelineEntry;
 
@@ -184,7 +189,11 @@ export default function TimelineManager({ petId, initialEntries, userId }: Props
           const updateResult = await updateTimelineEntry(newEntry.id, { photo_urls });
           if (updateResult.error) {
             await deleteUploadedMedia(photo_urls);
-            setFormError(updateResult.error);
+            setFormError(
+              updateResult.error === 'UPGRADE_REQUIRED'
+                ? 'Este memorial está em modo lembrança. Reative o Premium em Planos.'
+                : updateResult.error
+            );
             return;
           }
           newEntry = { ...newEntry, photo_urls };
@@ -213,7 +222,11 @@ export default function TimelineManager({ petId, initialEntries, userId }: Props
     startTransition(async () => {
       const result = await deleteTimelineEntry(id);
       if (result.error) {
-        toast.error('Erro ao excluir o momento. Tente novamente.');
+        toast.error(
+          result.error === 'UPGRADE_REQUIRED'
+            ? 'Este memorial está em modo lembrança. Reative o Premium em Planos.'
+            : 'Erro ao excluir o momento. Tente novamente.'
+        );
       } else {
         toast.success('Momento excluído com sucesso.');
         setEntries(prev => prev.filter(e => e.id !== id));
