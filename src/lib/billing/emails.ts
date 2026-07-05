@@ -27,11 +27,31 @@ export async function sendBillingEmailOnce(input: {
     return false;
   }
 
-  const profile = await prisma.profile.findUnique({
-    where: { id: input.profileId },
-    select: { email: true },
-  });
-  if (!profile?.email) return false;
+  let profile: { email: string | null } | null;
+  try {
+    profile = await prisma.profile.findUnique({
+      where: { id: input.profileId },
+      select: { email: true },
+    });
+  } catch (error) {
+    billingError('billing_email.profile_lookup_failed', error, {
+      type: input.type,
+      profileId: input.profileId,
+    });
+    try {
+      await prisma.billingEmail.delete({
+        where: { type_dedupe_key: { type: input.type, dedupe_key: input.dedupeKey } },
+      });
+    } catch {
+      // best-effort: se não conseguir liberar, o dedupe fica retido — logado acima
+    }
+    return false;
+  }
+
+  if (!profile?.email) {
+    billingLog('billing_email.no_email', { type: input.type, profileId: input.profileId });
+    return false;
+  }
 
   try {
     await getEmailClient().emails.send({
