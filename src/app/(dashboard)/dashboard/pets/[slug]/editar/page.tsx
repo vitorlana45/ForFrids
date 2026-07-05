@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getServerSession } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
+import { isPetEditable } from '@/lib/security/access';
 import PetEditTabs from '@/components/pets/PetEditTabs';
 import ModerationBanner from '@/components/pets/ModerationBanner';
 import type { Pet, TimelineEntry, Tribute } from '@/types/database';
@@ -23,6 +24,8 @@ export default async function EditarPetPage({ params }: Props) {
   const pet = petData as unknown as Pet | null;
   if (!pet) notFound();
 
+  const editable = await isPetEditable(pet.id);
+
   const moderation = petData as unknown as {
     moderation_status?: 'active' | 'flagged' | 'hidden' | 'blocked';
     blocked_reason?: string | null;
@@ -36,19 +39,21 @@ export default async function EditarPetPage({ params }: Props) {
     approvedTributesCount,
     likesCount,
     chroniclesCount,
-  ] = await Promise.all([
-    prisma.timelineEntry.findMany({
-      where: { pet_id: pet.id },
-      orderBy: { date: 'asc' },
-    }),
-    prisma.tribute.findMany({
-      where: { pet_id: pet.id, status: 'pending' },
-      orderBy: { created_at: 'desc' },
-    }),
-    prisma.tribute.count({ where: { pet_id: pet.id, status: 'approved' } }),
-    prisma.memorialReaction.count({ where: { pet_id: pet.id, reaction_type: 'heart' } }),
-    prisma.chronicle.count({ where: { pet_id: pet.id } }),
-  ]);
+  ] = editable
+    ? await Promise.all([
+        prisma.timelineEntry.findMany({
+          where: { pet_id: pet.id },
+          orderBy: { date: 'asc' },
+        }),
+        prisma.tribute.findMany({
+          where: { pet_id: pet.id, status: 'pending' },
+          orderBy: { created_at: 'desc' },
+        }),
+        prisma.tribute.count({ where: { pet_id: pet.id, status: 'approved' } }),
+        prisma.memorialReaction.count({ where: { pet_id: pet.id, reaction_type: 'heart' } }),
+        prisma.chronicle.count({ where: { pet_id: pet.id } }),
+      ])
+    : [[], [], 0, 0, 0];
 
   return (
     <div className="mx-auto max-w-[1100px] px-6 pb-24 animate-fade-in">
@@ -84,15 +89,28 @@ export default async function EditarPetPage({ params }: Props) {
         />
       )}
 
-      <PetEditTabs
-        userId={userId}
-        pet={pet}
-        entries={entries as unknown as TimelineEntry[]}
-        pendingTributes={pendingTributes as unknown as Tribute[]}
-        approvedTributesCount={approvedTributesCount}
-        likesCount={likesCount}
-        chroniclesCount={chroniclesCount}
-      />
+      {editable ? (
+        <PetEditTabs
+          userId={userId}
+          pet={pet}
+          entries={entries as unknown as TimelineEntry[]}
+          pendingTributes={pendingTributes as unknown as Tribute[]}
+          approvedTributesCount={approvedTributesCount}
+          likesCount={likesCount}
+          chroniclesCount={chroniclesCount}
+        />
+      ) : (
+        <div className="bg-surface-container rounded-3xl p-10 text-center space-y-4">
+          <h2 className="font-serif text-2xl text-on-surface italic">Em modo lembrança</h2>
+          <p className="text-on-surface-variant">
+            O memorial de {pet.name} continua no ar para todos que o amam,
+            mas a edição está pausada no plano gratuito.
+          </p>
+          <Link href="/dashboard/planos" className="inline-block bg-primary text-on-primary px-8 py-3 rounded-full font-serif">
+            Reativar o Premium
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

@@ -17,6 +17,7 @@ export function useDashboardAlerts(initial: Input) {
     readyCapsulesCount: initial.readyCapsulesCount,
     memorialLikesCount: initial.memorialLikesCount ?? 0,
     total: initial.pendingApprovalsCount + initial.readyCapsulesCount,
+    billing: { pastDue: false, cancelsAt: null },
   });
 
   const refresh = useCallback(async () => {

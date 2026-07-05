@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getServerSession } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import DashboardNav from '@/components/dashboard/DashboardNav';
+import { BillingBanner } from '@/components/dashboard/billing-banner';
 import { getDashboardAlerts } from '@/lib/dashboard/alerts';
 import type { Profile } from '@/types/database';
 
@@ -23,7 +24,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
         readyCapsulesCount={alerts.readyCapsulesCount}
         memorialLikesCount={alerts.memorialLikesCount}
       />
-      <main className="pt-32">{children}</main>
+      <main className="pt-32">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <BillingBanner userId={userId} />
+        </div>
+        {children}
+      </main>
     </div>
   );
 }
