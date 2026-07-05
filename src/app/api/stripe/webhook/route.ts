@@ -127,6 +127,8 @@ export async function POST(request: Request) {
 }
 
 async function notifyPaymentFailed(invoice: Stripe.Invoice) {
+  if (invoice.billing_reason !== 'subscription_cycle') return;
+
   const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id;
   if (!customerId || !invoice.id) return;
 
