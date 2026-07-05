@@ -128,22 +128,44 @@ export default function HomePage() {
             <div className="flex-1 w-full">
               <div className="bg-surface-container-lowest p-10 md:p-16 rounded-[3.5rem] shadow-memorial border border-surface-variant relative overflow-hidden">
                 <div className="text-center space-y-8 relative z-10">
-                  <div className="w-36 h-36 mx-auto rounded-full overflow-hidden border-4 border-surface-container-lowest shadow-xl ring-1 ring-secondary/10 bg-surface-container-high flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[60px] text-primary/30">cruelty_free</span>
+                  <div className="w-36 h-36 mx-auto rounded-full overflow-hidden border-4 border-surface-container-lowest shadow-xl ring-1 ring-secondary/10 bg-surface-container-high relative">
+                    <Image
+                      src="/frids-sofa-blur.png"
+                      alt="Frids, a cachorrinha que inspirou o Eterno Pet"
+                      fill
+                      sizes="144px"
+                      className="object-cover object-[68%_45%]"
+                    />
                   </div>
                   <div>
-                    <h3 className="font-serif text-4xl italic mb-2">Para sempre, Max</h3>
-                    <p className="text-[10px] font-bold text-primary tracking-[0.3em] uppercase opacity-70">2012 - 2024</p>
+                    <h3 className="font-serif text-4xl italic mb-2">Para sempre, Frids</h3>
+                    <p className="text-[10px] font-bold text-primary tracking-[0.3em] uppercase opacity-70">Dezoito anos de amor</p>
                   </div>
                   <div className="h-px w-16 bg-secondary/30 mx-auto" />
                   <p className="font-serif text-xl leading-relaxed text-on-surface-variant italic px-6">
-                    “O melhor companheiro de trilhas e o dono do latido mais alegre do bairro.
-                    Você nos ensinou o significado de amor incondicional.”
+                    “A presença mais calma e doce da casa, companheira silenciosa de todas
+                    as fases. Você nos ensinou o significado de amor incondicional.”
                   </p>
                 </div>
                 <div className="mt-16 grid grid-cols-2 gap-6">
-                  <div className="rounded-3xl h-40 bg-surface-container-high" />
-                  <div className="rounded-3xl h-40 bg-surface-container" />
+                  <div className="rounded-3xl h-40 relative overflow-hidden bg-surface-container-high">
+                    <Image
+                      src="/frids-viagem.jpg"
+                      alt="Frids deitada na grama durante um passeio"
+                      fill
+                      sizes="(max-width: 768px) 45vw, 260px"
+                      className="object-cover object-[50%_30%]"
+                    />
+                  </div>
+                  <div className="rounded-3xl h-40 relative overflow-hidden bg-surface-container">
+                    <Image
+                      src="/foto-sofa-2.jpg"
+                      alt="Close da Frids deitada no sofá"
+                      fill
+                      sizes="(max-width: 768px) 45vw, 260px"
+                      className="object-cover"
+                    />
+                  </div>
                 </div>
                 <span className="material-symbols-outlined absolute -top-12 -right-12 text-primary/5 text-[240px] pointer-events-none select-none">eco</span>
               </div>
