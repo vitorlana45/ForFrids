@@ -78,7 +78,7 @@ export default function SobrePage() {
                 {/* Retrato da Frids */}
                 <div className="w-36 h-36 mx-auto rounded-full overflow-hidden border-4 border-surface-container-lowest shadow-xl ring-1 ring-secondary/20 bg-surface-container-high relative">
                   <Image
-                    src="/frids-viagem.jpg"
+                    src="/frids_viagem.jpg"
                     alt="Frids, a cachorrinha que inspirou o Eterno Pet, deitada na grama"
                     fill
                     className="object-cover object-[50%_32%]"
@@ -258,12 +258,17 @@ export default function SobrePage() {
               >
                 Criar Memorial
               </Link>
-              <Link
-                href="/memorial/fridis"
-                className="border border-inverse-on-surface/30 text-inverse-on-surface px-10 py-5 rounded-full font-serif font-medium hover:bg-inverse-on-surface/10 transition-all"
+              {/* Memorial da Frids ainda em construção — link desativado até a publicação */}
+              <span
+                aria-disabled="true"
+                title="O memorial da Frids está em construção"
+                className="inline-flex items-center gap-3 border border-inverse-on-surface/20 text-inverse-on-surface/50 px-10 py-5 rounded-full font-serif font-medium cursor-not-allowed select-none"
               >
                 Visitar o memorial da Frids
-              </Link>
+                <span className="rounded-full bg-inverse-on-surface/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em]">
+                  Em breve
+                </span>
+              </span>
             </div>
           </div>
           <div className="absolute bottom-[-15%] left-[-5%] opacity-[0.04] pointer-events-none select-none">

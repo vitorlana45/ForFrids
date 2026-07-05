@@ -128,42 +128,53 @@ export default function HomePage() {
             <div className="flex-1 w-full">
               <div className="bg-surface-container-lowest p-10 md:p-16 rounded-[3.5rem] shadow-memorial border border-surface-variant relative overflow-hidden">
                 <div className="text-center space-y-8 relative z-10">
-                  <div className="w-36 h-36 mx-auto rounded-full overflow-hidden border-4 border-surface-container-lowest shadow-xl ring-1 ring-secondary/10 bg-surface-container-high relative">
-                    <Image
-                      src="/frids-sofa-blur.png"
-                      alt="Frids, a cachorrinha que inspirou o Eterno Pet"
-                      fill
-                      sizes="144px"
-                      className="object-cover object-[68%_45%]"
-                    />
+                  <div className="flex items-end justify-center -space-x-5">
+                    <div className="relative z-0 h-24 w-24 overflow-hidden rounded-full border-4 border-surface-container-lowest bg-surface-container-high shadow-lg">
+                      <Image
+                        src="/max.webp"
+                        alt="Max ainda filhote, deitado na grama"
+                        fill
+                        sizes="96px"
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="relative z-10 h-36 w-36 overflow-hidden rounded-full border-4 border-surface-container-lowest bg-surface-container-high shadow-xl ring-1 ring-secondary/10">
+                      <Image
+                        src="/max_hero.jpg"
+                        alt="Max, um golden retriever de olhar sereno"
+                        fill
+                        sizes="144px"
+                        className="object-cover object-[50%_22%]"
+                      />
+                    </div>
+                    <div className="relative z-0 h-24 w-24 overflow-hidden rounded-full border-4 border-surface-container-lowest bg-surface-container-high shadow-lg">
+                      <Image
+                        src="/max_idoso.jpg"
+                        alt="Max sorrindo ao lado da bolinha favorita"
+                        fill
+                        sizes="96px"
+                        className="object-cover object-[50%_18%]"
+                      />
+                    </div>
                   </div>
                   <div>
-                    <h3 className="font-serif text-4xl italic mb-2">Para sempre, Frids</h3>
-                    <p className="text-[10px] font-bold text-primary tracking-[0.3em] uppercase opacity-70">Dezoito anos de amor</p>
+                    <h3 className="font-serif text-4xl italic mb-2">Para sempre, Max</h3>
+                    <p className="text-[10px] font-bold text-primary tracking-[0.3em] uppercase opacity-70">2012 - 2024</p>
                   </div>
                   <div className="h-px w-16 bg-secondary/30 mx-auto" />
                   <p className="font-serif text-xl leading-relaxed text-on-surface-variant italic px-6">
-                    “A presença mais calma e doce da casa, companheira silenciosa de todas
-                    as fases. Você nos ensinou o significado de amor incondicional.”
+                    “O melhor companheiro de trilhas e o dono do latido mais alegre do bairro.
+                    Você nos ensinou o significado de amor incondicional.”
                   </p>
                 </div>
-                <div className="mt-16 grid grid-cols-2 gap-6">
-                  <div className="rounded-3xl h-40 relative overflow-hidden bg-surface-container-high">
+                <div className="mt-16">
+                  <div className="rounded-3xl h-48 relative overflow-hidden bg-surface-container-high">
                     <Image
-                      src="/frids-viagem.jpg"
-                      alt="Frids deitada na grama durante um passeio"
+                      src="/max_out.jpg"
+                      alt="Max no campo, sob um céu de pôr do sol"
                       fill
-                      sizes="(max-width: 768px) 45vw, 260px"
-                      className="object-cover object-[50%_30%]"
-                    />
-                  </div>
-                  <div className="rounded-3xl h-40 relative overflow-hidden bg-surface-container">
-                    <Image
-                      src="/foto-sofa-2.jpg"
-                      alt="Close da Frids deitada no sofá"
-                      fill
-                      sizes="(max-width: 768px) 45vw, 260px"
-                      className="object-cover"
+                      sizes="(max-width: 768px) 90vw, 540px"
+                      className="object-cover object-[50%_67%]"
                     />
                   </div>
                 </div>
@@ -231,7 +242,7 @@ export default function HomePage() {
               <div className="p-14 rounded-[3rem] bg-primary text-on-primary shadow-premium scale-105 z-10 flex flex-col relative overflow-hidden">
                 <div className="absolute top-8 right-10 bg-secondary px-4 py-1.5 rounded-full text-[9px] font-bold tracking-[0.2em] uppercase text-white">RECOMENDADO</div>
                 <h4 className="font-serif text-2xl mb-2">Memorial Premium</h4>
-                <div className="text-4xl font-serif mb-8">R$ 7,99<span className="text-xl opacity-70">/mês</span></div>
+                <div className="text-4xl font-serif mb-8">R$ 8,90<span className="text-xl opacity-70">/mês</span></div>
                 <ul className="space-y-6 mb-14 flex-grow">
                   {['Até 5 memoriais', 'Linha do tempo com até 50 momentos', 'Diário de Crônicas e Cápsula do Tempo', 'QR Code do memorial'].map(f => (
                     <li key={f} className="flex items-center gap-4">
@@ -247,10 +258,10 @@ export default function HomePage() {
               {/* Anual */}
               <div className="p-12 rounded-[2.5rem] border border-secondary/10 bg-surface-container flex flex-col">
                 <h4 className="font-serif text-2xl mb-2 text-primary">Premium Anual</h4>
-                <div className="text-4xl font-serif mb-2">R$ 79,90<span className="text-xl opacity-70">/ano</span></div>
-                <span className="text-base opacity-60 font-sans mb-8 block">equivale a R$ 6,66/mês</span>
+                <div className="text-4xl font-serif mb-2">R$ 89,90<span className="text-xl opacity-70">/ano</span></div>
+                <span className="text-base opacity-60 font-sans mb-8 block">equivale a R$ 7,49/mês</span>
                 <ul className="space-y-5 mb-12 flex-grow">
-                  {['Tudo do plano Premium', '2 meses grátis', 'Economize R$ 15,98 no ano'].map(f => (
+                  {['Tudo do plano Premium', '2 meses grátis', 'Economize R$ 16,90 no ano'].map(f => (
                     <li key={f} className="flex items-center gap-4 text-on-surface-variant">
                       <span className="material-symbols-outlined text-secondary text-sm">done</span> {f}
                     </li>
