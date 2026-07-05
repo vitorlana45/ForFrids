@@ -6,6 +6,9 @@ import {
   upsertStripeSubscription,
 } from '@/lib/billing/stripe-sync';
 import { billingError, billingLog } from '@/lib/billing/debug';
+import { prisma } from '@/lib/prisma';
+import { sendBillingEmailOnce } from '@/lib/billing/emails';
+import { paymentFailedEmail } from '@/lib/email/templates';
 
 export async function POST(request: Request) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -88,10 +91,24 @@ export async function POST(request: Request) {
       }
 
       case 'invoice.payment_succeeded':
-      case 'invoice.payment_failed':
         billingLog('webhook.invoice', { eventId: event.id, type: event.type });
         await syncStripeInvoice(event.data.object as Stripe.Invoice);
         break;
+
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice;
+        billingLog('webhook.invoice', { eventId: event.id, type: event.type });
+        await syncStripeInvoice(invoice);
+        try {
+          await notifyPaymentFailed(invoice);
+        } catch (error) {
+          billingError('webhook.notify_payment_failed.error', error, {
+            eventId: event.id,
+            type: event.type,
+          });
+        }
+        break;
+      }
 
       default:
         billingLog('webhook.ignored', { eventId: event.id, type: event.type });
@@ -107,4 +124,29 @@ export async function POST(request: Request) {
 
   billingLog('webhook.processed', { eventId: event.id, type: event.type });
   return NextResponse.json({ received: true });
+}
+
+async function notifyPaymentFailed(invoice: Stripe.Invoice) {
+  const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id;
+  if (!customerId || !invoice.id) return;
+
+  const sub = await prisma.subscription.findFirst({
+    where: { provider: 'stripe', provider_customer_id: customerId },
+    select: { profile_id: true, profile: { select: { full_name: true } } },
+    orderBy: { created_at: 'desc' },
+  });
+  if (!sub) return;
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const template = paymentFailedEmail({
+    tutorName: sub.profile.full_name?.split(' ')[0] ?? 'Tutor',
+    plansUrl: `${siteUrl}/dashboard/planos`,
+  });
+  await sendBillingEmailOnce({
+    profileId: sub.profile_id,
+    type: 'payment_failed',
+    dedupeKey: `invoice_${invoice.id}`,
+    subject: template.subject,
+    html: template.html,
+  });
 }
