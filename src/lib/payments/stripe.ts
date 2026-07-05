@@ -25,7 +25,6 @@ export const stripePaymentGateway: PaymentGateway = {
 
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
-      payment_method_types: ['card'],
       line_items: [{ price, quantity: 1 }],
       customer: input.customerId ?? undefined,
       customer_email: input.customerId ? undefined : input.email ?? undefined,

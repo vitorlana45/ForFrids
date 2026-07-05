@@ -1,11 +1,12 @@
 import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
-import { getStripe } from '@/lib/stripe';
+import { getStripe, stripePriceIds } from '@/lib/stripe';
 import { billingError, billingLog } from '@/lib/billing/debug';
 import { detectTransition } from '@/lib/billing/lifecycle';
 import { sendBillingEmailOnce } from '@/lib/billing/emails';
 import { downgradeEmail, farewellEmail } from '@/lib/email/templates';
 import type { PlanId } from '@/types/database';
+import type { BillingInterval } from '@/lib/payments';
 
 type StripeRef = string | { id: string } | null | undefined;
 
@@ -25,6 +26,19 @@ function paidPlan(planId?: string | null): Extract<PlanId, 'premium'> | null {
 
 function activePlan(status: string, planId: PlanId): PlanId {
   return ['active', 'trialing', 'past_due'].includes(status) ? planId : 'free';
+}
+
+function billingInterval(subscription: Stripe.Subscription): BillingInterval | null {
+  const metadataInterval = subscription.metadata?.billing_interval;
+  if (metadataInterval === 'month' || metadataInterval === 'year') return metadataInterval;
+
+  const price = subscription.items.data[0]?.price;
+  if (price?.id === stripePriceIds.premium_annual) return 'year';
+  if (price?.id === stripePriceIds.premium_monthly) return 'month';
+  if (price?.recurring?.interval === 'year') return 'year';
+  if (price?.recurring?.interval === 'month') return 'month';
+
+  return null;
 }
 
 export async function updateProfilePlan(profileId: string, planId: PlanId, status: string) {
@@ -174,7 +188,12 @@ export async function upsertStripeSubscription(
     });
   }
 
-  return { planId, effectivePlanId: activePlan(subscription.status, planId), status: subscription.status };
+  return {
+    planId,
+    effectivePlanId: activePlan(subscription.status, planId),
+    status: subscription.status,
+    billingInterval: billingInterval(subscription),
+  };
 }
 
 export async function syncStripeInvoice(invoice: Stripe.Invoice) {
@@ -210,7 +229,7 @@ export async function syncStripeCheckoutSession(sessionId: string, expectedProfi
   const profileId = session.metadata?.profile_id;
   if (!profileId || (expectedProfileId && profileId !== expectedProfileId)) {
     billingLog('checkout.sync.skip_profile_mismatch', { sessionId, profileId, expectedProfileId });
-    return { synced: false, planId: null };
+    return { synced: false, planId: null, billingInterval: null };
   }
 
   if (session.mode === 'subscription') {
@@ -223,11 +242,15 @@ export async function syncStripeCheckoutSession(sessionId: string, expectedProfi
         profileId,
         planId: session.metadata?.plan_id,
       });
-      return { synced: !!result, planId: result?.effectivePlanId ?? null };
+      return {
+        synced: !!result,
+        planId: result?.effectivePlanId ?? null,
+        billingInterval: result?.billingInterval ?? null,
+      };
     }
   }
 
-  return { synced: false, planId: null };
+  return { synced: false, planId: null, billingInterval: null };
 }
 
 export async function syncLatestStripeSubscriptionForProfile(profileId: string) {
@@ -266,5 +289,7 @@ export async function syncLatestStripeSubscriptionForProfile(profileId: string) 
   if (!latest) return null;
 
   const result = await upsertStripeSubscription(latest.subscription);
-  return result?.effectivePlanId ?? null;
+  return result
+    ? { planId: result.effectivePlanId, billingInterval: result.billingInterval }
+    : null;
 }

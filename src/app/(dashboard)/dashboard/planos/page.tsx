@@ -9,6 +9,7 @@ import {
 } from '@/lib/billing/stripe-sync';
 import { billingError, billingLog } from '@/lib/billing/debug';
 import type { PlanId } from '@/types/database';
+import type { BillingInterval } from '@/lib/payments';
 
 const PLANS = [
   {
@@ -75,6 +76,7 @@ export default async function PlanosPage({ searchParams }: Props) {
 
   const { cancelled, session_id: sessionId, success } = await searchParams;
   let checkoutSyncedPlan = null as PlanId | null;
+  let currentBillingInterval = null as BillingInterval | null;
   billingLog('plans.page.start', {
     userId: user.id,
     success,
@@ -86,11 +88,13 @@ export default async function PlanosPage({ searchParams }: Props) {
     try {
       const result = await syncStripeCheckoutSession(sessionId, user.id);
       checkoutSyncedPlan = result.planId;
+      currentBillingInterval = result.billingInterval;
       billingLog('plans.page.checkout_sync.result', {
         userId: user.id,
         sessionId,
         synced: result.synced,
         planId: result.planId,
+        billingInterval: result.billingInterval,
       });
     } catch (error) {
       billingError('plans.page.checkout_sync.error', error, { userId: user.id, sessionId });
@@ -102,10 +106,16 @@ export default async function PlanosPage({ searchParams }: Props) {
   billingLog('plans.page.effective_plan', { userId: user.id, effectivePlanId });
   let reconciledPlanId = null as PlanId | null;
 
-  if (!checkoutSyncedPlan && effectivePlanId === 'free') {
+  if (!checkoutSyncedPlan || !currentBillingInterval) {
     try {
-      reconciledPlanId = await syncLatestStripeSubscriptionForProfile(user.id);
-      billingLog('plans.page.reconcile.result', { userId: user.id, reconciledPlanId });
+      const result = await syncLatestStripeSubscriptionForProfile(user.id);
+      reconciledPlanId = result?.planId ?? null;
+      currentBillingInterval = currentBillingInterval ?? result?.billingInterval ?? null;
+      billingLog('plans.page.reconcile.result', {
+        userId: user.id,
+        reconciledPlanId,
+        billingInterval: result?.billingInterval ?? null,
+      });
     } catch (error) {
       billingError('plans.page.reconcile.error', error, { userId: user.id });
       reconciledPlanId = null;
@@ -119,6 +129,7 @@ export default async function PlanosPage({ searchParams }: Props) {
     reconciledPlanId,
     effectivePlanId,
     currentPlanId,
+    currentBillingInterval,
   });
   const successPlanLabel = checkoutSyncedPlan
     ? planLabel(checkoutSyncedPlan)
@@ -161,8 +172,14 @@ export default async function PlanosPage({ searchParams }: Props) {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {PLANS.map((plan) => {
-          // Anual nao e detectavel como "atual" (intervalo nao fica no profile).
-          const isCurrent = plan.cardId === 'premium_annual' ? false : plan.id === currentPlanId;
+          const isPremiumCard = plan.cardId === 'premium_monthly' || plan.cardId === 'premium_annual';
+          const isCurrent = isPremiumCard
+            ? plan.id === currentPlanId && (
+                !currentBillingInterval
+                  ? plan.cardId === 'premium_monthly'
+                  : ('interval' in plan && plan.interval === currentBillingInterval)
+              )
+            : plan.id === currentPlanId;
 
           return (
             <article
