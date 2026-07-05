@@ -1,8 +1,13 @@
 import { Resend } from 'resend';
 
-const resend = new Resend('re_KWp1rjyq_AKSSMYCmDSYnekCHYakTfyz7');
+const apiKey = process.env.RESEND_API_KEY;
+if (!apiKey) {
+  throw new Error('Missing RESEND_API_KEY');
+}
 
-const SITE_URL = 'http://localhost:3000';
+const resend = new Resend(apiKey);
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
 function welcomeEmail(name) {
   const firstName = name.split(' ')[0];
@@ -51,8 +56,8 @@ function welcomeEmail(name) {
 const { subject, html } = welcomeEmail('Vitor Lana');
 
 const { data, error } = await resend.emails.send({
-  from: 'onboarding@resend.dev',
-  to: 'vitoresmerio00@gmail.com',
+  from: process.env.EMAIL_FROM ?? process.env.RESEND_FROM_EMAIL ?? 'Eterno Pet <contato@eternopet.com.br>',
+  to: process.env.TEST_EMAIL_TO ?? 'vitoresmerio00@gmail.com',
   subject,
   html,
 });
