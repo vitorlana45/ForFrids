@@ -1,9 +1,10 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from './prisma';
-import { getResend, FROM_EMAIL } from './resend';
+import { EMAIL_FROM, getEmailClient } from './email/client';
 import { verificationEmail, passwordResetEmail } from './emails/auth-emails';
 import { welcomeEmail } from './emails/welcome';
+import { log } from './logger';
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: 'postgresql' }),
@@ -40,13 +41,16 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
+    // Best-effort: lançar erro aqui diferenciaria emails cadastrados dos não
+    // cadastrados quando o SMTP falha (enumeração de contas).
     sendResetPassword: async ({ user, url }) => {
       try {
-        const resend = getResend();
+        const email = getEmailClient();
         const { subject, html } = passwordResetEmail(url);
-        await resend.emails.send({ from: FROM_EMAIL, to: user.email, subject, html });
-      } catch {
-        // email send is best-effort
+        const result = await email.emails.send({ from: EMAIL_FROM, to: user.email, subject, html });
+        log.info('[auth:reset] email de redefinicao enviado', { messageId: result.data?.id ?? null });
+      } catch (error) {
+        log.error('[auth:reset] falha ao enviar email de redefinicao', { error });
       }
     },
   },
@@ -55,11 +59,11 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
       try {
-        const resend = getResend();
+        const email = getEmailClient();
         const { subject, html } = verificationEmail(url);
-        await resend.emails.send({ from: FROM_EMAIL, to: user.email, subject, html });
-      } catch {
-        // email send is best-effort
+        await email.emails.send({ from: EMAIL_FROM, to: user.email, subject, html });
+      } catch (error) {
+        log.error('[auth:verificacao] falha ao enviar email de verificacao', { error });
       }
     },
   },
@@ -95,11 +99,11 @@ export const auth = betterAuth({
       create: {
         after: async (user) => {
           try {
-            const resend = getResend();
+            const email = getEmailClient();
             const { subject, html } = welcomeEmail(user.name ?? user.email);
-            await resend.emails.send({ from: FROM_EMAIL, to: user.email, subject, html });
-          } catch {
-            // welcome email is best-effort
+            await email.emails.send({ from: EMAIL_FROM, to: user.email, subject, html });
+          } catch (error) {
+            log.error('[auth:welcome] falha ao enviar email de boas-vindas', { error });
           }
         },
       },

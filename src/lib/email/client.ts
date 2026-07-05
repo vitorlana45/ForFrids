@@ -1,8 +1,7 @@
 import nodemailer from 'nodemailer';
 import type SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { Resend } from 'resend';
 
-type EmailProvider = 'resend' | 'smtp' | 'spacemail';
+type EmailProvider = 'smtp' | 'spacemail';
 
 export interface SendEmailInput {
   from: string;
@@ -28,12 +27,11 @@ let cachedClient: EmailClient | null = null;
 let cachedProvider: EmailProvider | null = null;
 
 export const EMAIL_FROM = process.env.EMAIL_FROM
-  ?? process.env.RESEND_FROM_EMAIL
   ?? 'Eterno Pet <noreply@eternopet.com.br>';
 
 function getEmailProvider(): EmailProvider {
   const configured = process.env.EMAIL_PROVIDER?.toLowerCase();
-  if (configured === 'resend' || configured === 'smtp' || configured === 'spacemail') {
+  if (configured === 'smtp' || configured === 'spacemail') {
     return configured;
   }
   if (configured) {
@@ -44,21 +42,7 @@ function getEmailProvider(): EmailProvider {
     return 'smtp';
   }
 
-  return 'resend';
-}
-
-function createResendClient(): EmailClient {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    throw new Error('Missing RESEND_API_KEY');
-  }
-
-  const resend = new Resend(apiKey);
-  return {
-    emails: {
-      send: (input) => resend.emails.send(input),
-    },
-  };
+  return 'spacemail';
 }
 
 function boolFromEnv(value: string | undefined): boolean | undefined {
@@ -120,9 +104,7 @@ export function getEmailClient(): EmailClient {
   if (cachedClient && cachedProvider === provider) return cachedClient;
 
   cachedProvider = provider;
-  cachedClient = provider === 'resend'
-    ? createResendClient()
-    : createSmtpClient(provider);
+  cachedClient = createSmtpClient(provider);
 
   return cachedClient;
 }

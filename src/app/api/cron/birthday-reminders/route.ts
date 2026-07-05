@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { petBirthdayEmail, petAnniversaryEmail } from '@/lib/email/templates';
-import { emailFrom, getResend } from '@/lib/email/resend';
+import { EMAIL_FROM, getEmailClient } from '@/lib/email/client';
 import { prisma } from '@/lib/prisma';
 import type { Pet, Profile } from '@/types/database';
 
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const resend = getResend();
+  const email = getEmailClient();
   const today = saoPauloMonthDay();
 
   const allPets = await prisma.pet.findMany({
@@ -83,8 +83,8 @@ export async function GET(request: Request) {
       template = petAnniversaryEmail({ tutorName, petName: pet.name, memorialUrl, yearsSince });
     }
 
-    await resend.emails.send({
-      from: emailFrom,
+    await email.emails.send({
+      from: EMAIL_FROM,
       to: profile.email,
       subject: template.subject,
       html: template.html,

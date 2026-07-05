@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { getServerSession } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import { getResend, FROM_EMAIL } from '@/lib/resend';
+import { EMAIL_FROM, getEmailClient } from '@/lib/email/client';
 import { tributeNotificationEmail } from '@/lib/emails/tribute-notification';
 import { rateLimit } from '@/lib/security/rate-limit';
 import { verifyTurnstileToken } from '@/lib/security/turnstile';
@@ -82,9 +82,9 @@ export async function createTribute(
         authorRelation: parsed.data.author_relation ?? null,
         message: parsed.data.message,
       });
-      const resend = getResend();
-      await resend.emails.send({
-        from: FROM_EMAIL,
+      const email = getEmailClient();
+      await email.emails.send({
+        from: EMAIL_FROM,
         to: petWithOwner.owner.email,
         subject,
         html,

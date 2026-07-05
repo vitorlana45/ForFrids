@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { authorizeAdmin } from '@/lib/admin/auth';
 import { memorialBlockedEmail } from '@/lib/email/templates';
-import { emailFrom, getResend } from '@/lib/email/resend';
+import { EMAIL_FROM, getEmailClient } from '@/lib/email/client';
 import { log } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -48,7 +48,7 @@ export async function POST(request: Request, { params }: Params) {
   if (parsed.data.notify && pet.owner?.email) {
     try {
       const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://eternopet.com.br').replace(/\/$/, '');
-      const supportEmail = process.env.RESEND_FROM_EMAIL ?? 'contato@eternopet.com.br';
+      const supportEmail = process.env.SUPPORT_EMAIL ?? process.env.SMTP_USER ?? 'contato@eternopet.com.br';
       const tmpl = memorialBlockedEmail({
         tutorName: pet.owner.full_name?.split(' ')[0] ?? 'Tutor',
         petName: pet.name,
@@ -56,9 +56,9 @@ export async function POST(request: Request, { params }: Params) {
         dashboardUrl: `${siteUrl}/dashboard/pets/${pet.memorial_slug}/editar`,
         supportEmail,
       });
-      const resend = getResend();
-      await resend.emails.send({
-        from: emailFrom,
+      const email = getEmailClient();
+      await email.emails.send({
+        from: EMAIL_FROM,
         to: pet.owner.email,
         subject: tmpl.subject,
         html: tmpl.html,

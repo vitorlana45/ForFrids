@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getResend, emailFrom } from '@/lib/email/resend';
+import { EMAIL_FROM, getEmailClient } from '@/lib/email/client';
 import { welcomeEmail } from '@/lib/email/templates';
 
 export async function POST(request: Request) {
@@ -16,11 +16,11 @@ export async function POST(request: Request) {
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3001';
-  const resend = getResend();
+  const email = getEmailClient();
   const template = welcomeEmail({ name: body.name ?? 'Tutor', siteUrl });
 
-  await resend.emails.send({
-    from: emailFrom,
+  await email.emails.send({
+    from: EMAIL_FROM,
     to: body.email,
     subject: template.subject,
     html: template.html,
