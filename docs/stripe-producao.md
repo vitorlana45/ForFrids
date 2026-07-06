@@ -28,12 +28,28 @@ Os preços de test criados em 2026-07 **não** funcionam em produção — Live 
 
 **Preço 2 — anual**
 - Modelo: Recorrente (Recurring)
-- Valor: `R$ 89,00` · Moeda: `BRL` · Período: `Anual (year)`
-  (≈ 9 × R$ 9,90 — a economia de R$ 29,80 cobre os "3 meses grátis" da copy)
+- Valor: `R$ 89,90` · Moeda: `BRL` · Período: `Anual (year)`
+  (economia de R$ 28,90 vs. 12 × R$ 9,90 — copy promete "quase 3 meses grátis")
 - → copiar o `price_...` para `STRIPE_PRICE_PREMIUM_ANNUAL`
-- Se já existia o price de `R$ 89,90`: criar um price NOVO de `R$ 89,00`,
-  trocar a env e arquivar o antigo (assinantes existentes continuam
-  renovando no valor antigo, a menos que você os migre manualmente)
+
+> **Oferta de lançamento (jul/2026):** preços cheios R$ 14,90/mês e
+> R$ 119,90/ano; cobrados hoje R$ 9,90 e R$ 89,90. Toda a copy das duas
+> páginas de preço vem de `src/lib/pricing.ts`, chaveada pela env
+> `NEXT_PUBLIC_LAUNCH_OFFER` (`true` = promo com selo/riscado; ausente ou
+> `false` = preço cheio, sem selo).
+>
+> **Para encerrar a promoção (sem tocar em código):**
+> 1. Criar na Stripe (live) os prices cheios: R$ 14,90/mês e R$ 119,90/ano;
+>    arquivar os promocionais (assinantes existentes permanecem no preço
+>    em que assinaram).
+> 2. No Coolify, trocar `STRIPE_PRICE_PREMIUM_MONTHLY` e
+>    `STRIPE_PRICE_PREMIUM_ANNUAL` para os prices novos e setar
+>    `NEXT_PUBLIC_LAUNCH_OFFER=false` (a env precisa estar disponível no
+>    BUILD — marcar como build variable — porque a landing é estática).
+> 3. Redeploy. Conferir checkout (valor cheio) e as duas páginas (sem selo).
+>
+> CDC: o "de/por" com selo de lançamento só é lícito se o preço cheio for
+> realmente praticado após a promoção — não reative a promo sem critério.
 
 > Definir o preço mensal como **default price** do produto.
 > NÃO criar plano vitalício/único — foi descontinuado.

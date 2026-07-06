@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import ThemeToggle from '@/components/ui/ThemeToggle';
+import { pricing } from '@/lib/pricing';
 
 export default function HomePage() {
   return (
@@ -220,29 +221,33 @@ export default function HomePage() {
               <span className="text-[11px] font-bold tracking-[0.3em] text-secondary uppercase">PLANOS</span>
               <h2 className="font-serif text-5xl text-on-surface">Escolha como eternizar</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto items-center">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto items-center">
 
               {/* Free */}
               <div className="p-12 rounded-[2.5rem] border border-secondary/10 bg-surface-container flex flex-col">
-                <h4 className="font-serif text-2xl mb-2 text-primary">Santuário Grátis</h4>
+                <h4 className="font-serif text-2xl mb-2 text-primary">Gratuito</h4>
                 <div className="text-4xl font-serif mb-8">R$ 0</div>
                 <ul className="space-y-5 mb-12 flex-grow">
-                  {['1 memorial público', 'Linha do tempo com até 5 momentos', 'Mural de homenagens com moderação'].map(f => (
+                  {['1 memorial ativo', 'Linha do tempo com até 5 momentos', 'Homenagens de visitantes', 'Memorial público compartilhável'].map(f => (
                     <li key={f} className="flex items-center gap-4 text-on-surface-variant">
                       <span className="material-symbols-outlined text-secondary text-sm">done</span> {f}
                     </li>
                   ))}
                 </ul>
-                <Link href="/cadastrar" className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-surface-container-low transition-all block">
+                <Link href="/cadastrar" className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-primary hover:text-on-primary hover:shadow-lg hover:shadow-primary/20 transition-all block">
                   Começar Agora
                 </Link>
               </div>
 
               {/* Premium */}
               <div className="p-14 rounded-[3rem] bg-primary text-on-primary shadow-premium scale-105 z-10 flex flex-col relative overflow-hidden">
-                <div className="absolute top-8 right-10 bg-secondary px-4 py-1.5 rounded-full text-[9px] font-bold tracking-[0.2em] uppercase text-white">RECOMENDADO</div>
-                <h4 className="font-serif text-2xl mb-2">Memorial Premium</h4>
-                <div className="text-4xl font-serif mb-8">R$ 9,90<span className="text-xl opacity-70">/mês</span></div>
+                <div className="absolute top-8 right-10 bg-secondary px-4 py-1.5 rounded-full text-[9px] font-bold tracking-[0.2em] uppercase text-white">MAIS POPULAR</div>
+                <h4 className="font-serif text-2xl mb-2">Premium</h4>
+                {pricing.monthly.full && (
+                  <span className="mb-2 inline-block w-fit bg-secondary px-3 py-1 rounded-full text-[9px] font-bold tracking-[0.15em] uppercase text-white">Oferta de lançamento</span>
+                )}
+                {pricing.monthly.full && <s className="block font-serif text-lg opacity-50 leading-none">{pricing.monthly.full}</s>}
+                <div className="mb-8 mt-1 text-4xl font-serif">{pricing.monthly.charged}<span className="text-xl opacity-70">/mês</span></div>
                 <ul className="space-y-6 mb-14 flex-grow">
                   {['Até 5 memoriais', 'Linha do tempo com até 50 momentos', 'Diário de Crônicas e Cápsula do Tempo', 'QR Code do memorial'].map(f => (
                     <li key={f} className="flex items-center gap-4">
@@ -250,24 +255,28 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/cadastrar?plano=premium" className="w-full py-5 rounded-full bg-surface-container-lowest text-primary font-serif font-medium text-center hover:bg-surface transition-all block shadow-lg">
+                <Link href="/cadastrar?plano=premium" className="w-full py-5 rounded-full bg-surface-container-lowest text-primary font-serif font-medium text-center shadow-lg hover:-translate-y-0.5 hover:shadow-2xl transition-all block">
                   Escolher Premium
                 </Link>
               </div>
 
               {/* Anual */}
               <div className="p-12 rounded-[2.5rem] border border-secondary/10 bg-surface-container flex flex-col">
-                <h4 className="font-serif text-2xl mb-2 text-primary">Premium Anual</h4>
-                <div className="text-4xl font-serif mb-2">R$ 89,00<span className="text-xl opacity-70">/ano</span></div>
-                <span className="text-base opacity-60 font-sans mb-8 block">equivale a R$ 7,42/mês</span>
+                <h4 className="font-serif text-2xl mb-2 text-primary">Premium · Anual</h4>
+                {pricing.annual.full && (
+                  <span className="mb-2 inline-block w-fit bg-secondary/15 px-3 py-1 rounded-full text-[9px] font-bold tracking-[0.15em] uppercase text-secondary">Oferta de lançamento</span>
+                )}
+                {pricing.annual.full && <s className="block font-serif text-lg opacity-50 leading-none">{pricing.annual.full}</s>}
+                <div className="mb-2 mt-1 text-4xl font-serif">{pricing.annual.charged}<span className="text-xl opacity-70">/ano</span></div>
+                <span className="text-base opacity-60 font-sans mb-8 block">equivale a {pricing.annual.perMonth}/mês</span>
                 <ul className="space-y-5 mb-12 flex-grow">
-                  {['Tudo do plano Premium', '3 meses grátis', 'Economize R$ 29,80 no ano'].map(f => (
+                  {['Tudo do plano Premium', pricing.annual.freeMonths, `Economize ${pricing.annual.savings} no ano`].map(f => (
                     <li key={f} className="flex items-center gap-4 text-on-surface-variant">
                       <span className="material-symbols-outlined text-secondary text-sm">done</span> {f}
                     </li>
                   ))}
                 </ul>
-                <Link href="/cadastrar?plano=anual" className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-surface-container-low transition-all block">
+                <Link href="/cadastrar?plano=anual" className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-primary hover:text-on-primary hover:shadow-lg hover:shadow-primary/20 transition-all block">
                   Assinar Anual
                 </Link>
               </div>

@@ -55,7 +55,9 @@ Não adicionar features grandes antes de validar conversão.
 | Crônicas por pet | 0 | 20 |
 | Cápsulas, QR Code | ✗ | ✓ |
 
-Preços: Premium **R$ 9,90/mês** · Anual **R$ 89,00/ano** (ver `docs/stripe-producao.md`).
+Preços (oferta de lançamento): Premium **R$ 9,90/mês** (cheio R$ 14,90) · Anual **R$ 89,90/ano**
+(cheio R$ 119,90). Copy de preço centralizada em `src/lib/pricing.ts`, chaveada pela env
+`NEXT_PUBLIC_LAUNCH_OFFER` (true = promo; false/ausente = cheio) — ver `docs/stripe-producao.md`.
 Plano vitalício foi **descontinuado** — `normalizePlan()` mapeia `lifetime` legado para `premium`.
 Resolução do plano efetivo: `getEffectivePlanServer(userId)`. Qualquer copy de marketing
 (landing, /dashboard/planos) deve refletir exatamente estes limites.

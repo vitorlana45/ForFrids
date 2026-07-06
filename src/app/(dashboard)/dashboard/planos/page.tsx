@@ -8,6 +8,7 @@ import {
   syncStripeCheckoutSession,
 } from '@/lib/billing/stripe-sync';
 import { billingError, billingLog } from '@/lib/billing/debug';
+import { pricing } from '@/lib/pricing';
 import type { PlanId } from '@/types/database';
 import type { BillingInterval } from '@/lib/payments';
 
@@ -33,7 +34,8 @@ const PLANS = [
     id: 'premium' as const,
     interval: 'month' as const,
     name: 'Premium',
-    price: 'R$ 9,90',
+    price: pricing.monthly.charged,
+    launchPrice: pricing.monthly.full,
     period: '/mês',
     description: 'Para quem quer expressar mais.',
     features: [
@@ -50,14 +52,15 @@ const PLANS = [
     cardId: 'premium_annual' as const,
     id: 'premium' as const,
     interval: 'year' as const,
-    name: 'Premium Anual',
-    price: 'R$ 89,00',
+    name: 'Premium · Anual',
+    price: pricing.annual.charged,
+    launchPrice: pricing.annual.full,
     period: '/ano',
-    description: 'O mesmo Premium, com 3 meses grátis.',
+    description: `O mesmo Premium, pago uma vez ao ano — ${pricing.annual.freeMonths.toLowerCase()}.`,
     features: [
       'Tudo do plano Premium',
-      '3 meses grátis (≈ R$ 7,42/mês)',
-      'Economize R$ 29,80 no ano',
+      `Equivale a ${pricing.annual.perMonth}/mês`,
+      `Economize ${pricing.annual.savings} no ano`,
       'Renovação anual',
     ],
     cta: 'Assinar Anual',
@@ -203,10 +206,20 @@ export default async function PlanosPage({ searchParams }: Props) {
 
               <div className="mb-8">
                 {plan.price ? (
-                  <p className="font-serif text-on-surface">
-                    <span className="text-4xl">{plan.price}</span>
-                    <span className="text-base text-on-surface-variant">{plan.period}</span>
-                  </p>
+                  <>
+                    {'launchPrice' in plan && plan.launchPrice && (
+                      <span className="mb-2 inline-block w-fit rounded-full bg-secondary/10 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-secondary">
+                        Oferta de lançamento
+                      </span>
+                    )}
+                    {'launchPrice' in plan && plan.launchPrice && (
+                      <s className="block font-serif text-lg leading-none text-on-surface-variant opacity-60">{plan.launchPrice}</s>
+                    )}
+                    <p className="mt-1 font-serif text-on-surface">
+                      <span className="text-4xl">{plan.price}</span>
+                      <span className="text-base text-on-surface-variant">{plan.period}</span>
+                    </p>
+                  </>
                 ) : (
                   <p className="font-serif text-4xl text-on-surface">Grátis</p>
                 )}
