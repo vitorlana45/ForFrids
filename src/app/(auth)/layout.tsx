@@ -7,7 +7,6 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <Link href="/" className="font-serif italic text-2xl text-primary">
           Eterno Pet
         </Link>
-        <span className="text-on-surface-variant/40 text-sm">Ajuda</span>
       </header>
       <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {children}
