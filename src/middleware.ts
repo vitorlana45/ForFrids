@@ -1,11 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { getSessionCookie } from 'better-auth/cookies';
 
 const PROTECTED_ROUTES = ['/dashboard'];
 const AUTH_ROUTES = ['/entrar', '/cadastrar'];
-const SESSION_COOKIE = 'better-auth.session_token';
 
 export function middleware(request: NextRequest) {
-  const sessionToken = request.cookies.get(SESSION_COOKIE)?.value;
+  // getSessionCookie cobre o nome com e sem o prefixo __Secure- (HTTPS em prod)
+  const sessionToken = getSessionCookie(request);
   const { pathname } = request.nextUrl;
 
   const isProtected = PROTECTED_ROUTES.some((r) => pathname.startsWith(r));
