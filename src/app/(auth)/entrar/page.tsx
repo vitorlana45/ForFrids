@@ -45,8 +45,15 @@ export default function EntrarPage() {
 
       {/* Left: image */}
       <section className="hidden md:flex md:w-2/5 relative overflow-hidden bg-surface-container-high">
-        <Image src="/login.png" alt="" fill className="object-cover object-center grayscale-[15%] opacity-95" priority sizes="40vw" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
+        <Image
+          src="/login.png"
+          alt=""
+          fill
+          className="object-cover object-[50%_42%]"
+          priority
+          sizes="40vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent z-10" />
         <div className="absolute bottom-12 left-12 right-12 text-white z-20">
           <h2 className="font-serif text-2xl text-white mb-3">
             Um santuário para suas memórias mais preciosas.
@@ -60,7 +67,7 @@ export default function EntrarPage() {
 
       {/* Right: form */}
       <section className="flex-1 overflow-y-auto bg-surface">
-        <div className="flex min-h-full items-center justify-center px-8 py-6 md:px-16 pt-24">
+        <div className="flex min-h-full items-center justify-center px-8 md:px-16 py-24">
         <div className="w-full max-w-md flex flex-col space-y-6 animate-slide-up">
           <div className="space-y-3">
             <h1 className="font-serif text-3xl text-primary">
