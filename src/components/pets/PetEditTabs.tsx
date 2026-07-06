@@ -317,19 +317,34 @@ export default function PetEditTabs({
       )}
 
       {/* ── Engajamento ── */}
-      {active === 'engajamento' && (
+      {active === 'engajamento' && (() => {
+        const totalEngagement = likesCount + approvedTributesCount + chroniclesCount;
+        const heroPhrase =
+          totalEngagement === 0
+            ? `A história de ${pet.name} está pronta para receber carinho.`
+            : totalEngagement < 10
+              ? `${pet.name} recebeu os primeiros gestos de carinho.`
+              : `${pet.name} recebeu carinho de muitas pessoas.`;
+        return (
         <div className="space-y-6">
           {/* Hero metric */}
           <div className="relative overflow-hidden rounded-3xl border border-outline-variant/20 bg-surface-container-low px-10 py-10">
-            <span className="absolute -right-6 -top-6 font-serif text-[160px] font-bold leading-none text-primary/5 select-none">
-              {likesCount + approvedTributesCount + chroniclesCount}
-            </span>
+            {totalEngagement > 0 && (
+              <span className="absolute -right-6 -top-6 font-serif text-[160px] font-bold leading-none text-primary/5 select-none">
+                {totalEngagement}
+              </span>
+            )}
             <p className="relative text-xs font-bold uppercase tracking-[0.2em] text-secondary">
               Resumo geral
             </p>
             <p className="relative mt-2 font-serif text-3xl text-on-surface">
-              {pet.name} recebeu carinho de muitas pessoas.
+              {heroPhrase}
             </p>
+            {totalEngagement === 0 && (
+              <p className="relative mt-2 text-sm text-on-surface-variant">
+                Compartilhe o memorial com familiares e amigos para as primeiras homenagens chegarem.
+              </p>
+            )}
             {pet.is_public && (
               <Link
                 href={`/memorial/${pet.memorial_slug}`}
@@ -393,7 +408,8 @@ export default function PetEditTabs({
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
