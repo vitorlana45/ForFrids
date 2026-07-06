@@ -23,13 +23,13 @@ Os preços de test criados em 2026-07 **não** funcionam em produção — Live 
 
 **Preço 1 — mensal**
 - Modelo: Recorrente (Recurring)
-- Valor: `R$ 8,90` · Moeda: `BRL` · Período: `Mensal (month)`
+- Valor: `R$ 9,90` · Moeda: `BRL` · Período: `Mensal (month)`
 - → copiar o `price_...` para `STRIPE_PRICE_PREMIUM_MONTHLY`
 
 **Preço 2 — anual**
 - Modelo: Recorrente (Recurring)
 - Valor: `R$ 89,00` · Moeda: `BRL` · Período: `Anual (year)`
-  (10 × R$ 8,90 — garante os "2 meses grátis" exatos prometidos na copy)
+  (≈ 9 × R$ 9,90 — a economia de R$ 29,80 cobre os "3 meses grátis" da copy)
 - → copiar o `price_...` para `STRIPE_PRICE_PREMIUM_ANNUAL`
 - Se já existia o price de `R$ 89,90`: criar um price NOVO de `R$ 89,00`,
   trocar a env e arquivar o antigo (assinantes existentes continuam

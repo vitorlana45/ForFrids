@@ -242,7 +242,7 @@ export default function HomePage() {
               <div className="p-14 rounded-[3rem] bg-primary text-on-primary shadow-premium scale-105 z-10 flex flex-col relative overflow-hidden">
                 <div className="absolute top-8 right-10 bg-secondary px-4 py-1.5 rounded-full text-[9px] font-bold tracking-[0.2em] uppercase text-white">RECOMENDADO</div>
                 <h4 className="font-serif text-2xl mb-2">Memorial Premium</h4>
-                <div className="text-4xl font-serif mb-8">R$ 8,90<span className="text-xl opacity-70">/mês</span></div>
+                <div className="text-4xl font-serif mb-8">R$ 9,90<span className="text-xl opacity-70">/mês</span></div>
                 <ul className="space-y-6 mb-14 flex-grow">
                   {['Até 5 memoriais', 'Linha do tempo com até 50 momentos', 'Diário de Crônicas e Cápsula do Tempo', 'QR Code do memorial'].map(f => (
                     <li key={f} className="flex items-center gap-4">
@@ -261,7 +261,7 @@ export default function HomePage() {
                 <div className="text-4xl font-serif mb-2">R$ 89,00<span className="text-xl opacity-70">/ano</span></div>
                 <span className="text-base opacity-60 font-sans mb-8 block">equivale a R$ 7,42/mês</span>
                 <ul className="space-y-5 mb-12 flex-grow">
-                  {['Tudo do plano Premium', '2 meses grátis', 'Economize R$ 17,80 no ano'].map(f => (
+                  {['Tudo do plano Premium', '3 meses grátis', 'Economize R$ 29,80 no ano'].map(f => (
                     <li key={f} className="flex items-center gap-4 text-on-surface-variant">
                       <span className="material-symbols-outlined text-secondary text-sm">done</span> {f}
                     </li>

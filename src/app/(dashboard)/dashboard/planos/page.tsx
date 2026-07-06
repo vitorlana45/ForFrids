@@ -33,7 +33,7 @@ const PLANS = [
     id: 'premium' as const,
     interval: 'month' as const,
     name: 'Premium',
-    price: 'R$ 8,90',
+    price: 'R$ 9,90',
     period: '/mês',
     description: 'Para quem quer expressar mais.',
     features: [
@@ -53,11 +53,11 @@ const PLANS = [
     name: 'Premium Anual',
     price: 'R$ 89,00',
     period: '/ano',
-    description: 'O mesmo Premium, com 2 meses grátis.',
+    description: 'O mesmo Premium, com 3 meses grátis.',
     features: [
       'Tudo do plano Premium',
-      '2 meses grátis (≈ R$ 7,42/mês)',
-      'Economize R$ 17,80 no ano',
+      '3 meses grátis (≈ R$ 7,42/mês)',
+      'Economize R$ 29,80 no ano',
       'Renovação anual',
     ],
     cta: 'Assinar Anual',
