@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { authorizeAdmin } from '@/lib/admin/auth';
 
+export const dynamic = 'force-dynamic';
+
 const schema = z.object({
   status: z.enum(['open', 'in_progress', 'resolved']),
 });
