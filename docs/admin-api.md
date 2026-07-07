@@ -109,8 +109,8 @@ Desbloqueia o memorial. Volta para `flagged` se ainda houver reports pendentes, 
 
 ### `GET /support-tickets`
 
-Lista tickets. Query: `status` (`open|in_progress|resolved`), `limit` (max 200), `offset`.
-Resposta: `{ total, limit, offset, items: SupportTicket[] }`.
+Lista tickets. Query: `status` (`open|in_progress|resolved`), `limit` (default 50, max 200), `offset`.
+Resposta: `{ total, limit, offset, items: Array<SupportTicket & { user: { id, email, full_name } | null }> }`.
 
 ### `GET /support-tickets/:id`
 
