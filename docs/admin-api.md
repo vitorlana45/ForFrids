@@ -107,6 +107,25 @@ Passe `notify: false` para bloquear sem disparar email (raro — útil em testes
 
 Desbloqueia o memorial. Volta para `flagged` se ainda houver reports pendentes, ou `active` caso contrário.
 
+### `GET /support-tickets`
+
+Lista tickets. Query: `status` (`open|in_progress|resolved`), `limit` (max 200), `offset`.
+Resposta: `{ total, limit, offset, items: SupportTicket[] }`.
+
+### `GET /support-tickets/:id`
+
+Detalhe com autor e histórico. Resposta: `{ ticket: { ...SupportTicket, user: { id, email, full_name, plan_id } | null, replies: [{ id, message, sent_to, created_at }] } }`. 404 se não existe.
+
+### `POST /support-tickets/:id/reply`
+
+Body: `{ "message": string, "status"?: "in_progress" | "resolved" }` (status default: `in_progress`).
+Envia email de resposta ao autor (`contact_email` ?? email do usuário) e persiste no histórico.
+Respostas: 200 `{ reply, ticket: { id, status } }` · 400 mensagem inválida · 404 ticket inexistente · 422 sem email de contato · 502 falha de envio (nada é persistido).
+
+### `PATCH /support-tickets/:id`
+
+Body: `{ "status": "open" | "in_progress" | "resolved" }`. Atualiza só o status (sem email).
+
 ## Workflow recomendado no desktop
 
 1. `GET /reports?status=pending` a cada N segundos para popular a queue
