@@ -25,6 +25,14 @@ um backoffice por produto — quer um console único ("CORE") onde cada projeto
    gestão de usuários, multi-operador e notificações são fase 2.
 4. **Auth do console: login próprio single-user** com better-auth + Postgres
    do CORE. Tokens admin dos projetos ficam só no servidor (envs).
+5. **Backend CORE apartado do front via API explícita:** o repo único expõe
+   uma API REST versionada (`/api/core/v1/...`) e o front consome
+   exclusivamente essa API — sem server actions para dados. A mesma API
+   atende clients futuros (wrapper desktop Tauri, scripts, automações).
+6. **APIs admin dos produtos só na rede interna:** CORE e produtos rodam na
+   mesma VPS/Coolify; o CORE alcança `.../api/admin` pelo hostname interno
+   do Docker. Externamente, `/api/admin/*` dos produtos é bloqueado no
+   proxy/Cloudflare — defesa em profundidade (rede interna + Bearer token).
 
 ## Arquitetura multi-projeto
 
@@ -41,7 +49,10 @@ src/
       config.ts       # nome, slug, ícone, módulos: ['moderation','support']
       adapter.ts      # traduz API admin do Eterno Pet -> contratos
   app/
-    p/[project]/moderacao/
+    api/core/v1/       # backend CORE: REST versionada (auth via sessão)
+      [project]/moderation/...
+      [project]/support/...
+    p/[project]/moderacao/   # front: consome apenas /api/core/v1
     p/[project]/suporte/
 ```
 
@@ -50,10 +61,10 @@ src/
   a UI inteira vem de graça.**
 - A config declara os módulos habilitados; sidebar e rotas se montam a
   partir do registry (projeto sem moderação não exibe a seção).
-- **Chamadas às APIs dos projetos são exclusivamente server-side** (server
-  actions/route handlers do CORE) com `Authorization: Bearer` vindo de envs
-  (`ETERNOPET_ADMIN_URL`, `ETERNOPET_ADMIN_TOKEN`). O browser só fala com o
-  CORE.
+- **Fluxo de dados:** browser → `/api/core/v1/...` (sessão better-auth) →
+  adapter do projeto → API admin do produto via rede interna
+  (`ETERNOPET_ADMIN_URL` = hostname interno, `ETERNOPET_ADMIN_TOKEN` em env).
+  O browser nunca vê token de produto nem alcança as APIs admin diretamente.
 
 ## Módulo Moderação (API existente — docs/admin-api.md do ForFrids)
 
@@ -96,8 +107,11 @@ registrado), mudança de status.
 ## Fora do escopo (fase 2)
 
 Métricas/MRR por projeto, gestão de usuários (premium manual, reset),
-multi-operador com papéis, notificações push/Discord/Slack, wrapper Tauri,
-sistema de contestação de bloqueio.
+multi-operador com papéis, notificações push/Discord/Slack, wrapper Tauri
+(consumirá a mesma `/api/core/v1`), sistema de contestação de bloqueio, e
+**Metabase self-hosted com usuário Postgres read-only** para consultas
+ad-hoc aos bancos (nunca escrita direta — regras de negócio vivem nas APIs
+dos produtos).
 
 ## Ordem de construção
 
