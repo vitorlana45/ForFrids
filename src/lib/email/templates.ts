@@ -339,17 +339,19 @@ export function winBackEmail({ tutorName, plansUrl }: { tutorName: string; plans
   };
 }
 
+function escapeHtml(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 export function supportReplyEmail({ name, ticketTitle, replyMessage }: { name: string; ticketTitle: string; replyMessage: string }): { subject: string; html: string } {
-  const escaped = replyMessage
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/\n/g, '<br/>');
+  const escapedName = escapeHtml(name);
+  const escapedTicketTitle = escapeHtml(ticketTitle);
+  const escaped = escapeHtml(replyMessage).replace(/\n/g, '<br/>');
   return {
     subject: `Re: ${ticketTitle} — Suporte Eterno Pet`,
     html: `
-      <p>Olá, ${name},</p>
-      <p>Sobre a sua mensagem "<strong>${ticketTitle}</strong>":</p>
+      <p>Olá, ${escapedName},</p>
+      <p>Sobre a sua mensagem "<strong>${escapedTicketTitle}</strong>":</p>
       <p>${escaped}</p>
       <p>Se precisar de mais alguma coisa, é só responder este email.</p>
       <p>Com carinho,<br/>Equipe Eterno Pet</p>
