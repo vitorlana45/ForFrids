@@ -320,6 +320,7 @@ model SupportTicket {
   page_url        String?
   user_agent      String?
   image_url       String?
+  replies         SupportTicketReply[]
   created_at      DateTime           @default(now()) @db.Timestamptz()
   updated_at      DateTime           @updatedAt @db.Timestamptz()
 
@@ -327,6 +328,18 @@ model SupportTicket {
   @@index([type, created_at(sort: Desc)], map: "idx_support_tickets_type_created")
   @@index([user_id], map: "idx_support_tickets_user_id")
   @@map("support_tickets")
+}
+
+model SupportTicketReply {
+  id         String        @id @default(uuid()) @db.Uuid
+  ticket_id  String        @db.Uuid
+  ticket     SupportTicket @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+  message    String
+  sent_to    String
+  created_at DateTime      @default(now()) @db.Timestamptz()
+
+  @@index([ticket_id, created_at(sort: Desc)], map: "idx_ticket_replies_ticket_created")
+  @@map("support_ticket_replies")
 }
 
 // ============================================================
