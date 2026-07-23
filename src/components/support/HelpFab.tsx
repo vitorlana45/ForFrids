@@ -107,7 +107,8 @@ export default function HelpFab() {
   const [customDonation, setCustomDonation] = useState('');
 
   const turnstileRequired = !isAuthenticated && Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
-  const hasMobileBottomNav = pathname === '/' || pathname.startsWith('/dashboard');
+  const hasMobileBottomNav =
+    pathname === '/' || pathname.startsWith('/dashboard') || pathname.startsWith('/memorial');
   const meta = viewMeta[view];
 
   const supportType = useMemo(() => {
