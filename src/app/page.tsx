@@ -2,8 +2,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import { pricing } from '@/lib/pricing';
+import { getServerSession } from '@/lib/auth-server';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await getServerSession();
+  const isLoggedIn = Boolean(session);
+  // Logado, o CTA "criar" leva ao fluxo de novo memorial (o limite do plano e
+  // validado la dentro). Deslogado, leva ao cadastro.
+  const createHref = isLoggedIn ? '/dashboard/pets/novo' : '/cadastrar';
+  const plansHref = (plano: 'premium' | 'anual') =>
+    isLoggedIn ? '/dashboard/planos' : `/cadastrar?plano=${plano}`;
   return (
     <div className="min-h-screen overflow-x-clip bg-surface text-on-surface selection:bg-primary selection:text-on-primary">
 
@@ -19,10 +27,10 @@ export default function HomePage() {
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Link href="/entrar" className="text-primary font-medium font-serif hover:opacity-70 transition-opacity">
-              Login
+            <Link href={isLoggedIn ? '/dashboard' : '/entrar'} className="text-primary font-medium font-serif hover:opacity-70 transition-opacity">
+              {isLoggedIn ? 'Meu painel' : 'Login'}
             </Link>
-            <Link href="/cadastrar" className="bg-primary text-on-primary px-8 py-3 rounded-full font-serif text-sm tracking-wide hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim transition-all">
+            <Link href={createHref} className="bg-primary text-on-primary px-8 py-3 rounded-full font-serif text-sm tracking-wide hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim transition-all">
               Criar Memorial
             </Link>
           </div>
@@ -43,7 +51,7 @@ export default function HomePage() {
               através de tributos eternos e poéticos.
             </p>
             <div className="flex flex-wrap gap-5 pt-4">
-              <Link href="/cadastrar" className="bg-primary text-on-primary px-10 py-5 rounded-full font-serif font-medium flex items-center gap-3 hover:shadow-xl hover:shadow-primary/10 transition-all">
+              <Link href={createHref} className="bg-primary text-on-primary px-10 py-5 rounded-full font-serif font-medium flex items-center gap-3 hover:shadow-xl hover:shadow-primary/10 transition-all">
                 Começar Homenagem
                 <span className="material-symbols-outlined text-xl">arrow_forward</span>
               </Link>
@@ -234,7 +242,7 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/cadastrar" className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-primary hover:text-on-primary hover:shadow-lg hover:shadow-primary/20 transition-all block">
+                <Link href={createHref} className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-primary hover:text-on-primary hover:shadow-lg hover:shadow-primary/20 transition-all block">
                   Começar Agora
                 </Link>
               </div>
@@ -255,7 +263,7 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/cadastrar?plano=premium" className="w-full py-5 rounded-full bg-surface-container-lowest text-primary font-serif font-medium text-center shadow-lg hover:-translate-y-0.5 hover:shadow-2xl transition-all block">
+                <Link href={plansHref('premium')} className="w-full py-5 rounded-full bg-surface-container-lowest text-primary font-serif font-medium text-center shadow-lg hover:-translate-y-0.5 hover:shadow-2xl transition-all block">
                   Escolher Premium
                 </Link>
               </div>
@@ -276,7 +284,7 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/cadastrar?plano=anual" className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-primary hover:text-on-primary hover:shadow-lg hover:shadow-primary/20 transition-all block">
+                <Link href={plansHref('anual')} className="w-full py-5 rounded-full border border-primary text-primary font-serif font-medium text-center hover:bg-primary hover:text-on-primary hover:shadow-lg hover:shadow-primary/20 transition-all block">
                   Assinar Anual
                 </Link>
               </div>
@@ -310,7 +318,7 @@ export default function HomePage() {
           { icon: 'home', label: 'Início', href: '/' },
           { icon: 'local_florist', label: 'Jardim', href: '#proposito' },
           { icon: 'auto_awesome', label: 'Velar', href: '#planos' },
-          { icon: 'person', label: 'Perfil', href: '/entrar' },
+          { icon: 'person', label: 'Perfil', href: isLoggedIn ? '/dashboard' : '/entrar' },
         ].map((item, i) => (
           <Link key={item.label} href={item.href} className={`flex flex-col items-center justify-center ${i === 0 ? 'text-primary font-bold' : 'text-on-surface-variant'} hover:scale-105 transition-transform`}>
             <span className="material-symbols-outlined">{item.icon}</span>
