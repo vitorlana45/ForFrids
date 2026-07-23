@@ -224,6 +224,7 @@ export default async function MemorialPage({ params }: Props) {
               content={pet.letter_content!}
               petName={pet.name}
               ownerName={ownerProfile?.full_name ?? null}
+              ownerTitle={ownerProfile?.guardian_title ?? null}
               updatedAt={pet.letter_updated_at}
               isDeceased={Boolean(pet.death_date)}
             />
