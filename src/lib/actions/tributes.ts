@@ -134,3 +134,61 @@ export async function approveTribute(tributeId: string) {
 export async function rejectTribute(tributeId: string) {
   return reviewTribute(tributeId, 'rejected');
 }
+
+// Garante que o usuario logado e dono do pet da homenagem.
+async function assertTributeOwner(
+  tributeId: string,
+): Promise<{ error: string } | { pet: { memorial_slug: string } }> {
+  const session = await getServerSession();
+  if (!session) return { error: 'Não autenticado' };
+  const userId = session.user.id;
+
+  const tribute = await prisma.tribute.findUnique({
+    where: { id: tributeId },
+    select: { pet_id: true },
+  });
+  if (!tribute) return { error: 'Homenagem não encontrada' };
+
+  const pet = await prisma.pet.findUnique({
+    where: { id: tribute.pet_id },
+    select: { owner_id: true, memorial_slug: true },
+  });
+  if (!pet || pet.owner_id !== userId) return { error: 'Não autorizado' };
+
+  return { pet: { memorial_slug: pet.memorial_slug } };
+}
+
+// Ocultar (hidden=true) ou reexibir (hidden=false) uma homenagem ja aprovada,
+// sem excluir. Reversivel.
+export async function setTributeHidden(
+  tributeId: string,
+  hidden: boolean,
+): Promise<{ error?: string; success?: boolean }> {
+  const owner = await assertTributeOwner(tributeId);
+  if ('error' in owner) return { error: owner.error };
+
+  await prisma.tribute.update({
+    where: { id: tributeId },
+    data: { hidden },
+  });
+
+  revalidatePath('/dashboard/aprovacoes');
+  revalidatePath(`/dashboard/pets/${owner.pet.memorial_slug}/editar`);
+  revalidatePath(`/memorial/${owner.pet.memorial_slug}`);
+  return { success: true };
+}
+
+// Remove a homenagem de forma permanente (sem volta).
+export async function deleteTribute(
+  tributeId: string,
+): Promise<{ error?: string; success?: boolean }> {
+  const owner = await assertTributeOwner(tributeId);
+  if ('error' in owner) return { error: owner.error };
+
+  await prisma.tribute.delete({ where: { id: tributeId } });
+
+  revalidatePath('/dashboard/aprovacoes');
+  revalidatePath(`/dashboard/pets/${owner.pet.memorial_slug}/editar`);
+  revalidatePath(`/memorial/${owner.pet.memorial_slug}`);
+  return { success: true };
+}

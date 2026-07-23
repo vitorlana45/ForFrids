@@ -181,6 +181,8 @@ model Tribute {
   message         String
   status          TributeStatus  @default(pending)
   reviewed_at     DateTime?      @db.Timestamptz()
+  // Visibilidade controlada pelo dono APOS aprovada: oculta (reversivel) sem excluir.
+  hidden          Boolean        @default(false)
   created_at      DateTime       @default(now()) @db.Timestamptz()
 
   @@index([pet_id], map: "idx_tributes_pet_id")

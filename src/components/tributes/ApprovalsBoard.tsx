@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, ChevronDown, ExternalLink, X } from 'lucide-react';
-import { approveTribute, rejectTribute } from '@/lib/actions/tributes';
+import { Check, ChevronDown, ExternalLink, Eye, EyeOff, Trash2, X } from 'lucide-react';
+import { approveTribute, deleteTribute, rejectTribute, setTributeHidden } from '@/lib/actions/tributes';
 import { useConfirm } from '@/components/ui/ConfirmModal';
 import { useToast } from '@/components/ui/toast';
 import type { Tribute } from '@/types/database';
@@ -36,7 +36,7 @@ export default function ApprovalsBoard({ initialTributes, initialApprovedHistory
   const [tributes, setTributes] = useState(initialTributes);
   const [approvedHistory, setApprovedHistory] = useState(initialApprovedHistory);
   const [historyPetFilter, setHistoryPetFilter] = useState<'all' | string>('all');
-  const [historyPeriodFilter, setHistoryPeriodFilter] = useState<'today' | '7d' | '30d'>('30d');
+  const [historyPeriodFilter, setHistoryPeriodFilter] = useState<'today' | '7d' | '30d' | 'all'>('30d');
   const [expandedTribute, setExpandedTribute] = useState<ReviewedTribute | null>(null);
   const [mounted, setMounted] = useState(false);
   const [petFilterOpen, setPetFilterOpen] = useState(false);
@@ -135,6 +135,37 @@ export default function ApprovalsBoard({ initialTributes, initialApprovedHistory
           ].slice(0, 40));
         }
       }
+    });
+  }
+
+  function toggleHidden(id: string, hidden: boolean) {
+    startTransition(async () => {
+      const result = await setTributeHidden(id, hidden);
+      if (result.error) {
+        toast.error('Não foi possível atualizar a homenagem. Tente novamente.');
+        return;
+      }
+      toast.success(hidden ? 'Homenagem ocultada do memorial.' : 'Homenagem reexibida.');
+      setApprovedHistory(prev => prev.map(t => (t.id === id ? { ...t, hidden } : t)));
+    });
+  }
+
+  async function remove(id: string) {
+    const confirmed = await confirm({
+      title: 'Remover homenagem',
+      message: 'A homenagem será excluída permanentemente. Essa ação não pode ser desfeita.',
+      confirmLabel: 'Remover',
+      variant: 'danger',
+    });
+    if (!confirmed) return;
+    startTransition(async () => {
+      const result = await deleteTribute(id);
+      if (result.error) {
+        toast.error('Não foi possível remover a homenagem. Tente novamente.');
+        return;
+      }
+      toast.success('Homenagem removida.');
+      setApprovedHistory(prev => prev.filter(t => t.id !== id));
     });
   }
 
@@ -295,11 +326,12 @@ export default function ApprovalsBoard({ initialTributes, initialApprovedHistory
                 { value: 'today', label: 'Hoje' },
                 { value: '7d', label: '7 dias' },
                 { value: '30d', label: '30 dias' },
+                { value: 'all', label: 'Tudo' },
               ].map((period) => (
                 <button
                   key={period.value}
                   type="button"
-                  onClick={() => setHistoryPeriodFilter(period.value as 'today' | '7d' | '30d')}
+                  onClick={() => setHistoryPeriodFilter(period.value as 'today' | '7d' | '30d' | 'all')}
                   className={`rounded-full px-4 py-2 text-xs font-semibold transition-colors ${
                     historyPeriodFilter === period.value
                       ? 'bg-primary text-on-primary'
@@ -326,12 +358,19 @@ export default function ApprovalsBoard({ initialTributes, initialApprovedHistory
             {filteredHistory.map((tribute) => (
               <article
                 key={tribute.id}
-                className="rounded-2xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3"
+                className={`rounded-2xl border border-outline-variant/20 bg-surface-container-lowest px-4 py-3 ${tribute.hidden ? 'opacity-60' : ''}`}
               >
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-sm text-on-surface">
-                    <span className="font-semibold">{tribute.author_name}</span> em{' '}
-                    <span className="font-semibold">{tribute.pet.name}</span>
+                  <p className="flex flex-wrap items-center gap-2 text-sm text-on-surface">
+                    <span>
+                      <span className="font-semibold">{tribute.author_name}</span> em{' '}
+                      <span className="font-semibold">{tribute.pet.name}</span>
+                    </span>
+                    {tribute.hidden && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-surface-container px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
+                        <EyeOff className="h-3 w-3" /> Oculta
+                      </span>
+                    )}
                   </p>
                   <p className="text-xs text-on-surface-variant">
                     Aprovada em {new Date(tribute.reviewed_at ?? tribute.created_at).toLocaleString('pt-BR')}
@@ -340,7 +379,7 @@ export default function ApprovalsBoard({ initialTributes, initialApprovedHistory
                 <p className="mt-2 text-sm italic text-on-surface-variant" style={{ overflowWrap: 'anywhere' }}>
                   “{tribute.message}”
                 </p>
-                <div className="mt-3">
+                <div className="mt-3 flex flex-wrap items-center gap-4">
                   <button
                     type="button"
                     onClick={() => setExpandedTribute(tribute)}
@@ -348,6 +387,26 @@ export default function ApprovalsBoard({ initialTributes, initialApprovedHistory
                   >
                     Ver completa
                   </button>
+                  <div className="ml-auto flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => toggleHidden(tribute.id, !tribute.hidden)}
+                      disabled={isPending}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-outline-variant/40 px-3 py-1.5 text-xs font-semibold text-on-surface-variant transition-colors hover:bg-surface-container disabled:opacity-50"
+                    >
+                      {tribute.hidden ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+                      {tribute.hidden ? 'Reexibir' : 'Ocultar'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => remove(tribute.id)}
+                      disabled={isPending}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-error/30 px-3 py-1.5 text-xs font-semibold text-error transition-colors hover:bg-error/10 disabled:opacity-50"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Remover
+                    </button>
+                  </div>
                 </div>
               </article>
             ))}

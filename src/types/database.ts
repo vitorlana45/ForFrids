@@ -51,6 +51,7 @@ export interface Tribute {
   message: string;
   status: 'pending' | 'approved' | 'rejected';
   reviewed_at: string | null;
+  hidden: boolean;
   created_at: string;
 }
 

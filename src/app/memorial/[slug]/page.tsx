@@ -56,7 +56,7 @@ export default async function MemorialPage({ params }: Props) {
       orderBy: { date: 'asc' },
     }),
     prisma.tribute.findMany({
-      where: { pet_id: pet.id, status: 'approved' },
+      where: { pet_id: pet.id, status: 'approved', hidden: false },
       orderBy: { created_at: 'desc' },
     }),
     prisma.profile.findUnique({
