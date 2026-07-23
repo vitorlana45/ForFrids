@@ -222,3 +222,24 @@ html {
     }
   }
 }
+
+/* Apresentacao do memorial */
+@keyframes ep-kenburns {
+  from { transform: scale(1) translate3d(0, 0, 0); }
+  to   { transform: scale(1.08) translate3d(0, -1.5%, 0); }
+}
+.ep-kenburns { animation: ep-kenburns 12s ease-out both; }
+
+@keyframes ep-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.ep-progress {
+  animation-name: ep-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ep-kenburns { animation: none; }
+}
