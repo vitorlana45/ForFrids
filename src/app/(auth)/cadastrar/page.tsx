@@ -19,6 +19,9 @@ const schema = z.object({
   email: z.string().email('E-mail inválido'),
   password: z.string().min(6, 'Mínimo de 6 caracteres'),
   confirm_password: z.string(),
+  terms: z.boolean().refine((v) => v === true, {
+    message: 'É preciso aceitar os Termos de Uso e a Política de Privacidade.',
+  }),
 }).refine(d => d.password === d.confirm_password, { message: 'As senhas não coincidem', path: ['confirm_password'] });
 
 type FormData = z.infer<typeof schema>;
@@ -28,8 +31,10 @@ export default function CadastrarPage() {
   const [serverError, setServerError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } =
-    useForm<FormData>({ resolver: zodResolver(schema) });
+  const { register, handleSubmit, watch, trigger, formState: { errors, isSubmitting } } =
+    useForm<FormData>({ resolver: zodResolver(schema), defaultValues: { terms: false } });
+
+  const acceptedTerms = watch('terms');
 
   async function onSubmit(data: FormData) {
     setServerError('');
@@ -117,21 +122,43 @@ export default function CadastrarPage() {
               </div>
             ))}
 
+            <div className="space-y-2">
+              <label className="flex items-start gap-3 text-sm text-on-surface-variant">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-outline-variant text-primary focus:ring-2 focus:ring-primary-fixed"
+                  {...register('terms')}
+                />
+                <span>
+                  Li e aceito os{' '}
+                  <Link href="/termos" target="_blank" className="font-semibold text-primary underline-offset-4 hover:underline">Termos de Uso</Link>
+                  {' '}e a{' '}
+                  <Link href="/privacidade" target="_blank" className="font-semibold text-primary underline-offset-4 hover:underline">Política de Privacidade</Link>.
+                </span>
+              </label>
+              {errors.terms && <p className="text-xs text-error">{errors.terms.message}</p>}
+            </div>
+
             {serverError && (
               <p className="rounded-lg bg-error-container px-4 py-2 text-sm text-on-error-container">{serverError}</p>
             )}
 
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-primary text-on-primary py-4 rounded-full font-sans font-semibold hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim transition-all shadow-sm flex items-center justify-center gap-2"
+              disabled={isSubmitting || !acceptedTerms}
+              className="w-full bg-primary text-on-primary py-4 rounded-full font-sans font-semibold hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim transition-all shadow-sm flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
               Criar conta grátis
             </button>
           </form>
 
-          <OAuthButtons dividerLabel="ou cadastre com" />
+          <OAuthButtons
+            dividerLabel="ou cadastre com"
+            consentRequired
+            consentGiven={Boolean(acceptedTerms)}
+            onConsentMissing={() => trigger('terms')}
+          />
 
           <p className="text-center text-sm text-on-surface-variant">
             Já tem uma conta?{' '}

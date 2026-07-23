@@ -24,6 +24,11 @@ model Profile {
   bio             String?
   plan_id         PlanId   @default(free)
 
+  // Aceite dos Termos de Uso / Politica de Privacidade no cadastro. Carimbado
+  // no databaseHooks.user.create.before (cobre e-mail e Google). Ver src/lib/legal.ts.
+  terms_accepted_at DateTime? @db.Timestamptz()
+  terms_version     String?
+
   created_at DateTime @default(now()) @db.Timestamptz()
   updated_at DateTime @updatedAt @db.Timestamptz()
 

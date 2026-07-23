@@ -4,6 +4,7 @@ import { prisma } from './prisma';
 import { EMAIL_FROM, getEmailClient } from './email/client';
 import { verificationEmail, passwordResetEmail } from './emails/auth-emails';
 import { welcomeEmail } from './emails/welcome';
+import { CURRENT_TERMS_VERSION } from './legal';
 import { log } from './logger';
 
 export const auth = betterAuth({
@@ -91,12 +92,26 @@ export const auth = betterAuth({
       guardian_title: { type: 'string', required: false, input: false },
       bio: { type: 'string', required: false, input: false },
       plan_id: { type: 'string', required: false, input: false, defaultValue: 'free' },
+      terms_accepted_at: { type: 'date', required: false, input: false },
+      terms_version: { type: 'string', required: false, input: false },
     },
   },
 
   databaseHooks: {
     user: {
       create: {
+        before: async (user) => {
+          // Toda criacao de conta (e-mail ou Google) passa pelo aceite
+          // obrigatorio dos Termos na UI de cadastro. Registramos o aceite no
+          // momento da criacao para termos data + versao aceita.
+          return {
+            data: {
+              ...user,
+              terms_accepted_at: new Date(),
+              terms_version: CURRENT_TERMS_VERSION,
+            },
+          };
+        },
         after: async (user) => {
           try {
             const email = getEmailClient();

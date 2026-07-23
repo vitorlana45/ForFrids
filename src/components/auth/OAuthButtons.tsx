@@ -9,12 +9,30 @@ import { authClient } from '@/lib/auth-client';
 // inexistente e o Better Auth responderia 404 ("Provider not found").
 const googleEnabled = process.env.NEXT_PUBLIC_GOOGLE_ENABLED === 'true';
 
-export default function OAuthButtons({ dividerLabel = 'ou continue com' }: { dividerLabel?: string }) {
+interface Props {
+  dividerLabel?: string;
+  // Quando true, bloqueia o login social ate o consentimento ser dado. Usado no
+  // cadastro (aceite obrigatorio dos Termos); no login normal fica desligado.
+  consentRequired?: boolean;
+  consentGiven?: boolean;
+  onConsentMissing?: () => void;
+}
+
+export default function OAuthButtons({
+  dividerLabel = 'ou continue com',
+  consentRequired = false,
+  consentGiven = false,
+  onConsentMissing,
+}: Props) {
   const [loading, setLoading] = useState<'google' | null>(null);
 
   if (!googleEnabled) return null;
 
   async function signInWithGoogle() {
+    if (consentRequired && !consentGiven) {
+      onConsentMissing?.();
+      return;
+    }
     setLoading('google');
     await authClient.signIn.social({
       provider: 'google',

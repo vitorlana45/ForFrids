@@ -10,6 +10,8 @@ export interface Profile {
   guardian_title: string | null;
   bio: string | null;
   plan_id: PlanId;
+  terms_accepted_at: string | null;
+  terms_version: string | null;
   created_at: string;
   updated_at: string;
 }
