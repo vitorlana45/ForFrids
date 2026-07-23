@@ -4,6 +4,7 @@ import { getServerSession } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import PetDashboardCard from '@/components/dashboard/PetDashboardCard';
 import { getMemorialCompletion } from '@/lib/memorial-completion';
+import { getEffectivePlanServer } from '@/lib/plans';
 import type { Pet, Profile } from '@/types/database';
 
 export default async function DashboardPage() {
@@ -52,6 +53,7 @@ export default async function DashboardPage() {
   const petById = new Map(pets.map(p => [p.id, p]));
 
   const firstName = profile?.full_name?.split(' ')[0] ?? 'Tutor';
+  const effectivePlan = await getEffectivePlanServer(userId);
 
   return (
     <div className="max-w-[1200px] mx-auto px-6 pb-24 md:pb-12 botanical-bg">
@@ -231,6 +233,24 @@ export default async function DashboardPage() {
                   <p className="text-right text-xs font-semibold text-primary">{firstPetCompletion.nextAction}</p>
                 )}
               </div>
+            </section>
+          )}
+
+          {effectivePlan === 'free' && (
+            <section className="bg-primary/5 p-8 rounded-3xl border border-primary/15">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="material-symbols-outlined text-primary">slideshow</span>
+                <h3 className="font-serif text-xl text-on-surface">Apresentação premium</h3>
+              </div>
+              <p className="text-sm text-on-surface-variant mb-6">
+                Transforme a linha do tempo do seu pet numa apresentação cinematográfica em tela cheia, para assistir e compartilhar com a família.
+              </p>
+              <Link
+                href="/dashboard/planos"
+                className="block w-full text-center py-3 px-4 bg-primary text-on-primary rounded-xl text-sm font-semibold hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim transition-colors"
+              >
+                Conhecer o Premium
+              </Link>
             </section>
           )}
 
