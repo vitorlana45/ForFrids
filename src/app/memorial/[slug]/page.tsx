@@ -96,7 +96,7 @@ export default async function MemorialPage({ params }: Props) {
   ];
 
   return (
-    <div className="min-h-screen bg-surface text-on-surface botanical-bg">
+    <div className="min-h-screen overflow-x-clip bg-surface text-on-surface botanical-bg">
 
       {/* Header */}
       <header className="bg-surface/85 backdrop-blur-md border-b border-outline-variant/20 sticky top-0 z-50">
