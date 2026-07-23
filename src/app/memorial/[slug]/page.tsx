@@ -13,6 +13,7 @@ import GalleryLightbox from '@/components/memorial/GalleryLightbox';
 import MemorialLogoLink from '@/components/memorial/MemorialLogoLink';
 import MemorialTimeline from '@/components/memorial/MemorialTimeline';
 import ChroniclesSection from '@/components/memorial/ChroniclesSection';
+import { MIN_PRESENTATION_PHOTOS } from '@/lib/memorial/presentation';
 import TutorSection from '@/components/memorial/TutorSection';
 import type { Tribute } from '@/types/database';
 
@@ -80,6 +81,8 @@ export default async function MemorialPage({ params }: Props) {
 
   const isAlive = !pet.death_date;
   const allPhotos = entries.flatMap(e => e.photo_urls).filter(Boolean);
+  const canShowPresentation =
+    canUse(ownerPlanId, 'presentation') && allPhotos.length >= MIN_PRESENTATION_PHOTOS;
 
   const memorialUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://eternopet.com.br'}/memorial/${slug}`;
 
@@ -142,6 +145,18 @@ export default async function MemorialPage({ params }: Props) {
               <p className="font-serif text-2xl text-on-surface-variant max-w-2xl mx-auto font-light italic break-words" style={{ overflowWrap: 'anywhere' }}>
                 “{pet.tribute_text}”
               </p>
+            )}
+
+            {canShowPresentation && (
+              <div className="mt-10">
+                <Link
+                  href={`/memorial/${slug}/apresentacao`}
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-4 font-serif text-on-primary shadow-premium transition-transform hover:-translate-y-0.5"
+                >
+                  <span className="material-symbols-outlined">slideshow</span>
+                  Assistir apresentação
+                </Link>
+              </div>
             )}
           </div>
         </section>
