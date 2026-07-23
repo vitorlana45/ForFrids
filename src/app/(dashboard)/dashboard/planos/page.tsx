@@ -44,6 +44,7 @@ const PLANS = [
       'Diário de Crônicas',
       'Cápsula do Tempo',
       'QR Code do memorial',
+      'Apresentação de slides do memorial',
     ],
     cta: 'Assinar Premium',
     highlight: true,
@@ -276,6 +277,7 @@ export default async function PlanosPage({ searchParams }: Props) {
                 { label: 'QR Code do memorial',      free: '—',    premium: '✓'  },
                 { label: 'Cápsula do Tempo',         free: '—',    premium: '✓'  },
                 { label: 'Diário de Crônicas',       free: '—',    premium: '✓'  },
+                { label: 'Apresentação de slides',   free: '—',    premium: '✓'  },
               ].map((row) => (
                 <tr key={row.label}>
                   <td className="px-6 py-3.5 text-on-surface-variant">{row.label}</td>

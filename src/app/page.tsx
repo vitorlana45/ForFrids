@@ -257,7 +257,7 @@ export default async function HomePage() {
                 {pricing.monthly.full && <s className="block font-serif text-lg opacity-50 leading-none">{pricing.monthly.full}</s>}
                 <div className="mb-8 mt-1 text-4xl font-serif">{pricing.monthly.charged}<span className="text-xl opacity-70">/mês</span></div>
                 <ul className="space-y-6 mb-14 flex-grow">
-                  {['Até 5 memoriais', 'Linha do tempo com até 50 momentos', 'Diário de Crônicas e Cápsula do Tempo', 'QR Code do memorial'].map(f => (
+                  {['Até 5 memoriais', 'Linha do tempo com até 50 momentos', 'Diário de Crônicas e Cápsula do Tempo', 'QR Code do memorial', 'Apresentação de slides do memorial'].map(f => (
                     <li key={f} className="flex items-center gap-4">
                       <span className="material-symbols-outlined text-secondary text-sm">done</span> {f}
                     </li>
