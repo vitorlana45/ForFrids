@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { BarChart2, BookOpen, Clock3, ExternalLink, Heart, PawPrint, QrCode } from 'lucide-react';
+import { BarChart2, BookOpen, Clock3, ExternalLink, Heart, Mail, PawPrint, QrCode } from 'lucide-react';
 import PetForm from './PetForm';
 import TimelineManager from '@/components/timeline/TimelineManager';
 import TributeModeration from '@/components/tributes/TributeModeration';
+import LetterEditor from './LetterEditor';
 import type { Pet, TimelineEntry, Tribute } from '@/types/database';
 
-type Tab = 'dados' | 'timeline' | 'diario' | 'homenagens' | 'engajamento';
+type Tab = 'dados' | 'timeline' | 'diario' | 'homenagens' | 'engajamento' | 'carta';
 
 interface Props {
   userId: string;
@@ -23,6 +24,7 @@ interface Props {
 
 const TABS: { id: Tab; label: string; Icon: React.ComponentType<{ className?: string }> }[] = [
   { id: 'dados',        label: 'Dados',          Icon: PawPrint  },
+  { id: 'carta',       label: 'Carta',          Icon: Mail      },
   { id: 'timeline',    label: 'Linha do Tempo',  Icon: Clock3    },
   { id: 'diario',      label: 'Diário',          Icon: BookOpen  },
   { id: 'homenagens',  label: 'Homenagens',      Icon: Heart     },
@@ -184,6 +186,13 @@ export default function PetEditTabs({
               </div>
             </div>
           </aside>
+        </div>
+      )}
+
+      {/* ── Carta ── */}
+      {active === 'carta' && (
+        <div className="rounded-3xl border border-outline-variant/20 bg-surface-container-low p-6 md:p-8">
+          <LetterEditor pet={pet} />
         </div>
       )}
 
