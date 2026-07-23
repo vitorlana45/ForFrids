@@ -250,7 +250,7 @@ export default function HelpFab() {
                   <ActionCard icon={<Lightbulb className="h-5 w-5" />} title="Sugerir melhoria" description="Conte uma ideia que tornaria a plataforma melhor." onClick={() => setView('suggestion')} />
                   <ActionCard icon={<Bug className="h-5 w-5" />} title="Relatar bug" description="Envie contexto técnico e uma imagem opcional." onClick={() => setView('bug')} />
                   <ActionCard icon={<HeartHandshake className="h-5 w-5" />} title="Fazer doação" description="Apoie a manutenção do Eterno Pet com qualquer valor." onClick={() => setView('donation')} />
-                  <a href="mailto:contato@eternopet.com.br" className="mt-1 inline-flex items-center justify-center rounded-full border border-outline-variant/30 px-4 py-2.5 text-xs font-semibold text-on-surface-variant transition-colors hover:bg-surface-container">
+                  <a href="mailto:contato@eternopet.com" className="mt-1 inline-flex items-center justify-center rounded-full border border-outline-variant/30 px-4 py-2.5 text-xs font-semibold text-on-surface-variant transition-colors hover:bg-surface-container">
                     Preferir e-mail tradicional
                   </a>
                 </div>
