@@ -15,6 +15,7 @@ import MemorialTimeline from '@/components/memorial/MemorialTimeline';
 import ChroniclesSection from '@/components/memorial/ChroniclesSection';
 import { MIN_PRESENTATION_PHOTOS } from '@/lib/memorial/presentation';
 import TutorSection from '@/components/memorial/TutorSection';
+import MemorialLetter from '@/components/memorial/MemorialLetter';
 import type { Tribute } from '@/types/database';
 
 export const revalidate = 60;
@@ -83,6 +84,7 @@ export default async function MemorialPage({ params }: Props) {
   const allPhotos = entries.flatMap(e => e.photo_urls).filter(Boolean);
   const canShowPresentation =
     canUse(ownerPlanId, 'presentation') && allPhotos.length >= MIN_PRESENTATION_PHOTOS;
+  const hasPublicLetter = Boolean(pet.letter_content && pet.letter_is_public);
 
   const memorialUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://eternopet.com.br'}/memorial/${slug}`;
 
@@ -93,6 +95,7 @@ export default async function MemorialPage({ params }: Props) {
     { id: 'galeria', label: 'Galeria', icon: 'photo_library' },
     ...(ownerProfile?.full_name ? [{ id: 'tutor', label: 'Tutor', icon: 'person' }] : []),
     { id: 'tributos', label: 'Tributos', icon: 'favorite' },
+    ...(hasPublicLetter ? [{ id: 'carta', label: 'Carta', icon: 'mail' }] : []),
   ];
 
   return (
@@ -213,6 +216,19 @@ export default async function MemorialPage({ params }: Props) {
           memorialSlug={slug}
           initialTributes={tributes}
         />
+
+        {/* Carta do tutor */}
+        {hasPublicLetter && (
+          <section className="border-t border-primary/10 py-24" id="carta">
+            <MemorialLetter
+              content={pet.letter_content!}
+              petName={pet.name}
+              ownerName={ownerProfile?.full_name ?? null}
+              updatedAt={pet.letter_updated_at}
+              isDeceased={Boolean(pet.death_date)}
+            />
+          </section>
+        )}
       </main>
 
       {/* Footer */}
