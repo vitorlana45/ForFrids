@@ -110,6 +110,10 @@ model Pet {
   memorial_slug String    @unique
   is_public     Boolean   @default(true)
   tribute_text  String?
+  // Carta pessoal do tutor ao pet (finalizacao da jornada). Publica/privada.
+  letter_content    String?
+  letter_is_public  Boolean   @default(false)
+  letter_updated_at DateTime? @db.Timestamptz()
   created_at    DateTime  @default(now()) @db.Timestamptz()
   updated_at    DateTime  @updatedAt @db.Timestamptz()
 

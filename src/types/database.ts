@@ -28,6 +28,9 @@ export interface Pet {
   memorial_slug: string;
   is_public: boolean;
   tribute_text: string | null;
+  letter_content: string | null;
+  letter_is_public: boolean;
+  letter_updated_at: string | null;
   created_at: string;
   updated_at: string;
 }
