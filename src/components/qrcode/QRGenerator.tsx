@@ -1,20 +1,21 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { QRCodeCanvas } from 'qrcode.react';
+import { useEffect, useRef, useState } from 'react';
+import type QRCodeStyling from 'qr-code-styling';
+import type { Options } from 'qr-code-styling';
 import type { Pet } from '@/types/database';
 import { Download } from 'lucide-react';
 
 const COLORS = [
-  { label: 'Sage', fg: '#334537', bg: '#FDFBF7' },
-  { label: 'Terracota', fg: '#7a573b', bg: '#fff8f3' },
-  { label: 'Escuro', fg: '#1a1a1a', bg: '#ffffff' },
-  { label: 'Creme', fg: '#334537', bg: '#f5ede3' },
+  { label: 'Sálvia',         fg: '#334537', bg: '#FDFBF7' },
+  { label: 'Terracota',      fg: '#7A573B', bg: '#FFF8F3' },
+  { label: 'Preto & Branco', fg: '#171717', bg: '#FFFFFF' },
+  { label: 'Creme',          fg: '#334537', bg: '#F1E7D6' },
 ];
 
 const STYLES = [
-  { id: 'minimal', label: 'Minimalista', radius: 0 },
-  { id: 'organic', label: 'Orgânico', radius: 8 },
+  { id: 'minimal', label: 'Minimalista' },
+  { id: 'organic', label: 'Orgânico' },
 ] as const;
 
 const PRODUCTS = [
@@ -32,32 +33,48 @@ export default function QRGenerator({ pets, siteUrl }: Props) {
   const [selectedPetId, setSelectedPetId] = useState(pets[0]?.id ?? '');
   const [colorIdx, setColorIdx] = useState(0);
   const [styleId, setStyleId] = useState<'minimal' | 'organic'>('minimal');
-  const canvasRef = useRef<HTMLDivElement>(null);
+  const holderRef = useRef<HTMLDivElement>(null);
+  const qrRef = useRef<QRCodeStyling | null>(null);
 
   const pet = pets.find(p => p.id === selectedPetId);
   const url = pet ? `${siteUrl}/memorial/${pet.memorial_slug}` : siteUrl;
   const color = COLORS[colorIdx];
-  const style = STYLES.find(s => s.id === styleId)!;
+  const organic = styleId === 'organic';
 
-  function downloadPNG() {
-    // Create an offscreen canvas at higher resolution for download
-    const offscreen = document.createElement('canvas');
-    offscreen.width = 800;
-    offscreen.height = 800;
-    const ctx = offscreen.getContext('2d');
-    if (!ctx) return;
+  // Renderiza o QR estilizado no client (a lib usa DOM/canvas -> import dinamico).
+  useEffect(() => {
+    if (pets.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const QRCodeStylingCtor = (await import('qr-code-styling')).default;
+      if (cancelled || !holderRef.current) return;
 
-    // Draw from the visible canvas scaled up
-    const visible = canvasRef.current?.querySelector('canvas') as HTMLCanvasElement | null;
-    if (!visible) return;
-    ctx.fillStyle = color.bg;
-    ctx.fillRect(0, 0, 800, 800);
-    ctx.drawImage(visible, 0, 0, 800, 800);
+      const options: Options = {
+        width: 520,
+        height: 520,
+        type: 'canvas',
+        data: url,
+        margin: 10,
+        qrOptions: { errorCorrectionLevel: 'H' },
+        dotsOptions: { color: color.fg, type: organic ? 'rounded' : 'square' },
+        cornersSquareOptions: { color: color.fg, type: organic ? 'extra-rounded' : 'square' },
+        cornersDotOptions: { color: color.fg, type: organic ? 'dot' : 'square' },
+        backgroundOptions: { color: color.bg },
+      };
 
-    const link = document.createElement('a');
-    link.download = `qr-${pet?.memorial_slug ?? 'memorial'}.png`;
-    link.href = offscreen.toDataURL('image/png');
-    link.click();
+      const qr = new QRCodeStylingCtor(options);
+      holderRef.current.innerHTML = '';
+      qr.append(holderRef.current);
+      qrRef.current = qr;
+    })();
+    return () => { cancelled = true; };
+  }, [url, color.fg, color.bg, organic, pets.length]);
+
+  async function downloadPNG() {
+    await qrRef.current?.download({
+      name: `qr-${pet?.memorial_slug ?? 'memorial'}`,
+      extension: 'png',
+    });
   }
 
   if (pets.length === 0) {
@@ -72,7 +89,7 @@ export default function QRGenerator({ pets, siteUrl }: Props) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-      {/* ?? Left sidebar ?? */}
+      {/* Sidebar */}
       <aside className="lg:col-span-4 space-y-6">
 
         {/* Pet selector */}
@@ -118,11 +135,16 @@ export default function QRGenerator({ pets, siteUrl }: Props) {
                 key={c.label}
                 onClick={() => setColorIdx(i)}
                 title={c.label}
-                className={`w-10 h-10 rounded-full border-2 transition-all ${
-                  colorIdx === i ? 'border-primary scale-110' : 'border-transparent hover:scale-105'
+                aria-label={`Cor ${c.label}`}
+                className={`flex h-10 w-10 items-center justify-center rounded-full border transition-all ${
+                  colorIdx === i
+                    ? 'border-primary ring-2 ring-primary/40 scale-110'
+                    : 'border-outline-variant/40 hover:scale-105'
                 }`}
-                style={{ backgroundColor: c.fg }}
-              />
+                style={{ backgroundColor: c.bg }}
+              >
+                <span className="block h-4 w-4 rounded-full" style={{ backgroundColor: c.fg }} />
+              </button>
             ))}
           </div>
         </div>
@@ -137,7 +159,7 @@ export default function QRGenerator({ pets, siteUrl }: Props) {
         </button>
       </aside>
 
-      {/* ?? Main ?? */}
+      {/* Main */}
       <div className="lg:col-span-8 space-y-8">
 
         {/* QR Preview */}
@@ -146,16 +168,12 @@ export default function QRGenerator({ pets, siteUrl }: Props) {
           style={{ backgroundColor: color.bg }}
         >
           <div
-            ref={canvasRef}
-            className="p-6 rounded-2xl shadow-lg"
-            style={{ backgroundColor: color.bg, borderRadius: style.radius * 2 }}
+            className="p-4 shadow-lg"
+            style={{ backgroundColor: color.bg, borderRadius: organic ? 28 : 8 }}
           >
-            <QRCodeCanvas
-              value={url}
-              size={200}
-              fgColor={color.fg}
-              bgColor={color.bg}
-              level="H"
+            <div
+              ref={holderRef}
+              className="mx-auto w-56 [&>canvas]:h-auto [&>canvas]:w-full"
             />
           </div>
 
