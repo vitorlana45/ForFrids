@@ -134,7 +134,7 @@ export default function PetEditTabs({
                 </div>
                 <span className={`rounded-full px-3 py-1 text-xs font-bold ${
                   pet.is_public
-                    ? 'bg-primary-fixed text-primary'
+                    ? 'bg-primary-fixed text-on-primary-fixed-variant'
                     : 'bg-surface-container text-on-surface-variant'
                 }`}>
                   {pet.is_public ? 'Público' : 'Privado'}
