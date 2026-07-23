@@ -1,7 +1,7 @@
 import type { PlanId } from '@/types/database';
 import { prisma } from './prisma';
 
-export type Feature = 'capsules' | 'chronicles' | 'qrcode';
+export type Feature = 'capsules' | 'chronicles' | 'qrcode' | 'presentation';
 
 const LIMITS: Record<PlanId, {
   maxPets: number;
@@ -10,9 +10,10 @@ const LIMITS: Record<PlanId, {
   capsules: boolean;
   chronicles: boolean;
   qrcode: boolean;
+  presentation: boolean;
 }> = {
-  free:     { maxPets: 1,        maxTimelineEntries: 5,        maxChroniclesPerPet: 0,        capsules: false, chronicles: false, qrcode: false },
-  premium:  { maxPets: 5,        maxTimelineEntries: 50,        maxChroniclesPerPet: 20,       capsules: true,  chronicles: true,  qrcode: true  },
+  free:     { maxPets: 1,        maxTimelineEntries: 5,        maxChroniclesPerPet: 0,        capsules: false, chronicles: false, qrcode: false, presentation: false },
+  premium:  { maxPets: 5,        maxTimelineEntries: 50,        maxChroniclesPerPet: 20,       capsules: true,  chronicles: true,  qrcode: true,  presentation: true  },
 };
 
 // Normaliza valores legados vindos do banco (ex.: 'lifetime') para o plano atual.
