@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, type ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import {
   ArrowLeft,
   Bug,
@@ -81,6 +82,7 @@ function ActionCard({ icon, title, description, onClick }: {
 }
 
 export default function HelpFab() {
+  const pathname = usePathname();
   const { data } = useSession();
   const toast = useToast();
   const isAuthenticated = Boolean(data?.user?.id);
@@ -105,6 +107,7 @@ export default function HelpFab() {
   const [customDonation, setCustomDonation] = useState('');
 
   const turnstileRequired = !isAuthenticated && Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
+  const hasMobileBottomNav = pathname === '/' || pathname.startsWith('/dashboard');
   const meta = viewMeta[view];
 
   const supportType = useMemo(() => {
@@ -206,7 +209,9 @@ export default function HelpFab() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-[240] inline-flex items-center gap-3 rounded-full bg-primary px-4 py-3 text-on-primary shadow-premium transition-all hover:-translate-y-0.5 hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim"
+        className={`fixed right-6 z-[240] inline-flex items-center gap-3 rounded-full bg-primary px-4 py-3 text-on-primary shadow-premium transition-all hover:-translate-y-0.5 hover:bg-[#3d4d41] dark:hover:bg-primary-fixed-dim ${
+          hasMobileBottomNav ? 'bottom-24 md:bottom-6' : 'bottom-6'
+        }`}
         aria-label="Abrir central de ajuda"
       >
         <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-white/15">
@@ -245,7 +250,7 @@ export default function HelpFab() {
                   <ActionCard icon={<Lightbulb className="h-5 w-5" />} title="Sugerir melhoria" description="Conte uma ideia que tornaria a plataforma melhor." onClick={() => setView('suggestion')} />
                   <ActionCard icon={<Bug className="h-5 w-5" />} title="Relatar bug" description="Envie contexto técnico e uma imagem opcional." onClick={() => setView('bug')} />
                   <ActionCard icon={<HeartHandshake className="h-5 w-5" />} title="Fazer doação" description="Apoie a manutenção do Eterno Pet com qualquer valor." onClick={() => setView('donation')} />
-                  <a href="mailto:suporte@eternopet.com" className="mt-1 inline-flex items-center justify-center rounded-full border border-outline-variant/30 px-4 py-2.5 text-xs font-semibold text-on-surface-variant transition-colors hover:bg-surface-container">
+                  <a href="mailto:contato@eternopet.com.br" className="mt-1 inline-flex items-center justify-center rounded-full border border-outline-variant/30 px-4 py-2.5 text-xs font-semibold text-on-surface-variant transition-colors hover:bg-surface-container">
                     Preferir e-mail tradicional
                   </a>
                 </div>

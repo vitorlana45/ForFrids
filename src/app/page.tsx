@@ -5,7 +5,7 @@ import { pricing } from '@/lib/pricing';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-surface text-on-surface selection:bg-primary selection:text-on-primary">
+    <div className="min-h-screen overflow-x-clip bg-surface text-on-surface selection:bg-primary selection:text-on-primary">
 
       {/* ?? Header ?? */}
       <header className="bg-surface/90 backdrop-blur-md border-b border-secondary/20 fixed top-0 w-full z-50 transition-all">
@@ -53,7 +53,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="flex-1 relative">
+          <div className="flex-1 relative w-full">
             <div className="organic-blob bg-secondary/10 w-full aspect-square absolute -top-12 -right-12 blur-3xl pointer-events-none" />
             <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-2xl border-[12px] border-surface-container-lowest">
               <div className="relative w-full h-[520px]">

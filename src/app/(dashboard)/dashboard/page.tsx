@@ -244,21 +244,6 @@ export default async function DashboardPage() {
           </section>
         </aside>
       </div>
-
-      {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-2 h-16 bg-surface/80 backdrop-blur-md border-t border-outline-variant/20">
-        {[
-          { icon: 'home', label: 'Início', active: true, href: '/dashboard' },
-          { icon: 'lock_clock', label: 'Cápsulas', active: false, href: '/dashboard/capsulas' },
-          { icon: 'monitoring', label: 'Engajamento', active: false, href: '/dashboard/engajamento' },
-          { icon: 'person', label: 'Perfil', active: false, href: '/dashboard/perfil' },
-        ].map(item => (
-          <Link key={item.label} href={item.href} className={`flex flex-col items-center justify-center scale-95 active:scale-90 transition-transform duration-200 ${item.active ? 'text-primary' : 'text-on-surface-variant'}`}>
-            <span className="material-symbols-outlined">{item.icon}</span>
-            <span className="font-serif text-[11px] tracking-wide">{item.label}</span>
-          </Link>
-        ))}
-      </nav>
     </div>
   );
 }

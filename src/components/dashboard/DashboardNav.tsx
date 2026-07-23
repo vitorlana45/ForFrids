@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Sparkles,
   Sun,
+  User,
   X,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -41,6 +42,13 @@ const NAV_LINKS = [
   { href: '/dashboard/aprovacoes',  label: 'Aprovações',  Icon: ShieldCheck },
   { href: '/dashboard/engajamento', label: 'Engajamento', Icon: BarChart2   },
   { href: '/dashboard/planos',      label: 'Planos',      Icon: Sparkles    },
+];
+
+const MOBILE_NAV_LINKS = [
+  { href: '/dashboard',             label: 'Início',      Icon: Home        },
+  { href: '/dashboard/capsulas',    label: 'Cápsulas',    Icon: LockKeyhole },
+  { href: '/dashboard/engajamento', label: 'Engajamento', Icon: BarChart2   },
+  { href: '/dashboard/perfil',      label: 'Perfil',      Icon: User        },
 ];
 
 export default function DashboardNav({
@@ -383,6 +391,27 @@ export default function DashboardNav({
           </button>
         </div>
       </aside>
+
+      <nav className="fixed bottom-0 left-0 z-50 flex h-16 w-full items-center justify-around border-t border-outline-variant/20 bg-surface/90 px-4 pb-2 shadow-[0_-8px_24px_-16px_rgba(0,0,0,0.35)] backdrop-blur-md md:hidden">
+        {MOBILE_NAV_LINKS.map(({ href, label, Icon }) => {
+          const active = isActive(href);
+
+          return (
+            <Link
+              key={href}
+              href={href}
+              prefetch={false}
+              aria-current={active ? 'page' : undefined}
+              className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 text-[11px] transition-colors ${
+                active ? 'text-primary' : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              <Icon className="h-5 w-5" />
+              <span className="max-w-full truncate font-serif leading-tight">{label}</span>
+            </Link>
+          );
+        })}
+      </nav>
     </>
   );
 }

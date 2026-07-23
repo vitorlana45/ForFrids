@@ -48,6 +48,16 @@ export default function NavigationProgress() {
     setPending(false);
   }, [pathname, searchParams]);
 
+  useEffect(() => {
+    if (!pending) return;
+
+    const timeout = window.setTimeout(() => {
+      setPending(false);
+    }, 10_000);
+
+    return () => window.clearTimeout(timeout);
+  }, [pending]);
+
   if (!mounted || !pending) return null;
 
   return createPortal(
