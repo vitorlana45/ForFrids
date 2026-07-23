@@ -7,6 +7,7 @@ import { ConfirmModalProvider } from '@/components/ui/ConfirmModal';
 import { ToastProvider } from '@/components/ui/toast';
 import NavigationProgress from '@/components/ui/NavigationProgress';
 import HelpFab from '@/components/support/HelpFab';
+import CookieConsent from '@/components/legal/CookieConsent';
 
 export const metadata: Metadata = {
   title: 'Eterno Pet — Memória Afetiva para Pets',
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </Suspense>
               {children}
               <HelpFab />
+              <CookieConsent />
             </ToastProvider>
           </ConfirmModalProvider>
         </ThemeProvider>
