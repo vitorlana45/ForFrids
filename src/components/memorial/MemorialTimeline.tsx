@@ -115,13 +115,13 @@ function normalizeText(value: string) {
 function getMomentKind(entry: TimelineEntry): MomentKind {
   const text = normalizeText(`${entry.title} ${entry.description ?? ''}`);
 
-  if (/(despedida|saudade|partida|adeus|faleceu|morreu|luto)/.test(text)) {
+  if (/(despedida|saudade|partida|adeus|faleceu|morreu|luto|ate sempre)/.test(text)) {
     return 'farewell';
   }
   if (/(aniversario|parabens|festa|celebracao|natal|presente)/.test(text)) {
     return 'celebration';
   }
-  if (/(chegada|chegou|nasceu|nascimento|adocao|adotad|primeiro dia|casa)/.test(text)) {
+  if (/(chegada|chegou|nasceu|nascimento|adocao|adotad|primeiro dia)/.test(text)) {
     return 'arrival';
   }
   if (/(viagem|praia|passeio|trilha|parque|aventura|corrida|rua)/.test(text)) {
@@ -439,7 +439,7 @@ export default function MemorialTimeline({
                     key={`${openEntry.id}-modal-${j}`}
                     className={`relative min-h-0 w-full overflow-hidden bg-surface-container ${
                       openEntry.photo_urls.length === 1
-                        ? 'aspect-[16/9]'
+                        ? 'aspect-[4/3]'
                         : j === 0 && openEntry.photo_urls.length === 3
                           ? 'col-span-2 aspect-[16/9]'
                           : 'aspect-square'
@@ -451,7 +451,7 @@ export default function MemorialTimeline({
                       fill
                       sizes="(max-width: 768px) 92vw, 736px"
                       unoptimized
-                      className="object-cover object-top"
+                      className="object-contain"
                     />
                   </div>
                 ))}
