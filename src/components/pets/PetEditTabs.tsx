@@ -56,7 +56,7 @@ export default function PetEditTabs({
   return (
     <div>
       {/* Tab bar */}
-      <div className="mb-8 flex justify-center gap-1 overflow-x-auto rounded-2xl border border-outline-variant/20 bg-surface-container-low p-1.5">
+      <div className="mb-8 flex justify-start gap-1 overflow-x-auto rounded-2xl border border-outline-variant/20 bg-surface-container-low p-1.5 lg:justify-center">
         {TABS.map(({ id, label, Icon }) => {
           const badge = id === 'homenagens' && pendingTributes.length > 0
             ? pendingTributes.length : null;
