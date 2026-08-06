@@ -151,7 +151,19 @@ export default function PresentationPlayer({ slides, memorialSlug, petName, memo
         >
           {slide.kind === 'photo' && (
             <>
+              {/* Fundo desfocado da propria foto: preenche a tela sem cortar/ampliar o assunto */}
               <div className="ep-kenburns absolute inset-0">
+                <Image
+                  src={slide.photoUrl}
+                  alt=""
+                  fill
+                  unoptimized
+                  sizes="100vw"
+                  className="scale-110 object-cover blur-2xl brightness-[0.4]"
+                />
+              </div>
+              {/* Foto inteira, centralizada, sem corte */}
+              <div className="absolute inset-0">
                 <Image
                   src={slide.photoUrl}
                   alt={`${petName} — ${slide.momentTitle}`}
@@ -159,7 +171,7 @@ export default function PresentationPlayer({ slides, memorialSlug, petName, memo
                   unoptimized
                   priority={i === index}
                   sizes="100vw"
-                  className="object-cover"
+                  className="object-contain"
                 />
               </div>
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-8 pb-24 md:p-16 md:pb-28">
@@ -182,7 +194,16 @@ export default function PresentationPlayer({ slides, memorialSlug, petName, memo
                     <Image src={slide.avatarUrl} alt="" fill unoptimized sizes="100vw" className="object-cover" />
                   </div>
                   <div className="relative mb-8 h-40 w-40 overflow-hidden rounded-full border-4 border-white/20 shadow-2xl md:h-56 md:w-56">
-                    <Image src={slide.avatarUrl} alt={petName} fill unoptimized priority sizes="224px" className="object-cover" />
+                    <Image
+                      src={slide.avatarUrl}
+                      alt={petName}
+                      fill
+                      unoptimized
+                      priority
+                      sizes="224px"
+                      className="object-cover"
+                      style={slide.avatarPosition ? { objectPosition: slide.avatarPosition } : undefined}
+                    />
                   </div>
                 </>
               )}

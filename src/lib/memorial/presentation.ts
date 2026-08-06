@@ -6,6 +6,7 @@ export interface CoverSlide {
   kind: 'cover';
   petName: string;
   avatarUrl: string | null;
+  avatarPosition: string | null;
   birthYear: number | null;
   deathYear: number | null;
   tribute: string | null;
@@ -50,6 +51,7 @@ export function buildPresentationSlides(pet: Pet, entries: TimelineEntry[]): Pre
     kind: 'cover',
     petName: pet.name,
     avatarUrl: pet.avatar_url,
+    avatarPosition: pet.avatar_position,
     birthYear,
     deathYear,
     tribute: pet.tribute_text,
