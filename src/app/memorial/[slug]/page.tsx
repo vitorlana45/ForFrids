@@ -107,7 +107,9 @@ export default async function MemorialPage({ params }: Props) {
           <MemorialLogoLink />
           <MemorialNav items={navItems} variant="desktop" />
           <div className="flex items-center gap-1">
-            <ThemeToggle />
+            <span className="hidden sm:inline-flex">
+              <ThemeToggle />
+            </span>
             <MemorialActions
               petId={pet.id}
               petName={pet.name}
