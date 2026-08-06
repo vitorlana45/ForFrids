@@ -130,7 +130,7 @@ export default async function DashboardPage() {
                 {recentEntries.length === 0 ? (
                   <div className="flex gap-6 items-start relative pb-8">
                     <div className="w-8 h-8 rounded-full bg-primary-fixed flex-shrink-0 flex items-center justify-center z-10 border-4 border-surface">
-                      <span className="material-symbols-outlined text-sm text-primary">auto_stories</span>
+                      <span className="material-symbols-outlined text-sm text-on-primary-fixed-variant">auto_stories</span>
                     </div>
                     <div className="flex-1 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/20 shadow-sm">
                       <div className="flex items-center justify-between mb-3">
@@ -154,7 +154,7 @@ export default async function DashboardPage() {
                           <div className="absolute left-4 top-8 bottom-0 w-px bg-outline-variant" />
                         )}
                         <div className="w-8 h-8 rounded-full bg-primary-fixed flex-shrink-0 flex items-center justify-center z-10 border-4 border-surface">
-                          <span className="material-symbols-outlined text-sm text-primary">auto_stories</span>
+                          <span className="material-symbols-outlined text-sm text-on-primary-fixed-variant">auto_stories</span>
                         </div>
                         <div className="flex-1 min-w-0 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/20 shadow-sm">
                           <div className="flex items-center justify-between gap-3 mb-2">

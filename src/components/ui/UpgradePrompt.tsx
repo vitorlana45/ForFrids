@@ -19,7 +19,7 @@ export default function UpgradePrompt({ feature, description, variant = 'standal
       }`}
     >
       <span
-        className={`mb-5 flex items-center justify-center rounded-2xl bg-primary-fixed text-primary ${
+        className={`mb-5 flex items-center justify-center rounded-2xl bg-primary-fixed text-on-primary-fixed-variant ${
           isOverlay ? 'h-14 w-14' : 'h-16 w-16'
         }`}
       >

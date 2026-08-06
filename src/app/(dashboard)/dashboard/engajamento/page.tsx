@@ -103,7 +103,7 @@ export default async function EngagementPage() {
         </div>
 
         <div className="rounded-3xl border border-outline-variant/20 bg-surface-container-low p-6">
-          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-fixed text-primary">
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-fixed text-on-primary-fixed-variant">
             <BookOpen className="h-5 w-5" />
           </div>
           <p className="font-serif text-4xl text-on-surface">{totalChronicles}</p>

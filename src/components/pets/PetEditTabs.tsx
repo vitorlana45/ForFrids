@@ -395,7 +395,7 @@ export default function PetEditTabs({
             </div>
 
             <div className="rounded-3xl border border-outline-variant/20 bg-surface-container-low p-7">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-fixed text-primary">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-fixed text-on-primary-fixed-variant">
                 <BookOpen className="h-6 w-6" />
               </div>
               <p className="font-serif text-4xl text-on-surface">{chroniclesCount}</p>

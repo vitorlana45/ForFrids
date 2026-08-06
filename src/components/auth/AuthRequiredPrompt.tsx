@@ -70,7 +70,7 @@ export default function AuthRequiredPrompt({
         </span>
 
         <div className="relative z-10">
-          <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-fixed text-primary">
+          <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-fixed text-on-primary-fixed-variant">
             <span className="material-symbols-outlined">person_check</span>
           </div>
 

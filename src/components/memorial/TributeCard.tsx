@@ -2,7 +2,7 @@ import type { Tribute } from '@/types/database';
 
 const AVATAR_COLORS = [
   'bg-secondary-container text-secondary',
-  'bg-primary-fixed text-primary',
+  'bg-primary-fixed text-on-primary-fixed-variant',
   'bg-tertiary-fixed text-on-tertiary-fixed',
   'bg-surface-container-highest text-on-surface',
 ];

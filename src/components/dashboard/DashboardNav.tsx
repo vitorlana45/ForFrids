@@ -202,7 +202,7 @@ export default function DashboardNav({
                       {alerts.readyCapsulesCount > 0 && (
                         <Link href="/dashboard/capsulas" onClick={() => setAlertsOpen(false)}
                           className="flex items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-surface-container">
-                          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-fixed text-primary">
+                          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-fixed text-on-primary-fixed-variant">
                             <Clock className="h-5 w-5" />
                           </span>
                           <span className="min-w-0 flex-1">
