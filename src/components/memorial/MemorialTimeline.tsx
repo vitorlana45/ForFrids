@@ -310,13 +310,23 @@ export default function MemorialTimeline({
                 >
                   {cover && (
                     <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface-container">
+                      {/* Fundo desfocado da propria foto: preenche o card sem cortar o assunto */}
                       <Image
                         src={cover}
                         alt=""
                         fill
                         sizes="(max-width: 768px) 92vw, 340px"
                         unoptimized
-                        className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                        className="scale-110 object-cover blur-xl"
+                      />
+                      {/* Foto inteira, sempre visivel */}
+                      <Image
+                        src={cover}
+                        alt=""
+                        fill
+                        sizes="(max-width: 768px) 92vw, 340px"
+                        unoptimized
+                        className="object-contain transition-transform duration-700 group-hover:scale-105"
                       />
                       {extraPhotos > 0 && (
                         <span className="absolute bottom-2 right-2 rounded-full bg-black/55 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
