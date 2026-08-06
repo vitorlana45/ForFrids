@@ -1,12 +1,18 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getSessionCookie } from 'better-auth/cookies';
 
 const PROTECTED_ROUTES = ['/dashboard'];
+// Cookie de sessao do better-auth (default). Em HTTPS ganha o prefixo __Secure-.
+const SESSION_COOKIE = 'better-auth.session_token';
 
 export function middleware(request: NextRequest) {
-  // getSessionCookie apenas verifica a EXISTENCIA do cookie (com/sem o prefixo
-  // __Secure- em HTTPS). Ele NAO valida a sessao no banco.
-  const sessionToken = getSessionCookie(request);
+  // So checamos a EXISTENCIA do cookie de sessao (com/sem o prefixo __Secure-).
+  // Lemos direto do request em vez de usar better-auth/cookies (getSessionCookie)
+  // porque aquele modulo importa `jose`, que usa APIs de Node (CompressionStream)
+  // nao suportadas no Edge Runtime do middleware -> gerava warning no build.
+  // A validacao real da sessao fica nos layouts via getServerSession (Node).
+  const sessionToken =
+    request.cookies.get(SESSION_COOKIE)?.value ??
+    request.cookies.get(`__Secure-${SESSION_COOKIE}`)?.value;
   const { pathname } = request.nextUrl;
 
   const isProtected = PROTECTED_ROUTES.some((r) => pathname.startsWith(r));
