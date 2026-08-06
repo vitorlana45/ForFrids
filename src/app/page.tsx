@@ -55,7 +55,7 @@ export default async function HomePage() {
                 Começar Homenagem
                 <span className="material-symbols-outlined text-xl">arrow_forward</span>
               </Link>
-              <Link href="/memorial/fridis" className="border border-secondary/40 text-primary px-10 py-5 rounded-full font-serif font-medium hover:bg-surface-container transition-all">
+              <Link href="/memorial/max" className="border border-secondary/40 text-primary px-10 py-5 rounded-full font-serif font-medium hover:bg-surface-container transition-all">
                 Ver Memorial Exemplo
               </Link>
             </div>
