@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { X } from 'lucide-react';
 
@@ -16,14 +18,42 @@ export default function AuthRequiredPrompt({
   contextLabel,
   onClose,
 }: Props) {
-  return (
+  const [mounted, setMounted] = useState(false);
+
+  // Portal + travas: renderiza no body para escapar de ancestrais com
+  // backdrop-filter/transform (que quebravam o position: fixed do modal).
+  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (!onClose) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose?.();
+    }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(
     <div
       className="fixed inset-0 z-[9998] flex items-center justify-center bg-inverse-surface/45 px-4 py-8 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="auth-required-title"
+      onClick={onClose}
     >
-      <div className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-outline-variant/20 bg-surface-container-lowest p-8 shadow-premium animate-slide-up">
+      <div
+        className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-outline-variant/20 bg-surface-container-lowest p-8 shadow-premium animate-slide-up"
+        onClick={(e) => e.stopPropagation()}
+      >
         {onClose && (
           <button
             type="button"
@@ -71,6 +101,7 @@ export default function AuthRequiredPrompt({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
