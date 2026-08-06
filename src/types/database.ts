@@ -31,6 +31,8 @@ export interface Pet {
   letter_content: string | null;
   letter_is_public: boolean;
   letter_updated_at: string | null;
+  letter_signature_text: string | null;
+  letter_signature_drawing: string | null;
   created_at: string;
   updated_at: string;
 }

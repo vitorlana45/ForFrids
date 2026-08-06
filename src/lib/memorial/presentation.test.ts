@@ -22,6 +22,8 @@ function makePet(over: Partial<Pet> = {}): Pet {
     letter_content: null,
     letter_is_public: false,
     letter_updated_at: null,
+    letter_signature_text: null,
+    letter_signature_drawing: null,
     created_at: '2024-01-01',
     updated_at: '2024-01-01',
     ...over,

@@ -1,4 +1,9 @@
-import { getLetterHeading } from '@/lib/memorial/letter';
+import {
+  getLetterHeading,
+  isSafeSignaturePath,
+  SIGNATURE_VIEW_W,
+  SIGNATURE_VIEW_H,
+} from '@/lib/memorial/letter';
 
 interface Props {
   content: string;
@@ -7,6 +12,8 @@ interface Props {
   ownerTitle: string | null;
   updatedAt: string | null;
   isDeceased: boolean;
+  signatureText: string | null;
+  signatureDrawing: string | null;
 }
 
 export default function MemorialLetter({
@@ -16,11 +23,18 @@ export default function MemorialLetter({
   ownerTitle,
   updatedAt,
   isDeceased,
+  signatureText,
+  signatureDrawing,
 }: Props) {
   const heading = getLetterHeading(petName, isDeceased);
   const dateLabel = updatedAt
     ? new Date(updatedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
     : null;
+
+  // Desenho tem prioridade; senao texto digitado; senao o nome do tutor.
+  const drawing = signatureDrawing && isSafeSignaturePath(signatureDrawing) ? signatureDrawing : null;
+  const signatureName = signatureText || ownerName;
+  const hasSignature = Boolean(drawing || signatureName);
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -55,31 +69,37 @@ export default function MemorialLetter({
         </p>
 
         {/* Assinatura */}
-        {(ownerName || ownerTitle) && (
+        {hasSignature && (
           <div className="relative mt-12 flex flex-col items-end">
-            {ownerName && (
-              <p
-                className="text-4xl leading-none text-primary md:text-5xl"
-                style={{ fontFamily: '"Caveat", cursive' }}
+            {drawing ? (
+              <svg
+                viewBox={`0 0 ${SIGNATURE_VIEW_W} ${SIGNATURE_VIEW_H}`}
+                className="h-20 w-auto max-w-[70%] text-primary"
+                role="img"
+                aria-label="Assinatura do tutor"
               >
-                {ownerName}
-              </p>
+                <path
+                  d={drawing}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            ) : (
+              <>
+                <p
+                  className="text-4xl leading-none text-primary md:text-5xl"
+                  style={{ fontFamily: '"Caveat", cursive' }}
+                >
+                  {signatureName}
+                </p>
+                <svg aria-hidden width="132" height="12" viewBox="0 0 132 12" fill="none" className="mt-1 text-primary/35">
+                  <path d="M2 7c22-6 46 5 66 1s41-6 62-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </>
             )}
-            <svg
-              aria-hidden
-              width="132"
-              height="12"
-              viewBox="0 0 132 12"
-              fill="none"
-              className="mt-1 text-primary/35"
-            >
-              <path
-                d="M2 7c22-6 46 5 66 1s41-6 62-2"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
             {ownerTitle && (
               <p className="mt-2 font-sans text-[11px] uppercase tracking-[0.18em] text-on-surface-variant/70">
                 {ownerTitle}

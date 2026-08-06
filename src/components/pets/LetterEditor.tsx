@@ -3,14 +3,37 @@
 import { useState, useTransition } from 'react';
 import { Loader2, Mail, Trash2 } from 'lucide-react';
 import { removeLetter, saveLetter } from '@/lib/actions/pet-letter';
-import { getLetterHeading, LETTER_MAX_CHARS, LETTER_MIN_CHARS } from '@/lib/memorial/letter';
+import {
+  getLetterHeading,
+  LETTER_MAX_CHARS,
+  LETTER_MIN_CHARS,
+  SIGNATURE_TEXT_MAX,
+} from '@/lib/memorial/letter';
 import { useToast } from '@/components/ui/toast';
 import { useConfirm } from '@/components/ui/ConfirmModal';
+import SignaturePad from './SignaturePad';
 import type { Pet } from '@/types/database';
 
+type SigMode = 'default' | 'type' | 'draw';
+
 interface Props {
-  pet: Pick<Pet, 'id' | 'name' | 'death_date' | 'letter_content' | 'letter_is_public'>;
+  pet: Pick<
+    Pet,
+    | 'id'
+    | 'name'
+    | 'death_date'
+    | 'letter_content'
+    | 'letter_is_public'
+    | 'letter_signature_text'
+    | 'letter_signature_drawing'
+  >;
 }
+
+const SIG_TABS: { id: SigMode; label: string }[] = [
+  { id: 'default', label: 'Nome do perfil' },
+  { id: 'type', label: 'Digitar' },
+  { id: 'draw', label: 'Desenhar' },
+];
 
 export default function LetterEditor({ pet }: Props) {
   const toast = useToast();
@@ -18,6 +41,11 @@ export default function LetterEditor({ pet }: Props) {
   const [content, setContent] = useState(pet.letter_content ?? '');
   const [isPublic, setIsPublic] = useState(pet.letter_is_public);
   const [hasLetter, setHasLetter] = useState(Boolean(pet.letter_content));
+  const [sigMode, setSigMode] = useState<SigMode>(
+    pet.letter_signature_drawing ? 'draw' : pet.letter_signature_text ? 'type' : 'default',
+  );
+  const [sigText, setSigText] = useState(pet.letter_signature_text ?? '');
+  const [sigDrawing, setSigDrawing] = useState(pet.letter_signature_drawing ?? '');
   const [isSaving, startSaving] = useTransition();
   const [isRemoving, startRemoving] = useTransition();
 
@@ -28,7 +56,14 @@ export default function LetterEditor({ pet }: Props) {
 
   function save() {
     startSaving(async () => {
-      const result = await saveLetter(pet.id, { content: content.trim(), isPublic });
+      const signatureText = sigMode === 'type' ? sigText.trim() || null : null;
+      const signatureDrawing = sigMode === 'draw' ? sigDrawing || null : null;
+      const result = await saveLetter(pet.id, {
+        content: content.trim(),
+        isPublic,
+        signatureText,
+        signatureDrawing,
+      });
       if (result.error) {
         toast.error('Não foi possível salvar a carta. Tente novamente.');
         return;
@@ -54,6 +89,9 @@ export default function LetterEditor({ pet }: Props) {
       }
       setContent('');
       setIsPublic(false);
+      setSigMode('default');
+      setSigText('');
+      setSigDrawing('');
       setHasLetter(false);
       toast.success('Carta removida.');
     });
@@ -102,6 +140,52 @@ export default function LetterEditor({ pet }: Props) {
           </span>
         </span>
       </label>
+
+      {/* Assinatura */}
+      <div className="mt-6">
+        <p className="mb-2 text-sm font-semibold text-on-surface">Assinatura</p>
+        <div className="mb-3 inline-flex flex-wrap gap-1 rounded-full border border-outline-variant/30 p-1">
+          {SIG_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setSigMode(tab.id)}
+              className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
+                sigMode === tab.id
+                  ? 'bg-primary text-on-primary'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {sigMode === 'default' && (
+          <p className="text-sm text-on-surface-variant">
+            A carta será assinada com o nome do seu perfil, em letra manuscrita.
+          </p>
+        )}
+
+        {sigMode === 'type' && (
+          <div>
+            <input
+              value={sigText}
+              onChange={(e) => setSigText(e.target.value)}
+              maxLength={SIGNATURE_TEXT_MAX}
+              placeholder="Como você quer assinar?"
+              className="w-full rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-4 py-3 text-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
+            {sigText.trim() && (
+              <p className="mt-2 text-4xl text-primary" style={{ fontFamily: '"Caveat", cursive' }}>
+                {sigText}
+              </p>
+            )}
+          </div>
+        )}
+
+        {sigMode === 'draw' && <SignaturePad value={sigDrawing} onChange={setSigDrawing} />}
+      </div>
 
       <div className="mt-6 flex flex-wrap gap-3">
         <button
