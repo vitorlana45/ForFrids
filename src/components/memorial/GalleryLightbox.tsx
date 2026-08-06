@@ -51,7 +51,7 @@ export default function GalleryLightbox({ photos }: Props) {
               className="rounded-xl overflow-hidden relative aspect-[3/4] w-48 md:w-64 shrink-0 cursor-zoom-in focus-visible:ring-2 focus-visible:ring-primary"
               aria-label="Ampliar foto"
             >
-              <Image src={url} alt="" fill unoptimized className="object-cover hover:scale-105 transition-transform duration-700" />
+              <Image src={url} alt="" fill unoptimized className="object-cover object-top hover:scale-105 transition-transform duration-700" />
             </button>
           ))}
         </div>
@@ -69,7 +69,7 @@ export default function GalleryLightbox({ photos }: Props) {
                   }`}
                   aria-label="Ampliar foto"
                 >
-                  <Image src={url} alt="" fill unoptimized className="object-cover hover:scale-105 transition-transform duration-700" />
+                  <Image src={url} alt="" fill unoptimized className="object-cover object-top hover:scale-105 transition-transform duration-700" />
                 </button>
               ))}
             </div>

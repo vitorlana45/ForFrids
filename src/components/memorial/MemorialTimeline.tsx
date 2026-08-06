@@ -316,7 +316,7 @@ export default function MemorialTimeline({
                         fill
                         sizes="(max-width: 768px) 92vw, 340px"
                         unoptimized
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
                       />
                       {extraPhotos > 0 && (
                         <span className="absolute bottom-2 right-2 rounded-full bg-black/55 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
@@ -451,7 +451,7 @@ export default function MemorialTimeline({
                       fill
                       sizes="(max-width: 768px) 92vw, 736px"
                       unoptimized
-                      className="object-cover"
+                      className="object-cover object-top"
                     />
                   </div>
                 ))}
