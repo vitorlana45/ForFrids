@@ -236,7 +236,7 @@ export default async function HomePage() {
                 <h4 className="font-serif text-2xl mb-2 text-primary">Gratuito</h4>
                 <div className="text-4xl font-serif mb-8">R$ 0</div>
                 <ul className="space-y-5 mb-12 flex-grow">
-                  {['1 memorial ativo', 'Linha do tempo com até 5 momentos', 'Homenagens de visitantes', 'Memorial público compartilhável'].map(f => (
+                  {['1 memorial ativo', 'Linha do tempo com até 5 momentos', 'Homenagens de visitantes', 'Carta do tutor com assinatura personalizada', 'Memorial público compartilhável'].map(f => (
                     <li key={f} className="flex items-center gap-4 text-on-surface-variant">
                       <span className="material-symbols-outlined text-secondary text-sm">done</span> {f}
                     </li>
