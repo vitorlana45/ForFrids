@@ -16,12 +16,23 @@ export default function SignaturePad({ value, onChange }: Props) {
   const [current, setCurrent] = useState('');
 
   function toPoint(e: React.PointerEvent) {
-    const rect = svgRef.current!.getBoundingClientRect();
-    const x = Math.round(((e.clientX - rect.left) / rect.width) * SIGNATURE_VIEW_W);
-    const y = Math.round(((e.clientY - rect.top) / rect.height) * SIGNATURE_VIEW_H);
+    const svg = svgRef.current!;
+    const ctm = svg.getScreenCTM();
+    let x = 0;
+    let y = 0;
+    if (ctm) {
+      // Mapeia coordenada de tela -> coordenada do viewBox com exatidao,
+      // independente de escala/aspecto/borda (corrige o desvio da caneta).
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX;
+      pt.y = e.clientY;
+      const local = pt.matrixTransform(ctm.inverse());
+      x = local.x;
+      y = local.y;
+    }
     return {
-      x: Math.min(SIGNATURE_VIEW_W, Math.max(0, x)),
-      y: Math.min(SIGNATURE_VIEW_H, Math.max(0, y)),
+      x: Math.round(Math.min(SIGNATURE_VIEW_W, Math.max(0, x))),
+      y: Math.round(Math.min(SIGNATURE_VIEW_H, Math.max(0, y))),
     };
   }
 
@@ -68,7 +79,7 @@ export default function SignaturePad({ value, onChange }: Props) {
         <svg
           ref={svgRef}
           viewBox={`0 0 ${SIGNATURE_VIEW_W} ${SIGNATURE_VIEW_H}`}
-          className="h-40 w-full touch-none"
+          className="aspect-[3/1] w-full touch-none"
           onPointerDown={down}
           onPointerMove={move}
           onPointerUp={up}
