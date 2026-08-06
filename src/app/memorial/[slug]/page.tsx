@@ -129,7 +129,15 @@ export default async function MemorialPage({ params }: Props) {
           <div className="relative z-10">
             <div className="w-64 h-64 md:w-80 md:h-80 mx-auto rounded-full border-8 border-surface-container-lowest shadow-xl overflow-hidden mb-8 bg-surface-container-high flex items-center justify-center relative">
               {pet.avatar_url ? (
-                <Image src={pet.avatar_url} alt={pet.name} fill unoptimized className="object-cover" priority />
+                <Image
+                  src={pet.avatar_url}
+                  alt={pet.name}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                  style={pet.avatar_position ? { objectPosition: pet.avatar_position } : undefined}
+                  priority
+                />
               ) : (
                 <span className="material-symbols-outlined text-[100px] text-outline">cruelty_free</span>
               )}

@@ -44,6 +44,7 @@ async function main() {
       birth_date: new Date('2012-05-10'),
       death_date: new Date('2024-08-01'),
       avatar_url: '/max_hero.jpg',
+      avatar_position: '50% 20%',
       is_public: true,
       tribute_text:
         'O melhor companheiro de trilhas e o dono do latido mais alegre do bairro. Você nos ensinou o significado de amor incondicional.',
@@ -62,6 +63,7 @@ async function main() {
       birth_date: new Date('2012-05-10'),
       death_date: new Date('2024-08-01'),
       avatar_url: '/max_hero.jpg',
+      avatar_position: '50% 20%',
       is_public: true,
       tribute_text:
         'O melhor companheiro de trilhas e o dono do latido mais alegre do bairro. Você nos ensinou o significado de amor incondicional.',

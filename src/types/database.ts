@@ -25,6 +25,7 @@ export interface Pet {
   birth_date: string | null;
   death_date: string | null;
   avatar_url: string | null;
+  avatar_position: string | null;
   memorial_slug: string;
   is_public: boolean;
   tribute_text: string | null;

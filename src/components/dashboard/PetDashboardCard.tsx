@@ -21,6 +21,7 @@ export default function PetDashboardCard({ pet }: Props) {
             fill
             unoptimized
             className="object-cover transition-transform duration-700 group-hover:scale-105"
+            style={pet.avatar_position ? { objectPosition: pet.avatar_position } : undefined}
           />
         ) : (
           <div className="flex h-full items-center justify-center">

@@ -19,6 +19,7 @@ const petSchema = z.object({
   tribute_text: z.string().trim().max(400, 'Maximo de 400 caracteres').optional(),
   is_public: z.boolean(),
   avatar_url: z.string().nullable().optional(),
+  avatar_position: z.string().regex(/^\d{1,3}% \d{1,3}%$/, 'Posição inválida').nullable().optional(),
 });
 
 type PetInput = z.infer<typeof petSchema>;

@@ -49,6 +49,10 @@ export default function PetForm({ userId, pet, onAvatarChange }: Props) {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(pet?.avatar_url ?? null);
   const [avatarRemoved, setAvatarRemoved] = useState(false);
+  const [posY, setPosY] = useState<number>(() => {
+    const m = pet?.avatar_position?.match(/(\d{1,3})%\s+(\d{1,3})%/);
+    return m ? Number(m[2]) : 50;
+  });
   const [serverError, setServerError] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -133,7 +137,8 @@ export default function PetForm({ userId, pet, onAvatarChange }: Props) {
         }
         avatar_url = uploaded;
       }
-      const result = await updatePet(pet.id, { ...data, avatar_url });
+      const avatar_position = avatar_url ? `50% ${posY}%` : null;
+      const result = await updatePet(pet.id, { ...data, avatar_url, avatar_position });
       if (result.error) {
         if (avatarFile && avatar_url) await deleteUploadedMedia(avatar_url);
         setServerError(
@@ -161,7 +166,7 @@ export default function PetForm({ userId, pet, onAvatarChange }: Props) {
           toast.error('Pet criado, mas não foi possível enviar a foto. Edite o pet para tentar novamente.');
         }
         if (avatar_url) {
-          const updateResult = await updatePet(result.petId, { ...data, avatar_url });
+          const updateResult = await updatePet(result.petId, { ...data, avatar_url, avatar_position: `50% ${posY}%` });
           if (updateResult.error) {
             await deleteUploadedMedia(avatar_url);
             toast.error('Pet criado, mas nao foi possivel salvar a foto. Edite o pet para tentar novamente.');
@@ -259,6 +264,40 @@ export default function PetForm({ userId, pet, onAvatarChange }: Props) {
               <p className="mt-1 text-xs text-muted-foreground">JPG, PNG ou WEBP. Máx 5MB.</p>
             </div>
           </div>
+
+          {avatarPreview && !locked && (
+            <div className="mt-5 border-t border-outline-variant/15 pt-4">
+              <Label>Enquadramento no círculo</Label>
+              <p className="mb-3 mt-0.5 text-xs text-muted-foreground">
+                Ajuste a altura para centralizar o rosto — é assim que a foto aparece no memorial.
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-outline-variant/30">
+                  <img
+                    src={avatarPreview}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    style={{ objectPosition: `50% ${posY}%` }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={posY}
+                    onChange={(e) => setPosY(Number(e.target.value))}
+                    className="w-full accent-primary"
+                    aria-label="Enquadramento vertical da foto"
+                  />
+                  <div className="mt-1 flex justify-between text-[11px] text-muted-foreground">
+                    <span>Topo</span>
+                    <span>Base</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

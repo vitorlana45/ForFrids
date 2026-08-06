@@ -16,6 +16,7 @@ function makePet(over: Partial<Pet> = {}): Pet {
     birth_date: '2012-03-01',
     death_date: '2024-06-01',
     avatar_url: 'https://cdn/avatar.jpg',
+    avatar_position: null,
     memorial_slug: 'max',
     is_public: true,
     tribute_text: 'Amado para sempre',

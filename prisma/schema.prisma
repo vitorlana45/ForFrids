@@ -107,6 +107,8 @@ model Pet {
   birth_date    DateTime? @db.Date
   death_date    DateTime? @db.Date
   avatar_url    String?
+  // Ponto focal do recorte do avatar (CSS object-position, ex.: "50% 22%").
+  avatar_position String?
   memorial_slug String    @unique
   is_public     Boolean   @default(true)
   tribute_text  String?
