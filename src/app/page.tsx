@@ -140,7 +140,7 @@ export default async function HomePage() {
                   <div className="flex items-end justify-center -space-x-5">
                     <div className="relative z-0 h-24 w-24 overflow-hidden rounded-full border-4 border-surface-container-lowest bg-surface-container-high shadow-lg">
                       <Image
-                        src="/max.webp"
+                        src="/max.jpg"
                         alt="Max ainda filhote, deitado na grama"
                         fill
                         sizes="96px"

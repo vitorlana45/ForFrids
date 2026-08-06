@@ -44,7 +44,7 @@ async function main() {
       birth_date: new Date('2012-05-10'),
       death_date: new Date('2024-08-01'),
       avatar_url: '/max_hero.jpg',
-      avatar_position: '50% 20%',
+      avatar_position: '50% 25%',
       is_public: true,
       tribute_text:
         'O melhor companheiro de trilhas e o dono do latido mais alegre do bairro. Você nos ensinou o significado de amor incondicional.',
@@ -63,7 +63,7 @@ async function main() {
       birth_date: new Date('2012-05-10'),
       death_date: new Date('2024-08-01'),
       avatar_url: '/max_hero.jpg',
-      avatar_position: '50% 20%',
+      avatar_position: '50% 25%',
       is_public: true,
       tribute_text:
         'O melhor companheiro de trilhas e o dono do latido mais alegre do bairro. Você nos ensinou o significado de amor incondicional.',
@@ -84,7 +84,7 @@ async function main() {
         description:
           'O dia em que o Max chegou — pequeno o bastante pra caber numa mão e grande o bastante pra tomar conta de todos os corações.',
         date: new Date('2012-06-02'),
-        photo_urls: ['/max.webp'],
+        photo_urls: ['/max.jpg'],
       },
       {
         pet_id: pet.id,
